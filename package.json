@@ -1,0 +1,100 @@
+{
+  "name": "veriswap.io",
+  "author": "Congruent Labs Pty Ltd",
+  "email": "sales@congruentlabs.co",
+  "version": "0.0.1",
+  "private": false,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "cross-env GENERATE_SOURCEMAP=false react-scripts build",
+    "prettier:fix": "prettier './src/**/*.js' --write",
+    "eslint:fix": "eslint ./src --fix",
+    "codeStyle:fix": "npm run prettier:fix && npm run eslint:fix",
+    "clear-all": "rimraf ./build ./node_modules",
+    "deploy": "react-scripts build && firebase deploy --only hosting:sata-ico",
+    "deploy-dev": "react-scripts build && firebase deploy --only hosting:sata-dev"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "last 2 versions",
+      "Firefox ESR",
+      "not dead",
+      "not IE 11",
+      "maintained node versions"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.3.0",
+    "@ethersproject/providers": "^5.5.0",
+    "@mui/icons-material": "^5.0.4",
+    "@mui/material": "^5.0.4",
+    "@visx/axis": "^2.1.2",
+    "@visx/group": "^2.1.0",
+    "@visx/legend": "^2.1.2",
+    "@visx/mock-data": "^2.1.2",
+    "@visx/responsive": "^2.1.2",
+    "@visx/scale": "^2.1.2",
+    "@visx/shape": "^2.1.2",
+    "@visx/tooltip": "^2.2.0",
+    "@web3-react/core": "^6.1.9",
+    "aos": "^2.3.4",
+    "card-validator": "^8.1.1",
+    "crypto-js": "^4.1.1",
+    "d3-time-format": "^4.0.0",
+    "fernet": "^0.4.0",
+    "formik": "^2.2.9",
+    "jarallax": "^1.12.8",
+    "node-forge": "^0.10.0",
+    "node-sass": "^6.0.1",
+    "prop-types": "^15.7.2",
+    "react": "^17.0.2",
+    "react-countup": "^6.0.0",
+    "react-dom": "^17.0.2",
+    "react-i18next": "^11.12.0",
+    "react-images": "^1.1.7",
+    "react-lazy-load-image-component": "^1.5.1",
+    "react-router-dom": "^5.3.0",
+    "react-scripts": "4.0.3",
+    "react-slick": "^0.28.1",
+    "react-syntax-highlighter": "^15.4.4",
+    "react-typed": "^1.2.0",
+    "react-visibility-sensor": "^5.1.1",
+    "slick-carousel": "^1.8.1",
+    "url-safe-base64": "^1.1.1",
+    "use-local-storage-state": "^11.0.0",
+    "web-vitals": "^2.1.2",
+    "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.1.0",
+    "@typescript-eslint/parser": "^5.1.0",
+    "babel-eslint": "^10.1.0",
+    "babel-plugin-styled-components": "^1.13.3",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.11.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^6.1.1",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.26.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "prettier": "^2.4.1",
+    "prettier-eslint": "^13.0.0",
+    "prettier-eslint-cli": "^5.0.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.4.4"
+  }
+}
