@@ -1,3 +1,5 @@
+import { deepPurple } from '@mui/material/colors';
+
 export const light = {
   alternate: {
     main: '#f7f9fc',
@@ -48,10 +50,7 @@ export const dark = {
     contrastText: 'rgba(0, 0, 0, 0.87)',
   },
   secondary: {
-    main: '#0091ea',
-    light: '#64c1ff',
-    dark: '#0064b7',
-    contrastText: '#fff',
+    main: deepPurple[500],
   },
   text: {
     primary: '#EEEEEF',

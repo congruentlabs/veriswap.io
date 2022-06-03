@@ -1,5 +1,6 @@
 import React from 'react';
 import { Router } from 'react-router-dom';
+import { DAppProvider } from '@usedapp/core';
 import { createBrowserHistory } from 'history';
 import Routes from './Routes';
 import Page from './components/Page';
@@ -16,11 +17,13 @@ const browserHistory = createBrowserHistory();
 
 const App = () => {
   return (
-    <Page>
-      <Router history={browserHistory}>
-        <Routes />
-      </Router>
-    </Page>
+    <DAppProvider>
+      <Page>
+        <Router history={browserHistory}>
+          <Routes />
+        </Router>
+      </Page>
+    </DAppProvider>
   );
 };
 
