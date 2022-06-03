@@ -3,6 +3,9 @@
   "author": "Congruent Labs Pty Ltd",
   "email": "sales@congruentlabs.co",
   "version": "0.0.1",
+  "engines": {
+    "node": "<=16.0.0"
+  },
   "private": false,
   "scripts": {
     "start": "react-scripts start",
