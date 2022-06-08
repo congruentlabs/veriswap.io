@@ -9,7 +9,6 @@ const Main = ({ children }) => {
   return (
     <Box>
       <main>
-        <Box height={{ xs: 58, sm: 66 }} />
         {children}
         <Divider />
       </main>

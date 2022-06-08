@@ -17,31 +17,25 @@ import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
 
 import Box from '@mui/material/Box';
-import CardMedia from '@mui/material/CardMedia';
-import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
 import FormGroup from '@mui/material/FormGroup';
+import Stack from '@mui/material/Stack';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-
-import Typography from '@mui/material/Typography';
 // import useMediaQuery from '@mui/material/useMediaQuery';
 // import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
 
 import Container from 'components/Container';
-import { Chip } from '@mui/material';
 import { useCreateSwap, useExecuteSwap, useCancelSwap, useChangeExecutor } from './hooks';
+import { Alert } from '@mui/material';
 
 const infuraId = 'dab56da72e89492da5a8e77fbc45c7fa';
 
@@ -125,9 +119,9 @@ const Hero = () => {
     }
   };
 
-  useEffect(() => {
-    activateBrowserWallet();
-  }, []);
+  // useEffect(() => {
+  //   activateBrowserWallet();
+  // }, []);
 
   const handleChangeExecutor = (e) => {
     try {
@@ -205,7 +199,8 @@ const Hero = () => {
     }
   };
 
-  const onSubmitCreateSwap = () => {
+  const onSubmitCreateSwap = (e) => {
+    e.preventDefault();
     createSwapResetState();
     createSwapSend(fromToken, fromActualAmount, receiveToken, receiveActualAmount, executor, addonsRequireIdentity);
   };
@@ -230,12 +225,6 @@ const Hero = () => {
       minHeight={800}
       height={'auto'}
       position={'relative'}
-      // sx={{
-      //   backgroundColor: theme.palette.alternate.main,
-      //   background:
-      //     'url(https://assets.maccarianagency.com/backgrounds/img19.jpg) no-repeat center',
-      //   backgroundSize: 'cover',
-      // }}
     >
       <Box
         sx={{
@@ -246,261 +235,205 @@ const Hero = () => {
           bottom: 0,
           width: 1,
           height: 1,
-          backgroundColor: theme.palette.background.default,
-          // backgroundImage: `linear-gradient(315deg, ${theme.palette.background.default} 0%, #000000 74%)`,
+          // backgroundColor: theme.palette.background.default,
+          backgroundImage: `linear-gradient(315deg, ${theme.palette.background.default} 0%, #000000 74%)`,
           opacity: '0.8',
           zIndex: 1,
         }}
       />
-      <Container position={'relative'} zIndex={2}>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <Box width={1} height="100%" display="flex" alignItems="center">
-              <Box
-                component={Card}
-                height={1}
-                width={1}
-                borderRadius={0}
-                boxShadow={0}
-                style={{ backgroundColor: theme.palette.background.default }}
-              >
-                <Box
-                  component={CardMedia}
-                  height={1}
-                  width={1}
-                  minHeight={300}
-                  style={{ backgroundColor: theme.palette.background.default }}
-                  image="logo-full.png"
-                />
-              </Box>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Box width={1} height="100%" display="flex" alignItems="center">
-              <Box
-                padding={{ xs: 3, sm: 6 }}
-                width={1}
-                component={Card}
-                borderRadius={2}
-                boxShadow="rgb(100 221 23 / 60%) 0px 0px 31.25rem 1rem"
-                // data-aos={'zoom-in'}
-              >
-                {!account && (
-                  <Box display="flex" flexDirection={'column'}>
-                    <Box marginBottom={4}>
-                      <Button
-                        sx={{ height: 54 }}
-                        variant="contained"
-                        // color="default"
-                        size="medium"
-                        style={{ fontWeight: 900 }}
-                        fullWidth
-                        onClick={handleConnect}
-                      >
-                        CONNECT WALLET
-                      </Button>
-                    </Box>
-                  </Box>
-                )}
-                <Box>
-                  <Typography component="p" variant="body1" align="center">
-                    {account ? `Connected to: ${shortenAddress(account)}` : 'Connect to your Wallet to start using Veriswap!'}
-                  </Typography>
-                </Box>
-                {chainId && (
-                  <Box marginBottom={4}>
-                    <Typography component="p" variant="body1" align="center">
-                      Network: {getChainName(chainId)}
-                    </Typography>
-                  </Box>
-                )}
-                <form
-                  noValidate
-                  autoComplete="off"
-                  onSubmit={onSubmitCreateSwap}
+      <Container maxWidth="sm" zIndex="2" position="relative">
+        <Box width={1} height="100%" display="flex" alignItems="center">
+          <Box
+            padding={{ xs: 3, sm: 6 }}
+            width={1}
+            component={Card}
+            borderRadius={2}
+            boxShadow="rgb(100 221 23 / 60%) 0px 0px 31.25rem 1rem"
+            // data-aos={'zoom-in'}
+          >
+            {!account && (
+              <Stack spacing={2} alignItems="center">
+                <img src="logo.png" width="100" />
+                <Alert severity="warning">Connect your wallet to start using Veriswap!</Alert>
+                <Button
+                  sx={{ height: 54 }}
+                  variant="contained"
+                  // color="default"
+                  size="medium"
+                  style={{ fontWeight: 900 }}
+                  fullWidth
+                  onClick={handleConnect}
                 >
-                  <Box display="flex" flexDirection={'column'}>
-                    <Box marginBottom={2}>
-                      <TextField
-                        sx={{ height: 54 }}
-                        label="Token to Send"
-                        variant="outlined"
-                        color="primary"
-                        size="medium"
-                        disabled={!account}
-                        fullWidth
-                        value={fromToken}
-                        onChange={handleChangeFromToken}
-                        error={fromTokenError !== ''}
-                        helperText={fromTokenError}
-                      />
-                    </Box>
-                    <Box marginBottom={0.5}>
-                      <TextField
-                        sx={{ height: 54 }}
-                        label="Amount to Send"
-                        variant="outlined"
-                        color="primary"
-                        size="medium"
-                        disabled={!account}
-                        fullWidth
-                        value={fromAmount}
-                        onChange={handleChangeFromAmount}
-                        error={fromAmountError !== ''}
-                        helperText={fromAmountError}
-                      />
-                    </Box>
-                    <Box marginBottom={2}>
-                      <ButtonGroup variant="contained" color="secondary" fullWidth size="small">
-                        <Button onClick={(e) => handleClickFromPercentage(e, 25)}>
-                          25%
-                        </Button>
-                        <Button onClick={(e) => handleClickFromPercentage(e, 50)}>
-                          50%
-                        </Button>
-                        <Button onClick={(e) => handleClickFromPercentage(e, 75)}>
-                          75%
-                        </Button>
-                        <Button onClick={(e) => handleClickFromPercentage(e, 100)}>
-                          100%
-                        </Button>
-                      </ButtonGroup>
-                    </Box>
-                    {account && fromTokenInfo && fromTokenBalance && (
-                      <Box textAlign="center">
-                        <Chip label={`Balance: ${formatEther(fromTokenBalance, fromTokenInfo.decimals)} ${fromTokenInfo.symbol}`} />
-                      </Box>
-                    )}
-                    <Box marginY={4} marginX={{ xs: -3, sm: -6 }}>
-                      <Divider />
-                    </Box>
-                    <Box marginBottom={2}>
-                      <TextField
-                        sx={{ height: 54 }}
-                        label="Token to Receive"
-                        variant="outlined"
-                        color="primary"
-                        size="medium"
-                        disabled={!account}
-                        fullWidth
-                        value={receiveToken}
-                        onChange={handleChangeReceiveToken}
-                        error={receiveTokenError !== ''}
-                        helperText={receiveTokenError}
-                      />
-                    </Box>
-                    <Box marginBottom={1}>
-                      <TextField
-                        sx={{ height: 54 }}
-                        label="Amount to Receive"
-                        variant="outlined"
-                        color="primary"
-                        size="medium"
-                        fullWidth
-                        value={receiveAmount}
-                        onChange={handleChangeReceiveAmount}
-                        error={receiveAmountError !== ''}
-                        helperText={receiveAmountError}
-                      />
-                    </Box>
-                    {account && receiveTokenInfo && (
-                      <Box textAlign="center">
-                        <Chip label={`Receiving: ${receiveAmount} ${receiveTokenInfo.symbol}`} />
-                      </Box>
-                    )}
-                    <Box marginY={4} marginX={{ xs: -3, sm: -6 }}>
-                      <Divider />
-                    </Box>
-                    <Box marginBottom={2}>
-                      <TextField
-                        sx={{ height: 54 }}
-                        label="Executor"
-                        variant="outlined"
-                        color="primary"
-                        size="medium"
-                        disabled={!account}
-                        fullWidth
-                        value={executor}
-                        onChange={handleChangeExecutor}
-                      />
-                    </Box>
-                    <Box marginBottom={4}>
-                      <FormGroup>
-                        {/* <FormControlLabel
-                            control={(
-                              <Switch
-                                checked={addonsRiskChecked}
-                                disabled={!account}
-                                onChange={handleChangeAddonsRiskChecked}
-                              />
-                            )}
-                            label="Enforce Risk Detection"
-                          /> */}
-                        <FormControlLabel
-                          control={(
-                            <Switch
-                              checked={addonsRequireIdentity}
-                              disabled={!account}
-                              onChange={handleChangeAddonsRequireIdentity}
-                            />
-                          )}
-                          label="Require Signata Identity"
-                        />
-                      </FormGroup>
-                    </Box>
-                    <Box>
-                      <ButtonGroup
-                        fullWidth
-                        size="medium"
-                        sx={{ height: 54 }}
-                      >
-                        <Button
-                          sx={{ height: 54 }}
-                          variant="contained"
-                          color="primary"
-                          size="large"
-                          style={{ fontWeight: 900 }}
-                          fullWidth
-                          type="submit"
-                          endIcon={<SwapHorizIcon />}
-                        >
-                          OPEN
-                        </Button>
-                      </ButtonGroup>
-                    </Box>
+                  CONNECT WALLET
+                </Button>
+                <Typography component="p" variant="body2" align="left">
+                  By using Veriswap you agree to our{' '}
+                  <Box
+                    component="a"
+                    href=""
+                    color={theme.palette.text.primary}
+                    fontWeight={'700'}
+                  >
+                    Privacy Policy
                   </Box>
-                </form>
-                <Box marginY={4} marginX={{ xs: -3, sm: -6 }}>
+                  {' '}and{' '}
+                  <Box
+                    component="a"
+                    href=""
+                    color={theme.palette.text.primary}
+                    fontWeight={'700'}
+                  >
+                    Terms &amp; Conditions
+                  </Box>
+                  .
+                </Typography>
+              </Stack>
+            )}
+            {account && (
+              <form
+                noValidate
+                autoComplete="off"
+                onSubmit={onSubmitCreateSwap}
+              >
+                <Stack spacing={2} alignItems="center">
+                  <img src="logo.png" width="100" />
+                  <TextField
+                    sx={{ height: 54 }}
+                    label="Token to Send"
+                    variant="outlined"
+                    color="primary"
+                    size="medium"
+                    disabled={!account}
+                    fullWidth
+                    value={fromToken}
+                    onChange={handleChangeFromToken}
+                    error={fromTokenError !== ''}
+                    helperText={fromTokenError}
+                  />
+                  <TextField
+                    sx={{ height: 54 }}
+                    label="Amount to Send"
+                    variant="outlined"
+                    color="primary"
+                    size="medium"
+                    disabled={!account}
+                    fullWidth
+                    value={fromAmount}
+                    onChange={handleChangeFromAmount}
+                    error={fromAmountError !== ''}
+                    helperText={fromAmountError}
+                  />
+                  <ButtonGroup variant="contained" color="secondary" fullWidth size="small">
+                    <Button onClick={(e) => handleClickFromPercentage(e, 25)}>
+                      25%
+                    </Button>
+                    <Button onClick={(e) => handleClickFromPercentage(e, 50)}>
+                      50%
+                    </Button>
+                    <Button onClick={(e) => handleClickFromPercentage(e, 75)}>
+                      75%
+                    </Button>
+                    <Button onClick={(e) => handleClickFromPercentage(e, 100)}>
+                      100%
+                    </Button>
+                  </ButtonGroup>
+                  {fromTokenInfo && fromTokenBalance && (
+                    <Chip label={`Balance: ${formatEther(fromTokenBalance, fromTokenInfo.decimals)} ${fromTokenInfo.symbol}`} />
+                  )}
                   <Divider />
-                </Box>
-                <Box>
-                  <Typography component="p" variant="body2" align="left">
-                    By using Veriswap you agree to our{' '}
-                    <Box
-                      component="a"
-                      href=""
-                      color={theme.palette.text.primary}
-                      fontWeight={'700'}
+                  <TextField
+                    sx={{ height: 54 }}
+                    label="Token to Receive"
+                    variant="outlined"
+                    color="primary"
+                    size="medium"
+                    disabled={!account}
+                    fullWidth
+                    value={receiveToken}
+                    onChange={handleChangeReceiveToken}
+                    error={receiveTokenError !== ''}
+                    helperText={receiveTokenError}
+                  />
+                  <TextField
+                    sx={{ height: 54 }}
+                    label="Amount to Receive"
+                    variant="outlined"
+                    color="primary"
+                    size="medium"
+                    fullWidth
+                    value={receiveAmount}
+                    onChange={handleChangeReceiveAmount}
+                    error={receiveAmountError !== ''}
+                    helperText={receiveAmountError}
+                  />
+                  {receiveTokenInfo && (
+                    <Chip label={`Receiving: ${receiveAmount} ${receiveTokenInfo.symbol}`} />
+                  )}
+                  <Divider />
+                  <TextField
+                    sx={{ height: 54 }}
+                    label="Executor"
+                    variant="outlined"
+                    color="primary"
+                    size="medium"
+                    disabled={!account}
+                    fullWidth
+                    value={executor}
+                    onChange={handleChangeExecutor}
+                  />
+                  <FormGroup>
+                    <FormControlLabel
+                      control={(
+                        <Switch
+                          checked={addonsRiskChecked}
+                          disabled
+                          // disabled={!account}
+                          // onChange={handleChangeAddonsRiskChecked}
+                        />
+                      )}
+                      label="Enforce Risk Detection"
+                    />
+                    <FormControlLabel
+                      control={(
+                        <Switch
+                          checked={addonsRequireIdentity}
+                          disabled={!account}
+                          onChange={handleChangeAddonsRequireIdentity}
+                        />
+                      )}
+                      label="Require Signata Identity"
+                    />
+                  </FormGroup>
+                  <ButtonGroup
+                    fullWidth
+                    size="medium"
+                    sx={{ height: 54 }}
+                  >
+                    <Button
+                      sx={{ height: 54 }}
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      style={{ fontWeight: 900 }}
+                      fullWidth
+                      type="submit"
+                      endIcon={<SwapHorizIcon />}
                     >
-                      Privacy Policy
-                    </Box>
-                    {' '}and{' '}
-                    <Box
-                      component="a"
-                      href=""
-                      color={theme.palette.text.primary}
-                      fontWeight={'700'}
-                    >
-                      Terms &amp; Conditions
-                    </Box>
-                      .
+                      OPEN
+                    </Button>
+                  </ButtonGroup>
+                  <Divider />
+                  <Typography variant="body2" sx={{ fontFamily: 'Roboto Mono' }}>
+                    {`Connected Wallet: ${shortenAddress(account)}`}
                   </Typography>
-                </Box>
-                
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
+                  <Typography variant="body2" sx={{ fontFamily: 'Roboto Mono' }}>
+                    {`Network: ${getChainName(chainId)}`}
+                  </Typography>
+                </Stack>
+              </form>
+            )}
+          </Box>
+        </Box>
       </Container>
     </Box>
   );
