@@ -1,0 +1,216 @@
+[
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "chainId", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "identity",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "delegateKey",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "securityKey",
+        "type": "address"
+      }
+    ],
+    "name": "Create",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "identity",
+        "type": "address"
+      }
+    ],
+    "name": "Destroy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "identity",
+        "type": "address"
+      }
+    ],
+    "name": "Lock",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "identity",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "delegateKey",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "securityKey",
+        "type": "address"
+      }
+    ],
+    "name": "Rollover",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "identity",
+        "type": "address"
+      }
+    ],
+    "name": "Unlock",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint8", "name": "identityV", "type": "uint8" },
+      { "internalType": "bytes32", "name": "identityR", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "identityS", "type": "bytes32" },
+      { "internalType": "address", "name": "delegateKey", "type": "address" },
+      { "internalType": "address", "name": "securityKey", "type": "address" }
+    ],
+    "name": "create",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "identity", "type": "address" },
+      { "internalType": "uint8", "name": "delegateV", "type": "uint8" },
+      { "internalType": "bytes32", "name": "delegateR", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "delegateS", "type": "bytes32" },
+      { "internalType": "uint8", "name": "securityV", "type": "uint8" },
+      { "internalType": "bytes32", "name": "securityR", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "securityS", "type": "bytes32" }
+    ],
+    "name": "destroy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "identity", "type": "address" }
+    ],
+    "name": "getDelegate",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "delegateKey", "type": "address" }
+    ],
+    "name": "getIdentity",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "identity", "type": "address" }
+    ],
+    "name": "getLockCount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "identity", "type": "address" }
+    ],
+    "name": "getRolloverCount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "identity", "type": "address" }
+    ],
+    "name": "isLocked",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "identity", "type": "address" }
+    ],
+    "name": "lock",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "identity", "type": "address" },
+      { "internalType": "uint8", "name": "delegateV", "type": "uint8" },
+      { "internalType": "bytes32", "name": "delegateR", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "delegateS", "type": "bytes32" },
+      { "internalType": "uint8", "name": "securityV", "type": "uint8" },
+      { "internalType": "bytes32", "name": "securityR", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "securityS", "type": "bytes32" },
+      {
+        "internalType": "address",
+        "name": "newDelegateKey",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "newSecurityKey", "type": "address" }
+    ],
+    "name": "rollover",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "identity", "type": "address" },
+      { "internalType": "uint8", "name": "delegateV", "type": "uint8" },
+      { "internalType": "bytes32", "name": "delegateR", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "delegateS", "type": "bytes32" },
+      { "internalType": "uint8", "name": "securityV", "type": "uint8" },
+      { "internalType": "bytes32", "name": "securityR", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "securityS", "type": "bytes32" }
+    ],
+    "name": "unlock",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

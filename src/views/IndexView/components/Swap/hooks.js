@@ -1,32 +1,27 @@
-import { useContractFunction } from '@usedapp/core';
-import { Contract } from '@ethersproject/contracts';
-import SWAP_ABI from './swapAbi.json';
+import { useContractFunction, useCall } from '@usedapp/core';
 
-const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
-const swapContract = new Contract(SWAP_CONTRACT, SWAP_ABI);
-
-export function useCreateSwap() {
+export function useCreateSwap(swapContract) {
   const { state, send, events, resetState } = useContractFunction(swapContract, 'createSwap', {
     transactionName: 'Create Swap'
   });
   return { state, send, events, resetState };
 }
 
-export function useExecuteSwap() {
+export function useExecuteSwap(swapContract) {
   const { state, send, events, resetState } = useContractFunction(swapContract, 'executeSwap', {
     transactionName: 'Execute Swap'
   });
   return { state, send, events, resetState };
 }
 
-export function useCancelSwap() {
+export function useCancelSwap(swapContract) {
   const { state, send, events, resetState } = useContractFunction(swapContract, 'cancelSwap', {
     transactionName: 'Cancel Swap'
   });
   return { state, send, events, resetState };
 }
 
-export function useChangeExecutor() {
+export function useChangeExecutor(swapContract) {
   const { state, send, events, resetState } = useContractFunction(swapContract, 'changeExecutor', {
     transactionName: 'Change Executor'
   });
@@ -39,3 +34,19 @@ export function useApprove(erc20Token) {
   });
   return { state, send, events, resetState };
 }
+
+export const useGetSingleValue = (method, args, contractAddress, contract) => {
+  const { value, error } =
+    useCall(
+      contractAddress && {
+        contract,
+        method,
+        args
+      }
+    ) ?? {};
+  if (error) {
+    console.error(error.message);
+    return {};
+  }
+  return value?.[0];
+};

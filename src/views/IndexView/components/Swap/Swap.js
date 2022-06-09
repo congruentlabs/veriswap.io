@@ -4,10 +4,10 @@ import {
   useEtherBalance,
   useTokenBalance,
   useEthers,
-  getChainName,
   shortenAddress,
   useToken,
   shortenIfAddress,
+  DEFAULT_SUPPORTED_CHAINS
 } from '@usedapp/core';
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
@@ -15,6 +15,7 @@ import Torus from '@toruslabs/torus-embed';
 import WalletLink from 'walletlink';
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
+import { Contract } from '@ethersproject/contracts';
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -34,10 +35,17 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useTheme } from '@mui/material/styles';
 
 import Container from 'components/Container';
-import { useCreateSwap, useExecuteSwap, useCancelSwap, useChangeExecutor } from './hooks';
-import { Alert } from '@mui/material';
+import { useCreateSwap, useExecuteSwap, useCancelSwap, useChangeExecutor, useGetSingleValue } from './hooks';
+import { Alert, AlertTitle } from '@mui/material';
+
+import SWAP_ABI from './swapAbi.json';
+import ID_ABI from './idAbi.json';
 
 const infuraId = 'dab56da72e89492da5a8e77fbc45c7fa';
+const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
+const swapContract = new Contract(SWAP_CONTRACT, SWAP_ABI);
+const ID_CONTRACT = '0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385';
+const idContract = new Contract(ID_CONTRACT, ID_ABI);
 
 const providerOptions = {
   walletconnect: {
@@ -94,10 +102,13 @@ const Hero = () => {
   const [receiveAmountError, setReceiveAmountError] = useState('');
   const [addonsRiskChecked, setAddonsRiskChecked] = useState(false);
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
-  const { state: createSwapState, send: createSwapSend, resetState: createSwapResetState } = useCreateSwap();
-  const { state: executeSwapState, send: executeSwapSend, resetState: executeSwapResetState } = useExecuteSwap();
-  const { state: cancelSwapState, send: cancelSwapSend, resetState: cancelSwapResetState } = useCancelSwap();
-  const { state: changeExecutorState, send: changeExecutorSend, resetState: changeExecutorResetState } = useChangeExecutor();
+  const { state: createSwapState, send: createSwapSend, resetState: createSwapResetState } = useCreateSwap(swapContract);
+  const { state: executeSwapState, send: executeSwapSend, resetState: executeSwapResetState } = useExecuteSwap(swapContract);
+  const { state: cancelSwapState, send: cancelSwapSend, resetState: cancelSwapResetState } = useCancelSwap(swapContract);
+  const { state: changeExecutorState, send: changeExecutorSend, resetState: changeExecutorResetState } = useChangeExecutor(swapContract);
+  // const isLocked = useGetSingleValue('isLocked', [account], ID_CONTRACT, idContract);
+
+  const chainName = DEFAULT_SUPPORTED_CHAINS.find((network) => network.chainId === chainId) ?.chainName;
 
   const fromTokenInfo = useToken(fromToken);
   const receiveTokenInfo = useToken(receiveToken);
@@ -119,9 +130,9 @@ const Hero = () => {
     }
   };
 
-  // useEffect(() => {
-  //   activateBrowserWallet();
-  // }, []);
+  useEffect(() => {
+    activateBrowserWallet();
+  }, []);
 
   const handleChangeExecutor = (e) => {
     try {
@@ -402,6 +413,11 @@ const Hero = () => {
                       label="Require Signata Identity"
                     />
                   </FormGroup>
+                  {/* {addonsRequireIdentity && isLocked && (
+                    <Alert>
+                      <AlertTitle>{isLocked}</AlertTitle>
+                    </Alert>
+                  )} */}
                   <ButtonGroup
                     fullWidth
                     size="medium"
@@ -425,7 +441,7 @@ const Hero = () => {
                     {`Connected Wallet: ${shortenAddress(account)}`}
                   </Typography>
                   <Typography variant="body2" sx={{ fontFamily: 'Roboto Mono' }}>
-                    {`Network: ${getChainName(chainId)}`}
+                    {`Network: ${chainName}`}
                   </Typography>
                 </Stack>
               </form>
