@@ -17,26 +17,14 @@ import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
 import { Contract } from '@ethersproject/contracts';
 
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Divider from '@mui/material/Divider';
-import Chip from '@mui/material/Chip';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import FormGroup from '@mui/material/FormGroup';
-import Stack from '@mui/material/Stack';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 // import useMediaQuery from '@mui/material/useMediaQuery';
 // import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
+import { Alert, AlertTitle, LinearProgress, Box, TextField, Button, ButtonGroup, Divider, Chip, Typography, Card, FormGroup, Stack, FormControlLabel, Switch, SwapHorizIcon } from '@mui/material';
 
 import Container from 'components/Container';
-import { useCreateSwap, useExecuteSwap, useCancelSwap, useChangeExecutor, useGetSingleValue } from './hooks';
-import { Alert, AlertTitle } from '@mui/material';
+import { useCreateSwap, useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetSingleValue } from './hooks';
+import { ApprovalStatus, CreateSwapStatus } from '../ProgressStatus';
 
 import SWAP_ABI from './swapAbi.json';
 import ID_ABI from './idAbi.json';
@@ -88,9 +76,9 @@ const Hero = () => {
 
   const { activateBrowserWallet, activate, account, chainId } = useEthers();
   
-  const [fromToken, setFromToken] = useState('0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977');
-  const [receiveToken, setReceiveToken] = useState('0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c');
-  const [executor, setExecutor] = useState('0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c');
+  const [fromToken, setFromToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
+  const [receiveToken, setReceiveToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
+  const [executor, setExecutor] = useState('0x788DdE8Ca5b196ba47138DB6C0527f54B5959D51');
   const [fromAmount, setFromAmount] = useState('');
   const [creatorAddress, setCreatorAddress] = useState('');
   const [fromActualAmount, setFromActualAmount] = useState('');
@@ -100,8 +88,10 @@ const Hero = () => {
   const [receiveAmount, setReceiveAmount] = useState('');
   const [receiveActualAmount, setReceiveActualAmount] = useState('');
   const [receiveAmountError, setReceiveAmountError] = useState('');
+  const [isLoading, setLoading] = useState(false);
   const [addonsRiskChecked, setAddonsRiskChecked] = useState(false);
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
+  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(swapContract);
   const { state: createSwapState, send: createSwapSend, resetState: createSwapResetState } = useCreateSwap(swapContract);
   const { state: executeSwapState, send: executeSwapSend, resetState: executeSwapResetState } = useExecuteSwap(swapContract);
   const { state: cancelSwapState, send: cancelSwapSend, resetState: cancelSwapResetState } = useCancelSwap(swapContract);
@@ -113,6 +103,48 @@ const Hero = () => {
   const fromTokenInfo = useToken(fromToken);
   const receiveTokenInfo = useToken(receiveToken);
   const fromTokenBalance = useTokenBalance(fromToken, account);
+
+  useEffect(() => {
+    if (approveState) {
+      console.log(approveState);
+      if (approveState.status === 'PendingSignature') {
+        setLoading(true);
+      }
+      if (approveState.status === 'Exception') {
+        setLoading(false);
+      }
+      if (approveState.status === 'None') {
+        setLoading(false);
+      }
+      if (approveState.status === 'Mining') {
+        setLoading(true);
+      }
+      if (approveState.status === 'Success') {
+        setLoading(false);
+      }
+    }
+  }, [approveState]);
+
+  useEffect(() => {
+    if (createSwapState) {
+      console.log(createSwapState);
+      if (createSwapState.status === 'PendingSignature') {
+        setLoading(true);
+      }
+      if (createSwapState.status === 'Exception') {
+        setLoading(false);
+      }
+      if (createSwapState.status === 'None') {
+        setLoading(false);
+      }
+      if (createSwapState.status === 'Mining') {
+        setLoading(true);
+      }
+      if (createSwapState.status === 'Success') {
+        setLoading(false);
+      }
+    }
+  }, [createSwapState]);
 
   // const { t } = useTranslation();
   // const isMd = useMediaQuery(theme.breakpoints.up('md'), {
@@ -212,8 +244,15 @@ const Hero = () => {
 
   const onSubmitCreateSwap = (e) => {
     e.preventDefault();
+
+    // if needs approval
+
+    // call approve
+
+    // otherwise call the swap
+
     createSwapResetState();
-    createSwapSend(fromToken, fromActualAmount, receiveToken, receiveActualAmount, executor, addonsRequireIdentity);
+    createSwapSend(fromToken, fromActualAmount.toString(), receiveToken, receiveActualAmount.toString(), executor, addonsRequireIdentity);
   };
 
   const onSubmitExecuteSwap = () => {
@@ -314,7 +353,7 @@ const Hero = () => {
                     variant="outlined"
                     color="primary"
                     size="medium"
-                    disabled={!account}
+                    disabled={isLoading}
                     fullWidth
                     value={fromToken}
                     onChange={handleChangeFromToken}
@@ -327,7 +366,7 @@ const Hero = () => {
                     variant="outlined"
                     color="primary"
                     size="medium"
-                    disabled={!account}
+                    disabled={isLoading}
                     fullWidth
                     value={fromAmount}
                     onChange={handleChangeFromAmount}
@@ -357,7 +396,7 @@ const Hero = () => {
                     variant="outlined"
                     color="primary"
                     size="medium"
-                    disabled={!account}
+                    disabled={isLoading}
                     fullWidth
                     value={receiveToken}
                     onChange={handleChangeReceiveToken}
@@ -371,6 +410,7 @@ const Hero = () => {
                     color="primary"
                     size="medium"
                     fullWidth
+                    disabled={isLoading}
                     value={receiveAmount}
                     onChange={handleChangeReceiveAmount}
                     error={receiveAmountError !== ''}
@@ -385,7 +425,7 @@ const Hero = () => {
                     variant="outlined"
                     color="primary"
                     size="medium"
-                    disabled={!account}
+                    disabled={isLoading}
                     fullWidth
                     value={executor}
                     onChange={handleChangeExecutor}
@@ -421,12 +461,27 @@ const Hero = () => {
                   <ButtonGroup
                     fullWidth
                     size="medium"
+                    orientation="vertical"
                     sx={{ height: 54 }}
                   >
                     <Button
                       sx={{ height: 54 }}
                       variant="contained"
                       color="primary"
+                      size="large"
+                      disabled={isLoading}
+                      style={{ fontWeight: 900 }}
+                      fullWidth
+                      type="submit"
+                      endIcon={<SwapHorizIcon />}
+                    >
+                      APPROVE
+                    </Button>
+                    <Button
+                      sx={{ height: 54 }}
+                      variant="contained"
+                      color="primary"
+                      disabled={isLoading}
                       size="large"
                       style={{ fontWeight: 900 }}
                       fullWidth
@@ -436,6 +491,11 @@ const Hero = () => {
                       OPEN
                     </Button>
                   </ButtonGroup>
+                  {isLoading && (<LinearProgress />)}
+
+                  <ApprovalStatus state={approveState} />
+                  <CreateSwapStatus state={createSwapState} />
+
                   <Divider />
                   <Typography variant="body2" sx={{ fontFamily: 'Roboto Mono' }}>
                     {`Connected Wallet: ${shortenAddress(account)}`}
