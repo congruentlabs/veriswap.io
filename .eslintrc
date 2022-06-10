@@ -55,6 +55,7 @@
     "react/destructuring-assignment": 0,
     "import/no-extraneous-dependencies": 0,
     "react/jsx-no-constructed-context-values": 0,
+    "react/function-declaration": 1,
     "react/jsx-key": 1,
     "react-hooks/rules-of-hooks": 2,
     "no-unused-vars": [
