@@ -20,7 +20,9 @@ import { Contract } from '@ethersproject/contracts';
 // import useMediaQuery from '@mui/material/useMediaQuery';
 // import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
-import { Alert, AlertTitle, LinearProgress, Box, TextField, Button, ButtonGroup, Divider, Chip, Typography, Card, FormGroup, Stack, FormControlLabel, Switch, SwapHorizIcon } from '@mui/material';
+import { Alert, AlertTitle, LinearProgress, Box, TextField, Button, ButtonGroup, Divider, Chip, Typography, Card, FormGroup, Stack, FormControlLabel, Switch } from '@mui/material';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import DoneIcon from '@mui/icons-material/Done';
 
 import Container from 'components/Container';
 import { useCreateSwap, useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetSingleValue } from './hooks';
