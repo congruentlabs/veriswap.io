@@ -17,7 +17,7 @@ const ThemeModeToggler = () => {
         borderRadius: 2,
         minWidth: 'auto',
         padding: 1,
-        borderColor: alpha(theme.palette.divider, 0.2),
+        borderColor: alpha(theme.palette.divider, 0.2)
       }}
     >
       {mode === 'light' ? (

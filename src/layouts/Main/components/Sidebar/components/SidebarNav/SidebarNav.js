@@ -9,19 +9,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import NavItem from './components/NavItem';
 
 const SidebarNav = ({ pages, onClose }) => {
-  const {
-    landings: landingPages,
-    secondary: secondaryPages,
-    account: accountPages,
-  } = pages;
+  const { landings: landingPages, secondary: secondaryPages, account: accountPages } = pages;
 
   return (
     <Box>
-      <Box
-        display={'flex'}
-        justifyContent={'flex-end'}
-        onClick={() => onClose()}
-      >
+      <Box display={'flex'} justifyContent={'flex-end'} onClick={() => onClose()}>
         <IconButton>
           <CloseIcon fontSize="small" />
         </IconButton>
@@ -40,12 +32,7 @@ const SidebarNav = ({ pages, onClose }) => {
         </Box>
         <Divider sx={{ marginBottom: 2 }} />
         <Box marginTop={1}>
-          <Button
-            variant="outlined"
-            fullWidth
-            component="a"
-            href="/docs/introduction"
-          >
+          <Button variant="outlined" fullWidth component="a" href="/docs/introduction">
             Documentation
           </Button>
         </Box>
@@ -68,7 +55,7 @@ const SidebarNav = ({ pages, onClose }) => {
 
 SidebarNav.propTypes = {
   pages: PropTypes.object.isRequired,
-  onClose: PropTypes.func,
+  onClose: PropTypes.func
 };
 
 export default SidebarNav;

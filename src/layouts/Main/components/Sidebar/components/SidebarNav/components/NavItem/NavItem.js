@@ -19,7 +19,7 @@ const NavItem = ({ title, items }) => {
         variant="subtitle1"
         gutterBottom
         sx={{
-          fontWeight: 700,
+          fontWeight: 700
         }}
       >
         {title}
@@ -33,7 +33,7 @@ const NavItem = ({ title, items }) => {
             sx={{
               fontWeight: 700,
               textTransform: 'uppercase',
-              display: 'block',
+              display: 'block'
             }}
           >
             {item.groupTitle}
@@ -50,8 +50,8 @@ const NavItem = ({ title, items }) => {
                     fontWeight: activeLink === p.href ? 600 : 400,
                     textDecoration: 'none',
                     '&:hover': {
-                      color: theme.palette.primary.dark,
-                    },
+                      color: theme.palette.primary.dark
+                    }
                   }}
                 >
                   {p.title}
@@ -68,7 +68,7 @@ const NavItem = ({ title, items }) => {
 NavItem.propTypes = {
   items: PropTypes.array.isRequired,
   title: PropTypes.string.isRequired,
-  onClose: PropTypes.func,
+  onClose: PropTypes.func
 };
 
 export default NavItem;

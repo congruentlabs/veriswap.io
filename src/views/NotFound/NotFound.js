@@ -13,7 +13,7 @@ import Container from 'components/Container';
 const NotFound = () => {
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
-    defaultMatches: true,
+    defaultMatches: true
   });
 
   return (
@@ -29,29 +29,12 @@ const NotFound = () => {
       >
         <Container>
           <Grid container>
-            <Grid
-              item
-              container
-              alignItems={'center'}
-              justifyContent={'center'}
-              xs={12}
-              md={6}
-            >
+            <Grid item container alignItems={'center'} justifyContent={'center'} xs={12} md={6}>
               <Box>
-                <Typography
-                  variant="h1"
-                  component={'h1'}
-                  align={isMd ? 'left' : 'center'}
-                  sx={{ fontWeight: 700 }}
-                >
+                <Typography variant="h1" component={'h1'} align={isMd ? 'left' : 'center'} sx={{ fontWeight: 700 }}>
                   404
                 </Typography>
-                <Typography
-                  variant="h6"
-                  component="p"
-                  color="text.secondary"
-                  align={isMd ? 'left' : 'center'}
-                >
+                <Typography variant="h6" component="p" color="text.secondary" align={isMd ? 'left' : 'center'}>
                   Oops! Looks like you followed a bad link.
                   <br />
                   If you think this is a problem with us, please{' '}
@@ -59,18 +42,8 @@ const NotFound = () => {
                     tell us
                   </Link>
                 </Typography>
-                <Box
-                  marginTop={4}
-                  display={'flex'}
-                  justifyContent={{ xs: 'center', md: 'flex-start' }}
-                >
-                  <Button
-                    component={Link}
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    href={'/'}
-                  >
+                <Box marginTop={4} display={'flex'} justifyContent={{ xs: 'center', md: 'flex-start' }}>
+                  <Button component={Link} variant="contained" color="primary" size="large" href={'/'}>
                     Back home
                   </Button>
                 </Box>
@@ -80,16 +53,11 @@ const NotFound = () => {
               <Box height={1} width={1} maxWidth={500}>
                 <Box
                   component={'img'}
-                  src={
-                    'https://assets.maccarianagency.com/svg/illustrations/drawkit-illustration6.svg'
-                  }
+                  src={'https://assets.maccarianagency.com/svg/illustrations/drawkit-illustration6.svg'}
                   width={1}
                   height={1}
                   sx={{
-                    filter:
-                      theme.palette.mode === 'dark'
-                        ? 'brightness(0.8)'
-                        : 'none',
+                    filter: theme.palette.mode === 'dark' ? 'brightness(0.8)' : 'none'
                   }}
                 />
               </Box>

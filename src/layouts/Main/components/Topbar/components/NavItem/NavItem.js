@@ -38,17 +38,12 @@ const NavItem = ({ title, id, items }) => {
         sx={{ cursor: 'pointer' }}
         onClick={(e) => handleClick(e, id)}
       >
-        <Typography color={openedPopoverId === id ? 'primary' : 'text.primary'}>
-          {title}
-        </Typography>
+        <Typography color={openedPopoverId === id ? 'primary' : 'text.primary'}>{title}</Typography>
         <ExpandMoreIcon
           sx={{
             marginLeft: theme.spacing(1),
             transform: openedPopoverId === id ? 'rotate(180deg)' : 'none',
-            color:
-              openedPopoverId === id
-                ? theme.palette.primary.dark
-                : theme.palette.text.primary,
+            color: openedPopoverId === id ? theme.palette.primary.dark : theme.palette.text.primary
           }}
           fontSize="small"
         />
@@ -61,19 +56,19 @@ const NavItem = ({ title, id, items }) => {
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'center',
+          horizontal: 'center'
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'center',
+          horizontal: 'center'
         }}
         sx={{
           '.MuiPaper-root': {
             maxWidth: 600,
             padding: 4,
             marginTop: 2,
-            borderRadius: 2,
-          },
+            borderRadius: 2
+          }
         }}
       >
         <Grid container spacing={2}>
@@ -85,7 +80,7 @@ const NavItem = ({ title, id, items }) => {
                 sx={{
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  display: 'block',
+                  display: 'block'
                 }}
               >
                 {item.groupTitle}
@@ -102,9 +97,9 @@ const NavItem = ({ title, id, items }) => {
                         fontWeight: activeLink === p.href ? 600 : 400,
                         '&:hover': {
                           textDecoration: 'none',
-                          color: theme.palette.primary.dark,
+                          color: theme.palette.primary.dark
                         },
-                        textDecoration: 'none',
+                        textDecoration: 'none'
                       }}
                     >
                       {p.title}
@@ -123,7 +118,7 @@ const NavItem = ({ title, id, items }) => {
 NavItem.propTypes = {
   title: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  items: PropTypes.array.isRequired,
+  items: PropTypes.array.isRequired
 };
 
 export default NavItem;

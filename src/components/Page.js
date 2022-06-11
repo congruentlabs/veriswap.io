@@ -40,7 +40,7 @@ export default function Page({ children }) {
       once: true,
       delay: 50,
       duration: 500,
-      easing: 'ease-in-out',
+      easing: 'ease-in-out'
     });
   }, []);
 
@@ -60,5 +60,5 @@ export default function Page({ children }) {
 }
 
 Page.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node.isRequired
 };

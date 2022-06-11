@@ -11,7 +11,7 @@ import {
 } from '@usedapp/core';
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import Torus from '@toruslabs/torus-embed';
+// import Torus from '@toruslabs/torus-embed';
 import WalletLink from 'walletlink';
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
@@ -20,12 +20,35 @@ import { Contract } from '@ethersproject/contracts';
 // import useMediaQuery from '@mui/material/useMediaQuery';
 // import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
-import { Alert, AlertTitle, LinearProgress, Box, TextField, Button, ButtonGroup, Divider, Chip, Typography, Card, FormGroup, Stack, FormControlLabel, Switch } from '@mui/material';
+import {
+  Alert,
+  AlertTitle,
+  LinearProgress,
+  Box,
+  TextField,
+  Button,
+  ButtonGroup,
+  Divider,
+  Chip,
+  Typography,
+  Card,
+  FormGroup,
+  Stack,
+  FormControlLabel,
+  Switch
+} from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
 
 import Container from 'components/Container';
-import { useCreateSwap, useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetSingleValue } from './hooks';
+import {
+  useCreateSwap,
+  useExecuteSwap,
+  useCancelSwap,
+  useChangeExecutor,
+  useApprove,
+  useGetSingleValue
+} from './hooks';
 import { ApprovalStatus, CreateSwapStatus } from '../ProgressStatus';
 
 import SWAP_ABI from './swapAbi.json';
@@ -47,9 +70,9 @@ const providerOptions = {
   binancechainwallet: {
     package: true
   },
-  torus: {
-    package: Torus
-  },
+  // torus: {
+  //   package: Torus
+  // },
   walletlink: {
     package: WalletLink,
     options: {
@@ -77,7 +100,7 @@ const Hero = () => {
   const theme = useTheme();
 
   const { activateBrowserWallet, activate, account, chainId } = useEthers();
-  
+
   const [fromToken, setFromToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
   const [receiveToken, setReceiveToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
   const [executor, setExecutor] = useState('0x788DdE8Ca5b196ba47138DB6C0527f54B5959D51');
@@ -94,13 +117,29 @@ const Hero = () => {
   const [addonsRiskChecked, setAddonsRiskChecked] = useState(false);
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
   const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(swapContract);
-  const { state: createSwapState, send: createSwapSend, resetState: createSwapResetState } = useCreateSwap(swapContract);
-  const { state: executeSwapState, send: executeSwapSend, resetState: executeSwapResetState } = useExecuteSwap(swapContract);
-  const { state: cancelSwapState, send: cancelSwapSend, resetState: cancelSwapResetState } = useCancelSwap(swapContract);
-  const { state: changeExecutorState, send: changeExecutorSend, resetState: changeExecutorResetState } = useChangeExecutor(swapContract);
+  const {
+    state: createSwapState,
+    send: createSwapSend,
+    resetState: createSwapResetState
+  } = useCreateSwap(swapContract);
+  const {
+    state: executeSwapState,
+    send: executeSwapSend,
+    resetState: executeSwapResetState
+  } = useExecuteSwap(swapContract);
+  const {
+    state: cancelSwapState,
+    send: cancelSwapSend,
+    resetState: cancelSwapResetState
+  } = useCancelSwap(swapContract);
+  const {
+    state: changeExecutorState,
+    send: changeExecutorSend,
+    resetState: changeExecutorResetState
+  } = useChangeExecutor(swapContract);
   // const isLocked = useGetSingleValue('isLocked', [account], ID_CONTRACT, idContract);
 
-  const chainName = DEFAULT_SUPPORTED_CHAINS.find((network) => network.chainId === chainId) ?.chainName;
+  const chainName = DEFAULT_SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
 
   const fromTokenInfo = useToken(fromToken);
   const receiveTokenInfo = useToken(receiveToken);
@@ -254,7 +293,14 @@ const Hero = () => {
     // otherwise call the swap
 
     createSwapResetState();
-    createSwapSend(fromToken, fromActualAmount.toString(), receiveToken, receiveActualAmount.toString(), executor, addonsRequireIdentity);
+    createSwapSend(
+      fromToken,
+      fromActualAmount.toString(),
+      receiveToken,
+      receiveActualAmount.toString(),
+      executor,
+      addonsRequireIdentity
+    );
   };
 
   const onSubmitExecuteSwap = () => {
@@ -273,11 +319,7 @@ const Hero = () => {
   };
 
   return (
-    <Box
-      minHeight={800}
-      height={'auto'}
-      position={'relative'}
-    >
+    <Box minHeight={800} height={'auto'} position={'relative'}>
       <Box
         sx={{
           position: 'absolute',
@@ -290,7 +332,7 @@ const Hero = () => {
           // backgroundColor: theme.palette.background.default,
           backgroundImage: `linear-gradient(315deg, ${theme.palette.background.default} 0%, #000000 74%)`,
           opacity: '0.8',
-          zIndex: 1,
+          zIndex: 1
         }}
       />
       <Container maxWidth="sm" zIndex="2" position="relative">
@@ -305,7 +347,7 @@ const Hero = () => {
           >
             {!account && (
               <Stack spacing={2} alignItems="center">
-                <img src="logo-full.png" width="100%" />
+                <img src="logo-full.png" width="100%" alt="Veriswap Logo" />
                 <Alert severity="warning">Connect your wallet to start using Veriswap!</Alert>
                 <Button
                   sx={{ height: 54 }}
@@ -320,21 +362,11 @@ const Hero = () => {
                 </Button>
                 <Typography component="p" variant="body2" align="left">
                   By using Veriswap you agree to our{' '}
-                  <Box
-                    component="a"
-                    href=""
-                    color={theme.palette.text.primary}
-                    fontWeight={'700'}
-                  >
+                  <Box component="a" href="" color={theme.palette.text.primary} fontWeight={'700'}>
                     Privacy Policy
-                  </Box>
-                  {' '}and{' '}
-                  <Box
-                    component="a"
-                    href=""
-                    color={theme.palette.text.primary}
-                    fontWeight={'700'}
-                  >
+                  </Box>{' '}
+                  and{' '}
+                  <Box component="a" href="" color={theme.palette.text.primary} fontWeight={'700'}>
                     Terms &amp; Conditions
                   </Box>
                   .
@@ -342,13 +374,9 @@ const Hero = () => {
               </Stack>
             )}
             {account && (
-              <form
-                noValidate
-                autoComplete="off"
-                onSubmit={onSubmitCreateSwap}
-              >
+              <form noValidate autoComplete="off" onSubmit={onSubmitCreateSwap}>
                 <Stack spacing={2} alignItems="center">
-                  <img src="logo-full.png" width="200" />
+                  <img src="logo-full.png" width="200" alt="Veriswap Logo" />
                   <TextField
                     sx={{ height: 54 }}
                     label="Token to Send"
@@ -376,21 +404,18 @@ const Hero = () => {
                     helperText={fromAmountError}
                   />
                   <ButtonGroup variant="contained" color="secondary" fullWidth size="small">
-                    <Button onClick={(e) => handleClickFromPercentage(e, 25)}>
-                      25%
-                    </Button>
-                    <Button onClick={(e) => handleClickFromPercentage(e, 50)}>
-                      50%
-                    </Button>
-                    <Button onClick={(e) => handleClickFromPercentage(e, 75)}>
-                      75%
-                    </Button>
-                    <Button onClick={(e) => handleClickFromPercentage(e, 100)}>
-                      100%
-                    </Button>
+                    <Button onClick={(e) => handleClickFromPercentage(e, 25)}>25%</Button>
+                    <Button onClick={(e) => handleClickFromPercentage(e, 50)}>50%</Button>
+                    <Button onClick={(e) => handleClickFromPercentage(e, 75)}>75%</Button>
+                    <Button onClick={(e) => handleClickFromPercentage(e, 100)}>100%</Button>
                   </ButtonGroup>
                   {fromTokenInfo && fromTokenBalance && (
-                    <Chip label={`Balance: ${formatEther(fromTokenBalance, fromTokenInfo.decimals)} ${fromTokenInfo.symbol}`} sx={{ fontFamily: 'Roboto Mono' }} />
+                    <Chip
+                      label={`Balance: ${formatEther(fromTokenBalance, fromTokenInfo.decimals)} ${
+                        fromTokenInfo.symbol
+                      }`}
+                      sx={{ fontFamily: 'Roboto Mono' }}
+                    />
                   )}
                   <TextField
                     sx={{ height: 54 }}
@@ -419,7 +444,10 @@ const Hero = () => {
                     helperText={receiveAmountError}
                   />
                   {receiveTokenInfo && (
-                    <Chip label={`Receiving: ${receiveAmount} ${receiveTokenInfo.symbol}`} sx={{ fontFamily: 'Roboto Mono' }} />
+                    <Chip
+                      label={`Receiving: ${receiveAmount} ${receiveTokenInfo.symbol}`}
+                      sx={{ fontFamily: 'Roboto Mono' }}
+                    />
                   )}
                   <TextField
                     sx={{ height: 54 }}
@@ -434,24 +462,24 @@ const Hero = () => {
                   />
                   <FormGroup>
                     <FormControlLabel
-                      control={(
+                      control={
                         <Switch
                           checked={addonsRiskChecked}
                           disabled
                           // disabled={!account}
                           // onChange={handleChangeAddonsRiskChecked}
                         />
-                      )}
+                      }
                       label="Enforce Risk Detection"
                     />
                     <FormControlLabel
-                      control={(
+                      control={
                         <Switch
                           checked={addonsRequireIdentity}
                           disabled={!account}
                           onChange={handleChangeAddonsRequireIdentity}
                         />
-                      )}
+                      }
                       label="Require Signata Identity"
                     />
                   </FormGroup>
@@ -460,12 +488,7 @@ const Hero = () => {
                       <AlertTitle>{isLocked}</AlertTitle>
                     </Alert>
                   )} */}
-                  <ButtonGroup
-                    fullWidth
-                    size="medium"
-                    orientation="vertical"
-                    sx={{ height: 54 }}
-                  >
+                  <ButtonGroup fullWidth size="medium" orientation="vertical" sx={{ height: 54 }}>
                     <Button
                       sx={{ height: 54 }}
                       variant="contained"
@@ -493,7 +516,7 @@ const Hero = () => {
                       OPEN
                     </Button>
                   </ButtonGroup>
-                  {isLoading && (<LinearProgress />)}
+                  {isLoading && <LinearProgress />}
 
                   <ApprovalStatus state={approveState} />
                   <CreateSwapStatus state={createSwapState} />

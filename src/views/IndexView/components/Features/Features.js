@@ -1,34 +1,31 @@
 /* eslint-disable react/no-unescaped-entities */
-import React from 'react';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+// import React from 'react';
+// import { useTheme } from '@mui/material/styles';
+// import Box from '@mui/material/Box';
+// import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
-import WarningIcon from '@mui/icons-material/Warning';
-import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+// import Typography from '@mui/material/Typography';
+// import WarningIcon from '@mui/icons-material/Warning';
+// import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
+// import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
 const feats = [
   {
     title: 'Powered by Signata',
-    subtitle:
-      'Lorum Ipsum.',
-    icon: <PrivacyTipIcon />,
+    subtitle: 'Lorum Ipsum.',
+    icon: <PrivacyTipIcon />
   },
   {
     title: 'Risk Detection with Chainlink',
-    subtitle:
-      'Lorum Ipsum.',
-    icon: <WarningIcon />,
+    subtitle: 'Lorum Ipsum.',
+    icon: <WarningIcon />
   },
   {
     title: 'Multi-Currency Support',
-    subtitle:
-      'Lorum Ipsum.',
-    icon: <SwapHorizIcon />,
-  },
+    subtitle: 'Lorum Ipsum.',
+    icon: <SwapHorizIcon />
+  }
 ];
 
 const Features = () => {
@@ -46,11 +43,7 @@ const Features = () => {
             data-aos={'fade-up'}
             data-aos-delay={i * 100}
           >
-            <Box
-              display={'flex'}
-              flexDirection={'column'}
-              alignItems="center"
-            >
+            <Box display={'flex'} flexDirection={'column'} alignItems="center">
               <Box
                 component={Avatar}
                 width={50}
@@ -62,11 +55,7 @@ const Features = () => {
               >
                 {item.icon}
               </Box>
-              <Typography
-                variant={'h6'}
-                gutterBottom
-                sx={{ fontWeight: 500 }}
-              >
+              <Typography variant={'h6'} gutterBottom sx={{ fontWeight: 500 }}>
                 {item.title}
               </Typography>
               {/* <Typography color="text.secondary">{item.subtitle}</Typography> */}

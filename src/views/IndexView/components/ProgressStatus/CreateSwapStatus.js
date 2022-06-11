@@ -18,7 +18,7 @@ const CreateSwapStatus = (state) => {
       </Alert>
     );
   }
-    
+
   if (state && state.status === 'PendingSignature') {
     return (
       <Alert severity="info">
@@ -26,7 +26,7 @@ const CreateSwapStatus = (state) => {
       </Alert>
     );
   }
-    
+
   if (state && state.status === 'Exception') {
     return (
       <Alert severity="error">

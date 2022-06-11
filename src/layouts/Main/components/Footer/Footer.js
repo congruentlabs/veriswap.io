@@ -17,38 +17,27 @@ const Footer = () => {
           width={1}
           flexDirection={{ xs: 'column', sm: 'row' }}
         >
-          <Box
-            display={'flex'}
-            component="a"
-            href="/"
-            title="Signata"
-            width={80}
-          >
-            <Box
-              component={'img'}
-              src="logo.png"
-              height={0.4}
-              width={0.4}
-            />
+          <Box display={'flex'} component="a" href="/" title="Signata" width={80}>
+            <Box component={'img'} src="logo.png" height={0.4} width={0.4} />
           </Box>
           <Box display="flex" flexWrap={'wrap'} alignItems={'center'}>
             {[
               {
                 href: 'https://signata.net/',
-                alt: 'Signata',
+                alt: 'Signata'
               },
               {
                 href: 'https://congruentlabs.co/',
-                alt: 'Congruent Labs',
+                alt: 'Congruent Labs'
               },
               {
                 href: 'https://twitter.com/satatoken',
-                alt: 'Terms & Conditions',
+                alt: 'Terms & Conditions'
               },
               {
                 href: 'https://github.com/congruentlabs',
-                alt: 'Privacy Policy',
-              },
+                alt: 'Privacy Policy'
+              }
             ].map((listItem) => (
               <Box marginTop={1} marginRight={2} key={listItem.href}>
                 <Link
@@ -67,12 +56,7 @@ const Footer = () => {
         </Box>
       </Grid>
       <Grid item xs={12}>
-        <Typography
-          align={'center'}
-          variant={'subtitle2'}
-          color="text.secondary"
-          gutterBottom
-        >
+        <Typography align={'center'} variant={'subtitle2'} color="text.secondary" gutterBottom>
           &copy; {new Date().getFullYear()} Congruent Labs Pty Ltd. All rights reserved.
         </Typography>
         {/* <Typography

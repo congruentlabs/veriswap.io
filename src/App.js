@@ -3,12 +3,12 @@ import React from 'react';
 // import { createBrowserHistory } from 'history';
 // import Routes from './Routes';
 import Page from './components/Page';
-import { IndexView } from 'views';
+import { IndexView } from './views';
 
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import 'aos/dist/aos.css';
 
-import 'scss/react-images.scss';
+// import 'scss/react-images.scss';
 
 // const browserHistory = createBrowserHistory();
 

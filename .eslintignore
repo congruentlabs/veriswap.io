@@ -6,3 +6,4 @@ src/serviceWorkerRegistration.js
 src/setupTests.js
 src/reportWebVitals.js
 node_modules/*
+config/*

@@ -20,7 +20,7 @@ const Main = ({ children }) => {
 };
 
 Main.propTypes = {
-  children: PropTypes.node,
+  children: PropTypes.node
 };
 
 export default Main;

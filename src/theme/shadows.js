@@ -27,7 +27,7 @@ const shadows = (themeMode = 'light') => {
     `0 10px 40px 10px ${alpha(rgb, 0.175)}`,
     `0 10px 40px 10px ${alpha(rgb, 0.175)}`,
     `0 10px 40px 10px ${alpha(rgb, 0.175)}`,
-    `0 10px 40px 10px ${alpha(rgb, 0.175)}`,
+    `0 10px 40px 10px ${alpha(rgb, 0.175)}`
   ];
 };
 

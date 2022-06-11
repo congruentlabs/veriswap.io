@@ -13,7 +13,7 @@ import Container from 'components/Container';
 const NotFoundCover = () => {
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
-    defaultMatches: true,
+    defaultMatches: true
   });
 
   return (
@@ -22,37 +22,18 @@ const NotFoundCover = () => {
         sx={{
           width: 1,
           height: 1,
-          overflow: 'hidden',
+          overflow: 'hidden'
         }}
       >
         <Container paddingX={0} paddingY={0} maxWidth={{ sm: 1, md: 1236 }}>
-          <Box
-            display={'flex'}
-            flexDirection={{ xs: 'column', md: 'row' }}
-            position={'relative'}
-          >
-            <Box
-              width={1}
-              order={{ xs: 2, md: 1 }}
-              display={'flex'}
-              alignItems={'center'}
-            >
+          <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} position={'relative'}>
+            <Box width={1} order={{ xs: 2, md: 1 }} display={'flex'} alignItems={'center'}>
               <Container>
                 <Box>
-                  <Typography
-                    variant="h1"
-                    component={'h1'}
-                    align={isMd ? 'left' : 'center'}
-                    sx={{ fontWeight: 700 }}
-                  >
+                  <Typography variant="h1" component={'h1'} align={isMd ? 'left' : 'center'} sx={{ fontWeight: 700 }}>
                     404
                   </Typography>
-                  <Typography
-                    variant="h6"
-                    component="p"
-                    color="text.secondary"
-                    align={isMd ? 'left' : 'center'}
-                  >
+                  <Typography variant="h6" component="p" color="text.secondary" align={isMd ? 'left' : 'center'}>
                     Oops! Looks like you followed a bad link.
                     <br />
                     If you think this is a problem with us, please{' '}
@@ -60,18 +41,8 @@ const NotFoundCover = () => {
                       tell us
                     </Link>
                   </Typography>
-                  <Box
-                    marginTop={4}
-                    display={'flex'}
-                    justifyContent={{ xs: 'center', md: 'flex-start' }}
-                  >
-                    <Button
-                      component={Link}
-                      variant="contained"
-                      color="primary"
-                      size="large"
-                      href={'/'}
-                    >
+                  <Box marginTop={4} display={'flex'} justifyContent={{ xs: 'center', md: 'flex-start' }}>
+                    <Button component={Link} variant="contained" color="primary" size="large" href={'/'}>
                       Back home
                     </Button>
                   </Box>
@@ -84,21 +55,21 @@ const NotFoundCover = () => {
                 position: 'relative',
                 maxWidth: { xs: '100%', md: '50%' },
                 order: { xs: 1, md: 2 },
-                minHeight: { xs: 'auto', md: 'calc(100vh - 58px)' },
+                minHeight: { xs: 'auto', md: 'calc(100vh - 58px)' }
               }}
             >
               <Box
                 sx={{
                   width: { xs: 1, md: '50vw' },
                   height: '100%',
-                  position: 'relative',
+                  position: 'relative'
                 }}
               >
                 <Box
                   sx={{
                     width: '100%',
                     height: '100%',
-                    overflow: 'hidden',
+                    overflow: 'hidden'
                   }}
                 >
                   <Box
@@ -110,41 +81,36 @@ const NotFoundCover = () => {
                       position: { xs: 'relative', md: 'absolute' },
                       clipPath: {
                         xs: 'none',
-                        md: 'polygon(10% 0%, 100% 0, 100% 100%, 0% 100%)',
+                        md: 'polygon(10% 0%, 100% 0, 100% 100%, 0% 100%)'
                       },
                       shapeOutside: {
                         xs: 'none',
-                        md: 'polygon(10% 0%, 100% 0, 100% 100%, 0% 100%)',
-                      },
+                        md: 'polygon(10% 0%, 100% 0, 100% 100%, 0% 100%)'
+                      }
                     }}
                   >
                     <Box
                       sx={{
                         height: { xs: 'auto', md: 1 },
                         '& img': {
-                          objectFit: 'cover',
+                          objectFit: 'cover'
                         },
                         '& .lazy-load-image-loaded': {
                           height: 1,
-                          width: 1,
-                        },
+                          width: 1
+                        }
                       }}
                     >
                       <Box
                         component={LazyLoadImage}
                         effect="blur"
-                        src={
-                          'https://assets.maccarianagency.com/backgrounds/img23.jpg'
-                        }
+                        src={'https://assets.maccarianagency.com/backgrounds/img23.jpg'}
                         height={{ xs: 'auto', md: 1 }}
                         maxHeight={{ xs: 300, md: 1 }}
                         width={1}
                         maxWidth={1}
                         sx={{
-                          filter:
-                            theme.palette.mode === 'dark'
-                              ? 'brightness(0.7)'
-                              : 'none',
+                          filter: theme.palette.mode === 'dark' ? 'brightness(0.7)' : 'none'
                         }}
                       />
                     </Box>

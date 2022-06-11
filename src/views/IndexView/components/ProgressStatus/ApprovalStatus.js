@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import React from 'react';
+// import React from 'react';
 import { AlertTitle, Alert } from '@mui/material';
 
 const ApprovalStatus = (state) => {
@@ -12,7 +12,7 @@ const ApprovalStatus = (state) => {
       </Alert>
     );
   }
-    
+
   if (state && state.status === 'PendingSignature') {
     return (
       <Alert severity="info">
@@ -20,7 +20,7 @@ const ApprovalStatus = (state) => {
       </Alert>
     );
   }
-    
+
   if (state && state.status === 'Exception') {
     return (
       <Alert severity="error">

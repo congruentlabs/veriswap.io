@@ -12,25 +12,25 @@ const getTheme = (mode, themeToggler) =>
         fontFamily: '"Lato", sans-serif',
         button: {
           textTransform: 'none',
-          fontWeight: 'medium',
-        },
+          fontWeight: 'medium'
+        }
       },
       zIndex: {
         appBar: 1200,
-        drawer: 1300,
+        drawer: 1300
       },
       components: {
         MuiButton: {
           styleOverrides: {
             label: {
-              fontWeight: 600,
+              fontWeight: 600
             },
-            containedSecondary: mode === 'light' ? { color: 'white' } : {},
-          },
-        },
+            containedSecondary: mode === 'light' ? { color: 'white' } : {}
+          }
+        }
       },
-      themeToggler,
-    }),
+      themeToggler
+    })
   );
 
 export default getTheme;

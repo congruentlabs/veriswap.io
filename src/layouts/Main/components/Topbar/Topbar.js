@@ -8,25 +8,9 @@ const Topbar = () => {
   // } = pages;
 
   return (
-    <Box
-      display={'flex'}
-      justifyContent={'space-between'}
-      alignItems={'center'}
-      width={1}
-    >
-      <Box
-        display={'flex'}
-        component="a"
-        href="/"
-        title="Signata"
-        width={{ xs: 100, md: 120 }}
-      >
-        <Box
-          component={'img'}
-          src="logo.png"
-          height={0.4}
-          width={0.4}
-        />
+    <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} width={1}>
+      <Box display={'flex'} component="a" href="/" title="Signata" width={{ xs: 100, md: 120 }}>
+        <Box component={'img'} src="logo.png" height={0.4} width={0.4} />
       </Box>
     </Box>
   );
@@ -34,7 +18,7 @@ const Topbar = () => {
 
 Topbar.propTypes = {
   onSidebarOpen: PropTypes.func,
-  pages: PropTypes.object,
+  pages: PropTypes.object
 };
 
 export default Topbar;
