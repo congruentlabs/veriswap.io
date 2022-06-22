@@ -19,7 +19,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SwapView />} />
-          <Route path="/:swapId" element={<ExecuteView />} />
+          <Route path="/swap/:swapId" element={<ExecuteView />} />
           <Route path="*" element={<SwapView />} />
         </Routes>
       </BrowserRouter>

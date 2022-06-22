@@ -207,7 +207,7 @@ const Swap = () => {
 
   useEffect(() => {
     activateBrowserWallet();
-  }, []);
+  }, [activateBrowserWallet]);
 
   const handleChangeExecutor = (e) => {
     try {
@@ -382,7 +382,7 @@ const Swap = () => {
             {account && (
               <form noValidate autoComplete="off" onSubmit={onSubmitCreateSwap}>
                 <Stack spacing={2} alignItems="center">
-                  <img src="logo-full.png" width="200" alt="Veriswap Logo" />
+                  <img src="/logo-full.png" width="200" alt="Veriswap Logo" />
                   <TextField
                     sx={{ height: 54 }}
                     label="Token to Send"

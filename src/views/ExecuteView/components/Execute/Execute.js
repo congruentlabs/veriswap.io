@@ -207,7 +207,7 @@ const Execute = () => {
 
   useEffect(() => {
     activateBrowserWallet();
-  }, []);
+  }, [activateBrowserWallet]);
 
   const handleChangeExecutor = (e) => {
     try {
@@ -379,10 +379,10 @@ const Execute = () => {
                 </Typography>
               </Stack>
             )}
-            {account && (
+            {account && receiveTokenInfo && fromTokenInfo && (
               <form noValidate autoComplete="off" onSubmit={onSubmitCreateSwap}>
                 <Stack spacing={2} alignItems="center">
-                  <img src="logo-full.png" width="200" alt="Veriswap Logo" />
+                  <img src="/logo-full.png" width="200" alt="Veriswap Logo" />
                   <Box
                     sx={{
                       width: '100%',
