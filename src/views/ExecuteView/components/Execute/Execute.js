@@ -39,6 +39,7 @@ import {
 } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 import Container from 'components/Container';
 import {
@@ -48,11 +49,12 @@ import {
   useChangeExecutor,
   useApprove,
   useGetSingleValue
-} from './hooks';
-import { ApprovalStatus, CreateSwapStatus } from '../ProgressStatus';
+} from '../../../hooks';
+import { ApprovalStatus } from 'components/ApprovalStatus';
+import { CreateSwapStatus } from 'components/CreateSwapStatus';
 
-import SWAP_ABI from './swapAbi.json';
-import ID_ABI from './idAbi.json';
+import SWAP_ABI from '../../../swapAbi.json';
+import ID_ABI from '../../../idAbi.json';
 
 const infuraId = 'dab56da72e89492da5a8e77fbc45c7fa';
 const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
@@ -96,7 +98,7 @@ const web3Modal = new Web3Modal({
   providerOptions
 });
 
-const Hero = () => {
+const Execute = () => {
   const theme = useTheme();
 
   const { activateBrowserWallet, activate, account, chainId } = useEthers();
@@ -381,120 +383,13 @@ const Hero = () => {
               <form noValidate autoComplete="off" onSubmit={onSubmitCreateSwap}>
                 <Stack spacing={2} alignItems="center">
                   <img src="logo-full.png" width="200" alt="Veriswap Logo" />
-                  <TextField
-                    sx={{ height: 54 }}
-                    label="Token to Send"
-                    variant="outlined"
-                    color="primary"
-                    size="medium"
-                    disabled={isLoading}
-                    fullWidth
-                    value={fromToken}
-                    onChange={handleChangeFromToken}
-                    error={fromTokenError !== ''}
-                    helperText={fromTokenError}
-                  />
-                  <TextField
-                    sx={{ height: 54 }}
-                    label="Amount to Send"
-                    variant="outlined"
-                    color="primary"
-                    size="medium"
-                    disabled={isLoading}
-                    fullWidth
-                    value={fromAmount}
-                    onChange={handleChangeFromAmount}
-                    error={fromAmountError !== ''}
-                    helperText={fromAmountError}
-                  />
-                  <ButtonGroup variant="contained" color="secondary" fullWidth size="small">
-                    <Button onClick={(e) => handleClickFromPercentage(e, 25)}>25%</Button>
-                    <Button onClick={(e) => handleClickFromPercentage(e, 50)}>50%</Button>
-                    <Button onClick={(e) => handleClickFromPercentage(e, 75)}>75%</Button>
-                    <Button onClick={(e) => handleClickFromPercentage(e, 100)}>100%</Button>
-                  </ButtonGroup>
-                  {fromTokenInfo && fromTokenBalance && (
-                    <Chip
-                      label={`Balance: ${formatEther(fromTokenBalance, fromTokenInfo.decimals)} ${
-                        fromTokenInfo.symbol
-                      }`}
-                      sx={{ fontFamily: 'Roboto Mono' }}
-                    />
-                  )}
-                  <TextField
-                    sx={{ height: 54 }}
-                    label="Token to Receive"
-                    variant="outlined"
-                    color="primary"
-                    size="medium"
-                    disabled={isLoading}
-                    fullWidth
-                    value={receiveToken}
-                    onChange={handleChangeReceiveToken}
-                    error={receiveTokenError !== ''}
-                    helperText={receiveTokenError}
-                  />
-                  <TextField
-                    sx={{ height: 54 }}
-                    label="Amount to Receive"
-                    variant="outlined"
-                    color="primary"
-                    size="medium"
-                    fullWidth
-                    disabled={isLoading}
-                    value={receiveAmount}
-                    onChange={handleChangeReceiveAmount}
-                    error={receiveAmountError !== ''}
-                    helperText={receiveAmountError}
-                  />
-                  {receiveTokenInfo && (
-                    <Chip
-                      label={`Receiving: ${receiveAmount} ${receiveTokenInfo.symbol}`}
-                      sx={{ fontFamily: 'Roboto Mono' }}
-                    />
-                  )}
-                  <TextField
-                    sx={{ height: 54 }}
-                    label="Executor"
-                    variant="outlined"
-                    color="primary"
-                    size="medium"
-                    disabled={isLoading}
-                    fullWidth
-                    value={executor}
-                    onChange={handleChangeExecutor}
-                  />
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={addonsRiskChecked}
-                          disabled
-                          // disabled={!account}
-                          // onChange={handleChangeAddonsRiskChecked}
-                        />
-                      }
-                      label="Enforce Risk Detection"
-                    />
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={addonsRequireIdentity}
-                          disabled={!account}
-                          onChange={handleChangeAddonsRequireIdentity}
-                        />
-                      }
-                      label="Require Signata Identity"
-                    />
-                  </FormGroup>
                   {/* {addonsRequireIdentity && isLocked && (
                     <Alert>
                       <AlertTitle>{isLocked}</AlertTitle>
                     </Alert>
                   )} */}
-                  <ButtonGroup fullWidth size="medium" orientation="vertical" sx={{ height: 54 }}>
+                  <ButtonGroup fullWidth size="medium" orientation="vertical">
                     <Button
-                      sx={{ height: 54 }}
                       variant="contained"
                       color="primary"
                       size="large"
@@ -502,12 +397,11 @@ const Hero = () => {
                       style={{ fontWeight: 900 }}
                       fullWidth
                       type="submit"
-                      endIcon={<SwapHorizIcon />}
+                      endIcon={<DoneIcon />}
                     >
                       APPROVE
                     </Button>
                     <Button
-                      sx={{ height: 54 }}
                       variant="contained"
                       color="primary"
                       disabled={isLoading}
@@ -517,16 +411,107 @@ const Hero = () => {
                       type="submit"
                       endIcon={<SwapHorizIcon />}
                     >
-                      OPEN
+                      OPEN SWAP
                     </Button>
                   </ButtonGroup>
-                  {isLoading && <LinearProgress />}
+
+                  <Box
+                    sx={{
+                      width: '100%',
+                      padding: 2,
+                      textAlign: 'center',
+                      backgroundColor: 'background.paper',
+                      borderRadius: 2
+                    }}
+                  >
+                    <Typography component="h2" variant="h4" align="left" gutterBottom>
+                      Swap Details
+                    </Typography>
+                    <Typography component="p" variant="body2" align="left">
+                      Allowed Executor
+                    </Typography>
+                    <Typography component="p" variant="h4" align="left">
+                      {shortenIfAddress(executor)}
+                    </Typography>
+                    <Divider sx={{ margin: 2 }}>
+                      {executor === account ? (
+                        <Chip label="You're allowed to execute this swap" color="success" icon={<DoneIcon />} />
+                      ) : (
+                        <Chip
+                          label="You're not allowed to execute this swap"
+                          color="error"
+                          icon={<WarningAmberIcon />}
+                        />
+                      )}
+                    </Divider>
+                    <Typography component="p" variant="body2" align="left">
+                      Token you're sending
+                    </Typography>
+                    <Typography component="p" variant="h4" align="left">
+                      {receiveTokenInfo.name}
+                    </Typography>
+                    <Typography component="p" variant="subtitle2" align="left" sx={{ paddingBottom: 2 }}>
+                      {receiveToken}
+                    </Typography>
+                    <Typography component="p" variant="body2" align="left">
+                      Amount you're sending
+                    </Typography>
+                    <Typography component="p" variant="h4" align="left">
+                      {`${receiveAmount} ${receiveTokenInfo.symbol}`}
+                    </Typography>
+                    <Divider sx={{ margin: 2 }} />
+                    <Typography component="p" variant="body2" align="left">
+                      Token you're receiving
+                    </Typography>
+                    <Typography component="p" variant="h4" align="left">
+                      {fromTokenInfo.name}
+                    </Typography>
+                    <Typography component="p" variant="subtitle2" align="left" sx={{ paddingBottom: 2 }}>
+                      {fromToken}
+                    </Typography>
+                    <Typography component="p" variant="body2" align="left">
+                      Amount you're receiving
+                    </Typography>
+                    <Typography component="p" variant="h4" align="left" sx={{ paddingBottom: 2 }}>
+                      {`${formatEther(fromTokenBalance, fromTokenInfo.decimals)} ${fromTokenInfo.symbol}`}
+                    </Typography>
+                    <Typography component={'p'} variant="body2" align="left">
+                      If you agree to this token swap, approve and complete the swap!
+                    </Typography>
+                  </Box>
+
+                  <ButtonGroup fullWidth size="medium" orientation="vertical">
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      size="large"
+                      disabled={isLoading}
+                      style={{ fontWeight: 900 }}
+                      fullWidth
+                      type="submit"
+                      endIcon={<DoneIcon />}
+                    >
+                      APPROVE
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      disabled={isLoading}
+                      size="large"
+                      style={{ fontWeight: 900 }}
+                      fullWidth
+                      type="submit"
+                      endIcon={<SwapHorizIcon />}
+                    >
+                      COMPLETE SWAP
+                    </Button>
+                  </ButtonGroup>
 
                   <ApprovalStatus state={approveState} />
                   <CreateSwapStatus state={createSwapState} />
 
                   <Divider />
-                  <Typography variant="body2" sx={{ fontFamily: 'Roboto Mono' }}>
+                  <Typography variant="body2" sx={{ fontFamily: 'Roboto Mono', paddingTop: 2 }}>
                     {`Connected Wallet: ${shortenAddress(account)}`}
                   </Typography>
                   <Typography variant="body2" sx={{ fontFamily: 'Roboto Mono' }}>

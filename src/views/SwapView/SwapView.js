@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Main from 'layouts/Main';
 import { Swap } from './components';
+import { useSearchParams } from 'react-router-dom';
 
-const IndexView = () => {
+const SwapView = () => {
   return (
     <Box sx={{ overflowX: 'hidden' }}>
       <Main>
@@ -13,4 +14,4 @@ const IndexView = () => {
   );
 };
 
-export default IndexView;
+export default SwapView;
