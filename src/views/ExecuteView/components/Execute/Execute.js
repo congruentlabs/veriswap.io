@@ -50,8 +50,8 @@ import {
   useApprove,
   useGetSingleValue
 } from '../../../hooks';
-import { ApprovalStatus } from 'components/ApprovalStatus';
-import { CreateSwapStatus } from 'components/CreateSwapStatus';
+import ApprovalStatus from 'components/ApprovalStatus';
+import CreateSwapStatus from 'components/CreateSwapStatus';
 
 import SWAP_ABI from '../../../swapAbi.json';
 import ID_ABI from '../../../idAbi.json';
@@ -495,4 +495,4 @@ const Execute = () => {
   );
 };
 
-export default Hero;
+export default Execute;

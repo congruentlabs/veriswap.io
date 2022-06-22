@@ -7,7 +7,7 @@ import { SwapView, ExecuteView } from './views';
 
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import 'aos/dist/aos.css';
-import { BrowserRouter, Routes } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // import 'scss/react-images.scss';
 
