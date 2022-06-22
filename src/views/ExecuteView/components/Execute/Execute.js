@@ -383,38 +383,6 @@ const Execute = () => {
               <form noValidate autoComplete="off" onSubmit={onSubmitCreateSwap}>
                 <Stack spacing={2} alignItems="center">
                   <img src="logo-full.png" width="200" alt="Veriswap Logo" />
-                  {/* {addonsRequireIdentity && isLocked && (
-                    <Alert>
-                      <AlertTitle>{isLocked}</AlertTitle>
-                    </Alert>
-                  )} */}
-                  <ButtonGroup fullWidth size="medium" orientation="vertical">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="large"
-                      disabled={isLoading}
-                      style={{ fontWeight: 900 }}
-                      fullWidth
-                      type="submit"
-                      endIcon={<DoneIcon />}
-                    >
-                      APPROVE
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={isLoading}
-                      size="large"
-                      style={{ fontWeight: 900 }}
-                      fullWidth
-                      type="submit"
-                      endIcon={<SwapHorizIcon />}
-                    >
-                      OPEN SWAP
-                    </Button>
-                  </ButtonGroup>
-
                   <Box
                     sx={{
                       width: '100%',
