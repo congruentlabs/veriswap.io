@@ -32,8 +32,8 @@ const Swap = () => {
   const { account, chainId } = useEthers();
   const swapContract = getSwapContract(chainId);
   const swapContractAddress = getSwapContractAddress(chainId);
-  const [fromToken, setFromToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
-  const [receiveToken, setReceiveToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
+  const [fromToken, setFromToken] = useState('0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c');
+  const [receiveToken, setReceiveToken] = useState('0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977');
   const [executor, setExecutor] = useState('0x788DdE8Ca5b196ba47138DB6C0527f54B5959D51');
   const [fromAmount, setFromAmount] = useState('');
   const [creatorAddress, setCreatorAddress] = useState('');

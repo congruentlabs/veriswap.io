@@ -31,7 +31,7 @@ const Execute = (props) => {
   const theme = useTheme();
   const { swapId } = props;
 
-  const { account } = useEthers();
+  const { account, chainId } = useEthers();
 
   const [allowedToExecute, setAllowedToExecute] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
@@ -238,6 +238,7 @@ const Execute = (props) => {
                   <SwapData
                     swapData={parsedSwapData}
                     account={account}
+                    chainId={chainId}
                     allowedToExecute={allowedToExecute}
                     setAllowedToExecute={setAllowedToExecute}
                     setSwapAllowance={setSwapAllowance}
