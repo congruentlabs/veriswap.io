@@ -23,20 +23,14 @@ import DoneIcon from '@mui/icons-material/Done';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 import Container from 'components/Container';
-import {
-  useCreateSwap,
-  useExecuteSwap,
-  useCancelSwap,
-  useChangeExecutor,
-  useApprove,
-  useGetValue
-} from '../../../hooks';
+import { useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetValue } from '../../../hooks';
 import ApprovalStatus from 'components/ApprovalStatus';
 import CreateSwapStatus from 'components/CreateSwapStatus';
 import SwapData from '../SwapData';
 
 import SWAP_ABI from '../../../swapAbi.json';
 import ID_ABI from '../../../idAbi.json';
+import { BigNumber } from 'ethers';
 
 const infuraId = 'dab56da72e89492da5a8e77fbc45c7fa';
 const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
@@ -86,8 +80,7 @@ const Execute = (props) => {
 
   const { activateBrowserWallet, activate, account, chainId } = useEthers();
 
-  const [fromActualAmount, setFromActualAmount] = useState('');
-  const [receiveActualAmount, setReceiveActualAmount] = useState('');
+  const [allowedToExecute, setAllowedToExecute] = useState(false);
   const [newExecutor, setNewExecutor] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
@@ -121,15 +114,25 @@ const Execute = (props) => {
 
   useEffect(() => {
     if (swapData && swapData.creator) {
+      // const parsedData = {
+      //   inputToken: swapData.creator,
+      //   inputAmount: swapData.inputAmount,
+      //   outputToken: swapData.outputToken,
+      //   outputAmount: swapData.outputAmount,
+      //   executor: swapData.executor,
+      //   creator: swapData.creator,
+      //   requireIdentity: swapData.requireIdentity,
+      //   state: swapData.state
+      // };
       const parsedData = {
-        inputToken: swapData.creator,
-        inputAmount: swapData.inputAmount,
-        outputToken: swapData.outputToken,
-        outputAmount: swapData.outputAmount,
-        executor: swapData.executor,
-        creator: swapData.creator,
-        requireIdentity: swapData.requireIdentity,
-        state: swapData.state
+        inputToken: '0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c',
+        inputAmount: BigNumber.from('20000000000000000000'),
+        outputToken: '0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977',
+        outputAmount: BigNumber.from('40000000000000000000'),
+        executor: '0xc441601696DF5ce0922224248AD96AB956D3B1Ae',
+        creator: '0xc441601696DF5ce0922224248AD96AB956D3B1Ae',
+        requireIdentity: 0,
+        state: 0
       };
       console.log(parsedData);
       setParsedSwapData(parsedData);
@@ -178,6 +181,48 @@ const Execute = (props) => {
     }
   }, [executeSwapState]);
 
+  useEffect(() => {
+    if (cancelSwapState) {
+      console.log(cancelSwapState);
+      if (cancelSwapState.status === 'PendingSignature') {
+        setLoading(true);
+      }
+      if (cancelSwapState.status === 'Exception') {
+        setLoading(false);
+      }
+      if (cancelSwapState.status === 'None') {
+        setLoading(false);
+      }
+      if (cancelSwapState.status === 'Mining') {
+        setLoading(true);
+      }
+      if (cancelSwapState.status === 'Success') {
+        setLoading(false);
+      }
+    }
+  }, [cancelSwapState]);
+
+  useEffect(() => {
+    if (changeExecutorState) {
+      console.log(changeExecutorState);
+      if (changeExecutorState.status === 'PendingSignature') {
+        setLoading(true);
+      }
+      if (changeExecutorState.status === 'Exception') {
+        setLoading(false);
+      }
+      if (changeExecutorState.status === 'None') {
+        setLoading(false);
+      }
+      if (changeExecutorState.status === 'Mining') {
+        setLoading(true);
+      }
+      if (changeExecutorState.status === 'Success') {
+        setLoading(false);
+      }
+    }
+  }, [changeExecutorState]);
+
   // const { t } = useTranslation();
   // const isMd = useMediaQuery(theme.breakpoints.up('md'), {
   //   defaultMatches: true,
@@ -212,18 +257,18 @@ const Execute = (props) => {
   };
 
   const onSubmitExecuteSwap = () => {
-    createSwapResetState();
-    createSwapSend(creatorAddress);
+    executeSwapResetState();
+    executeSwapSend(creatorAddress);
   };
 
   const onSubmitCancelSwap = () => {
-    createSwapResetState();
-    createSwapSend();
+    cancelSwapResetState();
+    cancelSwapSend();
   };
 
   const onSubmitChangeExecutorSwap = () => {
-    createSwapResetState();
-    createSwapSend(newExecutor);
+    changeExecutorResetState();
+    changeExecutorSend(newExecutor);
   };
 
   return (
@@ -300,15 +345,21 @@ const Execute = (props) => {
             {account && parsedSwapData.executor && receiveTokenInfo && fromTokenInfo && (
               <form noValidate autoComplete="off" onSubmit={onSubmitExecuteSwap}>
                 <Stack spacing={2} alignItems="center">
-                  <img src="/logo-full.png" width="200" alt="Veriswap Logo" />
-                  <SwapData swapData={parsedSwapData} account={account} chainId={chainId} />
+                  <img src="/logo.png" width="150" alt="Veriswap Logo" />
+                  <SwapData
+                    swapData={parsedSwapData}
+                    account={account}
+                    chainId={chainId}
+                    allowedToExecute={allowedToExecute}
+                    setAllowedToExecute={setAllowedToExecute}
+                  />
 
                   <ButtonGroup fullWidth size="medium" orientation="vertical">
                     <Button
                       variant="contained"
                       color="secondary"
                       size="large"
-                      disabled={isLoading}
+                      disabled={isLoading || !allowedToExecute}
                       style={{ fontWeight: 900 }}
                       fullWidth
                       type="submit"
@@ -319,7 +370,7 @@ const Execute = (props) => {
                     <Button
                       variant="contained"
                       color="secondary"
-                      disabled={isLoading}
+                      disabled={isLoading || !allowedToExecute}
                       size="large"
                       style={{ fontWeight: 900 }}
                       fullWidth
