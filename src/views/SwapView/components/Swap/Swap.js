@@ -1,20 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import {
-  useEtherBalance,
-  useTokenBalance,
-  useEthers,
-  shortenAddress,
-  useToken,
-  shortenIfAddress,
-  DEFAULT_SUPPORTED_CHAINS
-} from '@usedapp/core';
+import { useTokenBalance, useEthers, useToken, shortenIfAddress, useTokenAllowance } from '@usedapp/core';
 // import Torus from '@toruslabs/torus-embed';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
-import { Contract } from '@ethersproject/contracts';
-
-// import useMediaQuery from '@mui/material/useMediaQuery';
-// import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -22,7 +10,6 @@ import {
   Button,
   ButtonGroup,
   Chip,
-  Typography,
   Card,
   FormGroup,
   Stack,
@@ -33,33 +20,18 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
+import { useCreateSwap, useApprove, getSwapContractAddress, getSwapContract } from 'hooks';
 import Container from 'components/Container';
-import {
-  useCreateSwap,
-  useExecuteSwap,
-  useCancelSwap,
-  useChangeExecutor,
-  useApprove,
-  useGetSingleValue
-} from '../../../hooks';
 import ApprovalStatus from 'components/ApprovalStatus';
 import CreateSwapStatus from 'components/CreateSwapStatus';
 import AccountConnector from 'components/AccountConnector';
-
-import SWAP_ABI from '../../../swapAbi.json';
-import ID_ABI from '../../../idAbi.json';
-
-const infuraId = 'dab56da72e89492da5a8e77fbc45c7fa';
-const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
-const swapContract = new Contract(SWAP_CONTRACT, SWAP_ABI);
-const ID_CONTRACT = '0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385';
-const idContract = new Contract(ID_CONTRACT, ID_ABI);
+import ConnectedWallet from 'components/ConnectedWallet';
 
 const Swap = () => {
   const theme = useTheme();
-
   const { account, chainId } = useEthers();
-
+  const swapContract = getSwapContract(chainId);
+  const swapContractAddress = getSwapContractAddress(chainId);
   const [fromToken, setFromToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
   const [receiveToken, setReceiveToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
   const [executor, setExecutor] = useState('0x788DdE8Ca5b196ba47138DB6C0527f54B5959D51');
@@ -75,34 +47,28 @@ const Swap = () => {
   const [isLoading, setLoading] = useState(false);
   const [addonsRiskChecked, setAddonsRiskChecked] = useState(false);
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
-  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(swapContract);
+  const [requiresApproval, setRequiresApproval] = useState(false);
+  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(fromToken);
   const {
     state: createSwapState,
     send: createSwapSend,
     resetState: createSwapResetState
   } = useCreateSwap(swapContract);
-  const {
-    state: executeSwapState,
-    send: executeSwapSend,
-    resetState: executeSwapResetState
-  } = useExecuteSwap(swapContract);
-  const {
-    state: cancelSwapState,
-    send: cancelSwapSend,
-    resetState: cancelSwapResetState
-  } = useCancelSwap(swapContract);
-  const {
-    state: changeExecutorState,
-    send: changeExecutorSend,
-    resetState: changeExecutorResetState
-  } = useChangeExecutor(swapContract);
-  // const isLocked = useGetSingleValue('isLocked', [account], ID_CONTRACT, idContract);
 
-  const chainName = DEFAULT_SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
+  // const isLocked = useGetSingleValue('isLocked', [account], ID_CONTRACT, idContract);
 
   const fromTokenInfo = useToken(fromToken);
   const receiveTokenInfo = useToken(receiveToken);
   const fromTokenBalance = useTokenBalance(fromToken, account);
+  const swapAllowance = useTokenAllowance(fromToken, account, swapContractAddress);
+
+  useEffect(() => {
+    if (swapAllowance < fromActualAmount) {
+      setRequiresApproval(true);
+    } else {
+      setRequiresApproval(false);
+    }
+  }, [swapAllowance, setRequiresApproval, fromActualAmount]);
 
   useEffect(() => {
     if (approveState) {
@@ -410,7 +376,7 @@ const Swap = () => {
                       variant="contained"
                       color="primary"
                       size="large"
-                      disabled={isLoading}
+                      disabled={isLoading || !requiresApproval}
                       style={{ fontWeight: 900 }}
                       fullWidth
                       type="submit"
@@ -421,7 +387,7 @@ const Swap = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={isLoading}
+                      disabled={isLoading || requiresApproval}
                       size="large"
                       style={{ fontWeight: 900 }}
                       fullWidth
@@ -435,28 +401,7 @@ const Swap = () => {
                   <ApprovalStatus state={approveState} />
                   <CreateSwapStatus state={createSwapState} />
 
-                  <Box
-                    sx={{
-                      width: '100%',
-                      padding: 2,
-                      textAlign: 'center',
-                      backgroundColor: 'background.level2',
-                      borderRadius: 2
-                    }}
-                  >
-                    <Typography component="p" variant="body2" align="left">
-                      Connected Wallet
-                    </Typography>
-                    <Typography component="p" variant="h6" align="left">
-                      {shortenAddress(account)}
-                    </Typography>
-                    <Typography component="p" variant="body2" align="left">
-                      Network
-                    </Typography>
-                    <Typography component="p" variant="h6" align="left">
-                      {chainName}
-                    </Typography>
-                  </Box>
+                  <ConnectedWallet account={account} />
                 </Stack>
               </form>
             )}

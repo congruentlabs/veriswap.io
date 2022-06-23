@@ -9,15 +9,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
 
 const SwapData = (props) => {
-  const {
-    swapData,
-    account,
-    requiresApproval,
-    setRequiresApproval,
-    allowedToExecute,
-    setAllowedToExecute,
-    setSwapAllowance
-  } = props;
+  const { swapData, account, setRequiresApproval, allowedToExecute, setAllowedToExecute, setSwapAllowance } = props;
 
   const inputTokenInfo = useToken(swapData.inputToken);
   const outputTokenInfo = useToken(swapData.outputToken);
@@ -77,7 +69,7 @@ const SwapData = (props) => {
         )}
       </Divider>
       <Typography component="p" variant="body2" align="left">
-        Token you're sending
+        Token you're <b>sending</b>
       </Typography>
       {outputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
@@ -107,7 +99,7 @@ const SwapData = (props) => {
       )}
       <Divider sx={{ margin: 2 }} />
       <Typography component="p" variant="body2" align="left">
-        Token you're receiving
+        Token you're <b>receiving</b>
       </Typography>
       {inputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
@@ -123,12 +115,13 @@ const SwapData = (props) => {
         Amount you're receiving
       </Typography>
       {swapData.inputAmount && inputTokenInfo && (
-        <Typography component="p" variant="h4" align="left" sx={{ paddingBottom: 2 }}>
+        <Typography component="p" variant="h4" align="left">
           {`${formatEther(swapData.inputAmount || 0, inputTokenInfo.decimals)} ${inputTokenInfo.symbol}`}
         </Typography>
       )}
+      <Divider sx={{ margin: 2 }} />
       <Typography component={'p'} variant="body2" align="left">
-        If you agree to this token swap, approve and complete the swap!
+        If you agree to this exchange, approve and complete the swap!
       </Typography>
     </Box>
   );

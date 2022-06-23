@@ -1,38 +1,26 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import {
-  useEtherBalance,
-  useTokenBalance,
-  useEthers,
-  shortenAddress,
-  useToken,
-  shortenIfAddress,
-  useTokenAllowance,
-  DEFAULT_SUPPORTED_CHAINS
-} from '@usedapp/core';
-import Web3Modal from 'web3modal';
-import WalletConnectProvider from '@walletconnect/web3-provider';
-import WalletLink from 'walletlink';
-import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
-import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
+import { useEthers, shortenIfAddress } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
+import { BigNumber } from 'ethers';
 
 import { useTheme } from '@mui/material/styles';
-import { Alert, AlertTitle, Box, Button, ButtonGroup, Divider, Chip, Typography, Card, Stack } from '@mui/material';
+import { Box, Button, ButtonGroup, Card, Stack } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
+import { useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetValue } from 'hooks';
 import Container from 'components/Container';
-import { useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetValue } from '../../../hooks';
 import ApprovalStatus from 'components/ApprovalStatus';
 import CreateSwapStatus from 'components/CreateSwapStatus';
 import AccountConnector from 'components/AccountConnector';
-import { BigNumber } from 'ethers';
+import ConnectedWallet from 'components/ConnectedWallet';
+import InvalidSwap from 'components/InvalidSwap';
 import SwapData from '../SwapData';
 
-import SWAP_ABI from '../../../swapAbi.json';
-import ID_ABI from '../../../idAbi.json';
+import SWAP_ABI from 'swapAbi.json';
+import ID_ABI from 'idAbi.json';
 
 const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
 const swapContract = new Contract(SWAP_CONTRACT, SWAP_ABI);
@@ -43,7 +31,7 @@ const Execute = (props) => {
   const theme = useTheme();
   const { swapId } = props;
 
-  const { account, chainId } = useEthers();
+  const { account } = useEthers();
 
   const [allowedToExecute, setAllowedToExecute] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
@@ -72,8 +60,6 @@ const Execute = (props) => {
   const [parsedSwapData, setParsedSwapData] = useState({});
 
   const swapData = useGetValue('swaps', [swapId], SWAP_CONTRACT, swapContract);
-
-  const chainName = DEFAULT_SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
 
   useEffect(() => {
     if (swapData && swapData.creator) {
@@ -244,15 +230,7 @@ const Execute = (props) => {
             {!account && <AccountConnector />}
             {account &&
               parsedSwapData.creator &&
-              parsedSwapData.creator === '0x0000000000000000000000000000000000000000' && (
-                <Stack spacing={2} alignItems="center">
-                  <img src="/logo-full.png" width="200" alt="Veriswap Logo" />
-                  <Alert severity="warning" sx={{ width: '100%' }}>
-                    <AlertTitle>Invalid Swap URL</AlertTitle>
-                    Please check that the URL of your swap is correct.
-                  </Alert>
-                </Stack>
-              )}
+              parsedSwapData.creator === '0x0000000000000000000000000000000000000000' && <InvalidSwap />}
             {account && parsedSwapData && parsedSwapData.executor && parsedSwapData.inputToken && (
               <form noValidate autoComplete="off" onSubmit={onSubmitExecuteSwap}>
                 <Stack spacing={2} alignItems="center">
@@ -297,28 +275,7 @@ const Execute = (props) => {
                   <ApprovalStatus state={approveState} />
                   {/* <CreateSwapStatus state={createSwapState} /> */}
 
-                  <Box
-                    sx={{
-                      width: '100%',
-                      padding: 2,
-                      textAlign: 'center',
-                      backgroundColor: 'background.level2',
-                      borderRadius: 2
-                    }}
-                  >
-                    <Typography component="p" variant="body2" align="left">
-                      Connected Wallet
-                    </Typography>
-                    <Typography component="p" variant="h6" align="left">
-                      {shortenAddress(account)}
-                    </Typography>
-                    <Typography component="p" variant="body2" align="left">
-                      Network
-                    </Typography>
-                    <Typography component="p" variant="h6" align="left">
-                      {chainName}
-                    </Typography>
-                  </Box>
+                  <ConnectedWallet account={account} />
                 </Stack>
               </form>
             )}
