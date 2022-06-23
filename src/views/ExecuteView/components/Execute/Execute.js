@@ -7,6 +7,7 @@ import {
   shortenAddress,
   useToken,
   shortenIfAddress,
+  useTokenAllowance,
   DEFAULT_SUPPORTED_CHAINS
 } from '@usedapp/core';
 import Web3Modal from 'web3modal';
@@ -81,6 +82,8 @@ const Execute = (props) => {
   const { activateBrowserWallet, activate, account, chainId } = useEthers();
 
   const [allowedToExecute, setAllowedToExecute] = useState(false);
+  const [requiresApproval, setRequiresApproval] = useState(false);
+  const [swapAllowance, setSwapAllowance] = useState('');
   const [newExecutor, setNewExecutor] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
@@ -110,7 +113,6 @@ const Execute = (props) => {
 
   const fromTokenInfo = useToken(parsedSwapData.inputToken || '');
   const receiveTokenInfo = useToken(parsedSwapData.outputToken || '');
-  const fromTokenBalance = useTokenBalance(parsedSwapData.inputToken || '', account);
 
   useEffect(() => {
     if (swapData && swapData.creator) {
@@ -351,6 +353,9 @@ const Execute = (props) => {
                     chainId={chainId}
                     allowedToExecute={allowedToExecute}
                     setAllowedToExecute={setAllowedToExecute}
+                    setSwapAllowance={setSwapAllowance}
+                    requiresApproval={requiresApproval}
+                    setRequiresApproval={setRequiresApproval}
                   />
 
                   <ButtonGroup fullWidth size="medium" orientation="vertical">
@@ -358,7 +363,7 @@ const Execute = (props) => {
                       variant="contained"
                       color="secondary"
                       size="large"
-                      disabled={isLoading || !allowedToExecute}
+                      disabled={isLoading || !allowedToExecute || !requiresApproval}
                       style={{ fontWeight: 900 }}
                       fullWidth
                       type="submit"
@@ -369,7 +374,7 @@ const Execute = (props) => {
                     <Button
                       variant="contained"
                       color="secondary"
-                      disabled={isLoading || !allowedToExecute}
+                      disabled={isLoading || !allowedToExecute || requiresApproval}
                       size="large"
                       style={{ fontWeight: 900 }}
                       fullWidth

@@ -1,18 +1,28 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react';
-import { useTokenBalance, useToken } from '@usedapp/core';
+import { useTokenBalance, useToken, useTokenAllowance } from '@usedapp/core';
 import { formatEther } from '@ethersproject/units';
 
 import { Box, Divider, Chip, Typography } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
 
 const SwapData = (props) => {
-  const { swapData, account, chainId, allowedToExecute, setAllowedToExecute } = props;
+  const {
+    swapData,
+    account,
+    requiresApproval,
+    setRequiresApproval,
+    allowedToExecute,
+    setAllowedToExecute,
+    setSwapAllowance
+  } = props;
 
   const inputTokenInfo = useToken(swapData.inputToken);
   const outputTokenInfo = useToken(swapData.outputToken);
   const outputTokenBalance = useTokenBalance(swapData.outputToken, account);
+  const swapAllowance = useTokenAllowance(swapData.outputToken, account, SWAP_CONTRACT);
 
   useEffect(() => {
     if (swapData && account) {
@@ -21,6 +31,17 @@ const SwapData = (props) => {
       }
     }
   }, [account, swapData, setAllowedToExecute]);
+
+  useEffect(() => {
+    if (swapAllowance) {
+      setSwapAllowance(swapAllowance);
+    }
+    if (swapAllowance < outputTokenBalance) {
+      setRequiresApproval(true);
+    } else {
+      setRequiresApproval(false);
+    }
+  }, [setSwapAllowance, swapAllowance, setRequiresApproval, outputTokenBalance]);
 
   return (
     <Box
