@@ -34,7 +34,6 @@ import SwapData from '../SwapData';
 import SWAP_ABI from '../../../swapAbi.json';
 import ID_ABI from '../../../idAbi.json';
 
-const infuraId = 'dab56da72e89492da5a8e77fbc45c7fa';
 const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
 const swapContract = new Contract(SWAP_CONTRACT, SWAP_ABI);
 const ID_CONTRACT = '0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385';
@@ -100,7 +99,7 @@ const Execute = (props) => {
       };
       setParsedSwapData(parsedData);
     }
-  }, [swapData]);
+  }, [swapData, setParsedSwapData]);
 
   useEffect(() => {
     if (approveState) {

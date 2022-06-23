@@ -33,9 +33,6 @@ const SwapData = (props) => {
   }, [account, swapData, setAllowedToExecute]);
 
   useEffect(() => {
-    if (swapAllowance) {
-      setSwapAllowance(swapAllowance);
-    }
     if (swapAllowance < outputTokenBalance) {
       setRequiresApproval(true);
     } else {
@@ -82,7 +79,7 @@ const SwapData = (props) => {
       <Typography component="p" variant="body2" align="left">
         Token you're sending
       </Typography>
-      {outputTokenInfo.name && (
+      {outputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
           {outputTokenInfo.name}
         </Typography>
@@ -95,7 +92,7 @@ const SwapData = (props) => {
       <Typography component="p" variant="body2" align="left">
         Amount you're sending
       </Typography>
-      {swapData.outputAmount && outputTokenInfo.decimals && outputTokenInfo.symbol && (
+      {swapData.outputAmount && outputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
           {`${formatEther(swapData.outputAmount || 0, outputTokenInfo.decimals)} ${outputTokenInfo.symbol}`}
         </Typography>
@@ -103,7 +100,7 @@ const SwapData = (props) => {
       <Typography component="p" variant="body2" align="left">
         Your balance
       </Typography>
-      {outputTokenBalance && outputTokenInfo.decimals && outputTokenInfo.symbol && (
+      {outputTokenBalance && outputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
           {`${formatEther(outputTokenBalance || 0, outputTokenInfo.decimals)} ${outputTokenInfo.symbol}`}
         </Typography>
@@ -112,7 +109,7 @@ const SwapData = (props) => {
       <Typography component="p" variant="body2" align="left">
         Token you're receiving
       </Typography>
-      {inputTokenInfo.name && (
+      {inputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
           {inputTokenInfo.name}
         </Typography>
@@ -125,7 +122,7 @@ const SwapData = (props) => {
       <Typography component="p" variant="body2" align="left">
         Amount you're receiving
       </Typography>
-      {swapData.inputAmount && inputTokenInfo.decimals && inputTokenInfo.symbol && (
+      {swapData.inputAmount && inputTokenInfo && (
         <Typography component="p" variant="h4" align="left" sx={{ paddingBottom: 2 }}>
           {`${formatEther(swapData.inputAmount || 0, inputTokenInfo.decimals)} ${inputTokenInfo.symbol}`}
         </Typography>

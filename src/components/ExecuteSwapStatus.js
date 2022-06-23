@@ -2,14 +2,14 @@
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
-const CreateSwapStatus = (state) => {
+const ExecuteSwapStatus = (state) => {
   if (state && state.status === 'Success') {
     return (
       <Box
         sx={{ width: '100%', padding: 2, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 2 }}
       >
         <CircularProgress color="success" variant="determinate" value={100} />
-        <Typography>Create Swap Complete!</Typography>
+        <Typography>Execute Swap Complete!</Typography>
       </Box>
     );
   }
@@ -50,4 +50,4 @@ const CreateSwapStatus = (state) => {
   return <></>;
 };
 
-export default CreateSwapStatus;
+export default ExecuteSwapStatus;
