@@ -1,27 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import Main from 'layouts/Main';
 import { Execute } from './components';
-import { useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const ExecuteView = () => {
-  const [searchParams] = useSearchParams();
-  const [swapId, setSwapId] = useState('');
+  const { swapId } = useParams();
 
-  useEffect(() => {
-    if (searchParams) {
-      const swapToCheck = searchParams.get('swapId');
-      if (swapToCheck) {
-        setSwapId(swapToCheck);
-      }
-    }
-  }, [searchParams]);
-
-  searchParams.get('swap');
   return (
     <Box sx={{ overflowX: 'hidden' }}>
       <Main>
-        <Execute />
+        <Execute swapId={swapId} />
       </Main>
     </Box>
   );

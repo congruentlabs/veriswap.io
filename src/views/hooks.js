@@ -35,6 +35,22 @@ export function useApprove(erc20Token) {
   return { state, send, events, resetState };
 }
 
+export const useGetValue = (method, args, contractAddress, contract) => {
+  const { value, error } =
+    useCall(
+      contractAddress && {
+        contract,
+        method,
+        args
+      }
+    ) ?? {};
+  if (error) {
+    console.error(error.message);
+    return {};
+  }
+  return value;
+};
+
 export const useGetSingleValue = (method, args, contractAddress, contract) => {
   const { value, error } =
     useCall(

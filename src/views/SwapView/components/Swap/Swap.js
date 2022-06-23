@@ -350,16 +350,17 @@ const Swap = () => {
             {!account && (
               <Stack spacing={2} alignItems="center">
                 <img src="logo-full.png" width="100%" alt="Veriswap Logo" />
-                <Alert severity="warning">Connect your wallet to start using Veriswap!</Alert>
-                <Alert severity="error">
+                <Alert severity="warning" sx={{ width: '100%' }}>
+                  Connect your wallet to start using Veriswap!
+                </Alert>
+                <Alert severity="error" sx={{ width: '100%' }}>
                   <AlertTitle>App Under Development</AlertTitle>
                   This app is currently under active development and may not work properly. Use at your own peril.
                 </Alert>
                 <Button
-                  sx={{ height: 54 }}
                   variant="contained"
                   // color="default"
-                  size="medium"
+                  size="large"
                   style={{ fontWeight: 900 }}
                   fullWidth
                   onClick={handleConnect}

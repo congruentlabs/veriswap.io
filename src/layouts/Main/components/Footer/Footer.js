@@ -18,7 +18,7 @@ const Footer = () => {
           flexDirection={{ xs: 'column', sm: 'row' }}
         >
           <Box display={'flex'} component="a" href="/" title="Signata" width={80}>
-            <Box component={'img'} src="logo.png" height={0.4} width={0.4} />
+            <Box component={'img'} src="/logo.png" height={0.4} width={0.4} />
           </Box>
           <Box display="flex" flexWrap={'wrap'} alignItems={'center'}>
             {[

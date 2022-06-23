@@ -11,32 +11,13 @@ import {
 } from '@usedapp/core';
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-// import Torus from '@toruslabs/torus-embed';
 import WalletLink from 'walletlink';
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
 import { Contract } from '@ethersproject/contracts';
 
-// import useMediaQuery from '@mui/material/useMediaQuery';
-// import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
-import {
-  Alert,
-  AlertTitle,
-  LinearProgress,
-  Box,
-  TextField,
-  Button,
-  ButtonGroup,
-  Divider,
-  Chip,
-  Typography,
-  Card,
-  FormGroup,
-  Stack,
-  FormControlLabel,
-  Switch
-} from '@mui/material';
+import { Alert, AlertTitle, Box, Button, ButtonGroup, Divider, Chip, Typography, Card, Stack } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -48,10 +29,11 @@ import {
   useCancelSwap,
   useChangeExecutor,
   useApprove,
-  useGetSingleValue
+  useGetValue
 } from '../../../hooks';
 import ApprovalStatus from 'components/ApprovalStatus';
 import CreateSwapStatus from 'components/CreateSwapStatus';
+import SwapData from '../SwapData';
 
 import SWAP_ABI from '../../../swapAbi.json';
 import ID_ABI from '../../../idAbi.json';
@@ -98,32 +80,19 @@ const web3Modal = new Web3Modal({
   providerOptions
 });
 
-const Execute = () => {
+const Execute = (props) => {
   const theme = useTheme();
+  const { swapId } = props;
 
   const { activateBrowserWallet, activate, account, chainId } = useEthers();
 
-  const [fromToken, setFromToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
-  const [receiveToken, setReceiveToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
-  const [executor, setExecutor] = useState('0x788DdE8Ca5b196ba47138DB6C0527f54B5959D51');
-  const [fromAmount, setFromAmount] = useState('');
-  const [creatorAddress, setCreatorAddress] = useState('');
   const [fromActualAmount, setFromActualAmount] = useState('');
-  const [fromAmountError, setFromAmountError] = useState('');
-  const [fromTokenError, setFromTokenError] = useState('');
-  const [receiveTokenError, setReceiveTokenError] = useState('');
-  const [receiveAmount, setReceiveAmount] = useState('');
   const [receiveActualAmount, setReceiveActualAmount] = useState('');
-  const [receiveAmountError, setReceiveAmountError] = useState('');
+  const [newExecutor, setNewExecutor] = useState('');
   const [isLoading, setLoading] = useState(false);
-  const [addonsRiskChecked, setAddonsRiskChecked] = useState(false);
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
   const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(swapContract);
-  const {
-    state: createSwapState,
-    send: createSwapSend,
-    resetState: createSwapResetState
-  } = useCreateSwap(swapContract);
+
   const {
     state: executeSwapState,
     send: executeSwapSend,
@@ -139,13 +108,33 @@ const Execute = () => {
     send: changeExecutorSend,
     resetState: changeExecutorResetState
   } = useChangeExecutor(swapContract);
-  // const isLocked = useGetSingleValue('isLocked', [account], ID_CONTRACT, idContract);
+
+  const [parsedSwapData, setParsedSwapData] = useState({});
+
+  const swapData = useGetValue('swaps', [swapId], SWAP_CONTRACT, swapContract);
 
   const chainName = DEFAULT_SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
 
-  const fromTokenInfo = useToken(fromToken);
-  const receiveTokenInfo = useToken(receiveToken);
-  const fromTokenBalance = useTokenBalance(fromToken, account);
+  const fromTokenInfo = useToken(parsedSwapData.inputToken || '');
+  const receiveTokenInfo = useToken(parsedSwapData.outputToken || '');
+  const fromTokenBalance = useTokenBalance(parsedSwapData.inputToken || '', account);
+
+  useEffect(() => {
+    if (swapData && swapData.creator) {
+      const parsedData = {
+        inputToken: swapData.creator,
+        inputAmount: swapData.inputAmount,
+        outputToken: swapData.outputToken,
+        outputAmount: swapData.outputAmount,
+        executor: swapData.executor,
+        creator: swapData.creator,
+        requireIdentity: swapData.requireIdentity,
+        state: swapData.state
+      };
+      console.log(parsedData);
+      setParsedSwapData(parsedData);
+    }
+  }, [swapData]);
 
   useEffect(() => {
     if (approveState) {
@@ -169,25 +158,25 @@ const Execute = () => {
   }, [approveState]);
 
   useEffect(() => {
-    if (createSwapState) {
-      console.log(createSwapState);
-      if (createSwapState.status === 'PendingSignature') {
+    if (executeSwapState) {
+      console.log(executeSwapState);
+      if (executeSwapState.status === 'PendingSignature') {
         setLoading(true);
       }
-      if (createSwapState.status === 'Exception') {
+      if (executeSwapState.status === 'Exception') {
         setLoading(false);
       }
-      if (createSwapState.status === 'None') {
+      if (executeSwapState.status === 'None') {
         setLoading(false);
       }
-      if (createSwapState.status === 'Mining') {
+      if (executeSwapState.status === 'Mining') {
         setLoading(true);
       }
-      if (createSwapState.status === 'Success') {
+      if (executeSwapState.status === 'Success') {
         setLoading(false);
       }
     }
-  }, [createSwapState]);
+  }, [executeSwapState]);
 
   // const { t } = useTranslation();
   // const isMd = useMediaQuery(theme.breakpoints.up('md'), {
@@ -212,97 +201,14 @@ const Execute = () => {
   const handleChangeExecutor = (e) => {
     try {
       shortenIfAddress(e.target.value);
-      setExecutor(e.target.value);
+      setNewExecutor(e.target.value);
     } catch {
       // do nothing
     }
   };
-
-  const handleChangeFromToken = (e) => {
-    try {
-      shortenIfAddress(e.target.value);
-      setFromToken(e.target.value);
-    } catch {
-      // do nothing
-    }
-  };
-
-  const handleChangeReceiveToken = (e) => {
-    try {
-      shortenIfAddress(e.target.value);
-      setReceiveToken(e.target.value);
-    } catch {
-      // do nothing
-    }
-  };
-
-  const handleChangeFromAmount = (e) => {
-    e.preventDefault();
-    try {
-      setFromAmountError('');
-      const newAmount = e.target.value;
-      const parsedAmount = parseUnits(newAmount, fromTokenInfo.decimals);
-      if (parsedAmount.gt(fromTokenBalance) || parsedAmount.isNegative()) {
-        setFromActualAmount(fromTokenBalance);
-        setFromAmount(formatUnits(fromTokenBalance || 0, fromTokenInfo.decimals));
-      } else {
-        setFromActualAmount(parsedAmount);
-        setFromAmount(newAmount);
-      }
-    } catch (error) {
-      setFromAmountError('Invalid Amount');
-      console.error(error.message);
-    }
-  };
-
-  const handleChangeReceiveAmount = (e) => {
-    e.preventDefault();
-    try {
-      const newAmount = e.target.value || 0;
-      const parsedAmount = parseUnits(newAmount, receiveTokenInfo.decimals);
-      setReceiveActualAmount(parsedAmount);
-      setReceiveAmount(newAmount);
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
-  // const handleChangeAddonsRiskChecked = () => {
-  //   setAddonsRiskChecked(!addonsRiskChecked);
-  // };
 
   const handleChangeAddonsRequireIdentity = () => {
     setAddonsRequireIdentity(!addonsRequireIdentity);
-  };
-
-  const handleClickFromPercentage = (e, val) => {
-    e.preventDefault();
-    setFromAmountError('');
-    if (fromToken && fromTokenBalance && fromTokenBalance.gt(0)) {
-      const newAmount = fromTokenBalance.div(100).mul(val);
-      setFromActualAmount(newAmount);
-      setFromAmount(formatUnits(newAmount || 0, 18));
-    }
-  };
-
-  const onSubmitCreateSwap = (e) => {
-    e.preventDefault();
-
-    // if needs approval
-
-    // call approve
-
-    // otherwise call the swap
-
-    createSwapResetState();
-    createSwapSend(
-      fromToken,
-      fromActualAmount.toString(),
-      receiveToken,
-      receiveActualAmount.toString(),
-      executor,
-      addonsRequireIdentity
-    );
   };
 
   const onSubmitExecuteSwap = () => {
@@ -317,7 +223,7 @@ const Execute = () => {
 
   const onSubmitChangeExecutorSwap = () => {
     createSwapResetState();
-    createSwapSend(executor);
+    createSwapSend(newExecutor);
   };
 
   return (
@@ -349,17 +255,18 @@ const Execute = () => {
           >
             {!account && (
               <Stack spacing={2} alignItems="center">
-                <img src="logo-full.png" width="100%" alt="Veriswap Logo" />
-                <Alert severity="warning">Connect your wallet to start using Veriswap!</Alert>
-                <Alert severity="error">
+                <img src="/logo-full.png" width="100%" alt="Veriswap Logo" />
+                <Alert severity="warning" sx={{ width: '100%' }}>
+                  Connect your wallet to start using Veriswap!
+                </Alert>
+                <Alert severity="error" sx={{ width: '100%' }}>
                   <AlertTitle>App Under Development</AlertTitle>
                   This app is currently under active development and may not work properly. Use at your own peril.
                 </Alert>
                 <Button
-                  sx={{ height: 54 }}
                   variant="contained"
                   // color="default"
-                  size="medium"
+                  size="large"
                   style={{ fontWeight: 900 }}
                   fullWidth
                   onClick={handleConnect}
@@ -379,74 +286,22 @@ const Execute = () => {
                 </Typography>
               </Stack>
             )}
-            {account && receiveTokenInfo && fromTokenInfo && (
-              <form noValidate autoComplete="off" onSubmit={onSubmitCreateSwap}>
+            {account &&
+              parsedSwapData.creator &&
+              parsedSwapData.creator === '0x0000000000000000000000000000000000000000' && (
                 <Stack spacing={2} alignItems="center">
                   <img src="/logo-full.png" width="200" alt="Veriswap Logo" />
-                  <Box
-                    sx={{
-                      width: '100%',
-                      padding: 2,
-                      textAlign: 'center',
-                      backgroundColor: 'background.paper',
-                      borderRadius: 2
-                    }}
-                  >
-                    <Typography component="h2" variant="h4" align="left" gutterBottom>
-                      Swap Details
-                    </Typography>
-                    <Typography component="p" variant="body2" align="left">
-                      Allowed Executor
-                    </Typography>
-                    <Typography component="p" variant="h4" align="left">
-                      {shortenIfAddress(executor)}
-                    </Typography>
-                    <Divider sx={{ margin: 2 }}>
-                      {executor === account ? (
-                        <Chip label="You're allowed to execute this swap" color="success" icon={<DoneIcon />} />
-                      ) : (
-                        <Chip
-                          label="You're not allowed to execute this swap"
-                          color="error"
-                          icon={<WarningAmberIcon />}
-                        />
-                      )}
-                    </Divider>
-                    <Typography component="p" variant="body2" align="left">
-                      Token you're sending
-                    </Typography>
-                    <Typography component="p" variant="h4" align="left">
-                      {receiveTokenInfo.name}
-                    </Typography>
-                    <Typography component="p" variant="subtitle2" align="left" sx={{ paddingBottom: 2 }}>
-                      {receiveToken}
-                    </Typography>
-                    <Typography component="p" variant="body2" align="left">
-                      Amount you're sending
-                    </Typography>
-                    <Typography component="p" variant="h4" align="left">
-                      {`${receiveAmount} ${receiveTokenInfo.symbol}`}
-                    </Typography>
-                    <Divider sx={{ margin: 2 }} />
-                    <Typography component="p" variant="body2" align="left">
-                      Token you're receiving
-                    </Typography>
-                    <Typography component="p" variant="h4" align="left">
-                      {fromTokenInfo.name}
-                    </Typography>
-                    <Typography component="p" variant="subtitle2" align="left" sx={{ paddingBottom: 2 }}>
-                      {fromToken}
-                    </Typography>
-                    <Typography component="p" variant="body2" align="left">
-                      Amount you're receiving
-                    </Typography>
-                    <Typography component="p" variant="h4" align="left" sx={{ paddingBottom: 2 }}>
-                      {`${formatEther(fromTokenBalance, fromTokenInfo.decimals)} ${fromTokenInfo.symbol}`}
-                    </Typography>
-                    <Typography component={'p'} variant="body2" align="left">
-                      If you agree to this token swap, approve and complete the swap!
-                    </Typography>
-                  </Box>
+                  <Alert severity="warning" sx={{ width: '100%' }}>
+                    <AlertTitle>Invalid Swap URL</AlertTitle>
+                    Please check that the URL of your swap is correct.
+                  </Alert>
+                </Stack>
+              )}
+            {account && parsedSwapData.executor && receiveTokenInfo && fromTokenInfo && (
+              <form noValidate autoComplete="off" onSubmit={onSubmitExecuteSwap}>
+                <Stack spacing={2} alignItems="center">
+                  <img src="/logo-full.png" width="200" alt="Veriswap Logo" />
+                  <SwapData swapData={parsedSwapData} account={account} chainId={chainId} />
 
                   <ButtonGroup fullWidth size="medium" orientation="vertical">
                     <Button
@@ -476,7 +331,7 @@ const Execute = () => {
                   </ButtonGroup>
 
                   <ApprovalStatus state={approveState} />
-                  <CreateSwapStatus state={createSwapState} />
+                  {/* <CreateSwapStatus state={createSwapState} /> */}
 
                   <Divider />
                   <Typography variant="body2" sx={{ fontFamily: 'Roboto Mono', paddingTop: 2 }}>
