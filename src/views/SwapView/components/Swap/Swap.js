@@ -525,13 +525,28 @@ const Swap = () => {
                   <ApprovalStatus state={approveState} />
                   <CreateSwapStatus state={createSwapState} />
 
-                  <Divider />
-                  <Typography variant="body2" sx={{ fontFamily: 'Roboto Mono', paddingTop: 2 }}>
-                    {`Connected Wallet: ${shortenAddress(account)}`}
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontFamily: 'Roboto Mono' }}>
-                    {`Network: ${chainName}`}
-                  </Typography>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      padding: 2,
+                      textAlign: 'center',
+                      backgroundColor: 'background.level2',
+                      borderRadius: 2
+                    }}
+                  >
+                    <Typography component="p" variant="body2" align="left">
+                      Connected Wallet
+                    </Typography>
+                    <Typography component="p" variant="h6" align="left">
+                      {shortenAddress(account)}
+                    </Typography>
+                    <Typography component="p" variant="body2" align="left">
+                      Network
+                    </Typography>
+                    <Typography component="p" variant="h6" align="left">
+                      {chainName}
+                    </Typography>
+                  </Box>
                 </Stack>
               </form>
             )}
