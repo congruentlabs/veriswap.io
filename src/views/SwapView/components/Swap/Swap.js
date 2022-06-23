@@ -9,11 +9,7 @@ import {
   shortenIfAddress,
   DEFAULT_SUPPORTED_CHAINS
 } from '@usedapp/core';
-import Web3Modal from 'web3modal';
-import WalletConnectProvider from '@walletconnect/web3-provider';
 // import Torus from '@toruslabs/torus-embed';
-import WalletLink from 'walletlink';
-import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
 import { Contract } from '@ethersproject/contracts';
 
@@ -21,14 +17,10 @@ import { Contract } from '@ethersproject/contracts';
 // import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
 import {
-  Alert,
-  AlertTitle,
-  LinearProgress,
   Box,
   TextField,
   Button,
   ButtonGroup,
-  Divider,
   Chip,
   Typography,
   Card,
@@ -52,6 +44,7 @@ import {
 } from '../../../hooks';
 import ApprovalStatus from 'components/ApprovalStatus';
 import CreateSwapStatus from 'components/CreateSwapStatus';
+import AccountConnector from 'components/AccountConnector';
 
 import SWAP_ABI from '../../../swapAbi.json';
 import ID_ABI from '../../../idAbi.json';
@@ -62,46 +55,10 @@ const swapContract = new Contract(SWAP_CONTRACT, SWAP_ABI);
 const ID_CONTRACT = '0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385';
 const idContract = new Contract(ID_CONTRACT, ID_ABI);
 
-const providerOptions = {
-  walletconnect: {
-    package: WalletConnectProvider,
-    options: {
-      infuraId
-    }
-  },
-  binancechainwallet: {
-    package: true
-  },
-  // torus: {
-  //   package: Torus
-  // },
-  walletlink: {
-    package: WalletLink,
-    options: {
-      appName: 'Veriswap',
-      infuraId
-    }
-  },
-  coinbasewallet: {
-    package: CoinbaseWalletSDK, // Required
-    options: {
-      appName: 'Veriswap', // Required
-      infuraId, // Required
-      rpc: '', // Optional if `infuraId` is provided; otherwise it's required
-      chainId: 1, // Optional. It defaults to 1 if not provided
-      darkMode: false // Optional. Use dark theme, defaults to false
-    }
-  }
-};
-
-const web3Modal = new Web3Modal({
-  providerOptions
-});
-
 const Swap = () => {
   const theme = useTheme();
 
-  const { activateBrowserWallet, activate, account, chainId } = useEthers();
+  const { account, chainId } = useEthers();
 
   const [fromToken, setFromToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
   const [receiveToken, setReceiveToken] = useState('0x55AE81a393c7485e14b2c1C70308dC226cc44636');
@@ -193,21 +150,6 @@ const Swap = () => {
   // const isMd = useMediaQuery(theme.breakpoints.up('md'), {
   //   defaultMatches: true,
   // });
-
-  const handleConnect = async () => {
-    try {
-      const provider = await web3Modal.connect();
-
-      await provider.enable();
-      activate(provider);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    activateBrowserWallet();
-  }, [activateBrowserWallet]);
 
   const handleChangeExecutor = (e) => {
     try {
@@ -347,39 +289,7 @@ const Swap = () => {
             boxShadow="rgb(100 221 23 / 60%) 0px 0px 31.25rem 1rem"
             // data-aos={'zoom-in'}
           >
-            {!account && (
-              <Stack spacing={2} alignItems="center">
-                <img src="logo-full.png" width="100%" alt="Veriswap Logo" />
-                <Alert severity="warning" sx={{ width: '100%' }}>
-                  Connect your wallet to start using Veriswap!
-                </Alert>
-                <Alert severity="error" sx={{ width: '100%' }}>
-                  <AlertTitle>App Under Development</AlertTitle>
-                  This app is currently under active development and may not work properly. Use at your own peril.
-                </Alert>
-                <Button
-                  variant="contained"
-                  // color="default"
-                  size="large"
-                  style={{ fontWeight: 900 }}
-                  fullWidth
-                  onClick={handleConnect}
-                >
-                  CONNECT WALLET
-                </Button>
-                <Typography component="p" variant="body2" align="left">
-                  By using Veriswap you agree to our{' '}
-                  <Box component="a" href="" color={theme.palette.text.primary} fontWeight={'700'}>
-                    Privacy Policy
-                  </Box>{' '}
-                  and{' '}
-                  <Box component="a" href="" color={theme.palette.text.primary} fontWeight={'700'}>
-                    Terms &amp; Conditions
-                  </Box>
-                  .
-                </Typography>
-              </Stack>
-            )}
+            {!account && <AccountConnector />}
             {account && (
               <form noValidate autoComplete="off" onSubmit={onSubmitCreateSwap}>
                 <Stack spacing={2} alignItems="center">

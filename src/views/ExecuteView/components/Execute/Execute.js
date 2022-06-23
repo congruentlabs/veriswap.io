@@ -27,11 +27,12 @@ import Container from 'components/Container';
 import { useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetValue } from '../../../hooks';
 import ApprovalStatus from 'components/ApprovalStatus';
 import CreateSwapStatus from 'components/CreateSwapStatus';
+import AccountConnector from 'components/AccountConnector';
+import { BigNumber } from 'ethers';
 import SwapData from '../SwapData';
 
 import SWAP_ABI from '../../../swapAbi.json';
 import ID_ABI from '../../../idAbi.json';
-import { BigNumber } from 'ethers';
 
 const infuraId = 'dab56da72e89492da5a8e77fbc45c7fa';
 const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
@@ -39,47 +40,11 @@ const swapContract = new Contract(SWAP_CONTRACT, SWAP_ABI);
 const ID_CONTRACT = '0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385';
 const idContract = new Contract(ID_CONTRACT, ID_ABI);
 
-const providerOptions = {
-  walletconnect: {
-    package: WalletConnectProvider,
-    options: {
-      infuraId
-    }
-  },
-  binancechainwallet: {
-    package: true
-  },
-  // torus: {
-  //   package: Torus
-  // },
-  walletlink: {
-    package: WalletLink,
-    options: {
-      appName: 'Veriswap',
-      infuraId
-    }
-  },
-  coinbasewallet: {
-    package: CoinbaseWalletSDK, // Required
-    options: {
-      appName: 'Veriswap', // Required
-      infuraId, // Required
-      rpc: '', // Optional if `infuraId` is provided; otherwise it's required
-      chainId: 1, // Optional. It defaults to 1 if not provided
-      darkMode: false // Optional. Use dark theme, defaults to false
-    }
-  }
-};
-
-const web3Modal = new Web3Modal({
-  providerOptions
-});
-
 const Execute = (props) => {
   const theme = useTheme();
   const { swapId } = props;
 
-  const { activateBrowserWallet, activate, account, chainId } = useEthers();
+  const { account, chainId } = useEthers();
 
   const [allowedToExecute, setAllowedToExecute] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
@@ -110,9 +75,6 @@ const Execute = (props) => {
   const swapData = useGetValue('swaps', [swapId], SWAP_CONTRACT, swapContract);
 
   const chainName = DEFAULT_SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
-
-  const fromTokenInfo = useToken(parsedSwapData.inputToken || '');
-  const receiveTokenInfo = useToken(parsedSwapData.outputToken || '');
 
   useEffect(() => {
     if (swapData && swapData.creator) {
@@ -229,21 +191,6 @@ const Execute = (props) => {
   //   defaultMatches: true,
   // });
 
-  const handleConnect = async () => {
-    try {
-      const provider = await web3Modal.connect();
-
-      await provider.enable();
-      activate(provider);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    activateBrowserWallet();
-  }, [activateBrowserWallet]);
-
   const handleChangeExecutor = (e) => {
     try {
       shortenIfAddress(e.target.value);
@@ -251,10 +198,6 @@ const Execute = (props) => {
     } catch {
       // do nothing
     }
-  };
-
-  const handleChangeAddonsRequireIdentity = () => {
-    setAddonsRequireIdentity(!addonsRequireIdentity);
   };
 
   const onSubmitExecuteSwap = () => {
@@ -299,39 +242,7 @@ const Execute = (props) => {
             boxShadow="rgb(100 221 23 / 60%) 0px 0px 31.25rem 1rem"
             // data-aos={'zoom-in'}
           >
-            {!account && (
-              <Stack spacing={2} alignItems="center">
-                <img src="/logo-full.png" width="100%" alt="Veriswap Logo" />
-                <Alert severity="warning" sx={{ width: '100%' }}>
-                  Connect your wallet to start using Veriswap!
-                </Alert>
-                <Alert severity="error" sx={{ width: '100%' }}>
-                  <AlertTitle>App Under Development</AlertTitle>
-                  This app is currently under active development and may not work properly. Use at your own peril.
-                </Alert>
-                <Button
-                  variant="contained"
-                  // color="default"
-                  size="large"
-                  style={{ fontWeight: 900 }}
-                  fullWidth
-                  onClick={handleConnect}
-                >
-                  CONNECT WALLET
-                </Button>
-                <Typography component="p" variant="body2" align="left">
-                  By using Veriswap you agree to our{' '}
-                  <Box component="a" href="" color={theme.palette.text.primary} fontWeight={'700'}>
-                    Privacy Policy
-                  </Box>{' '}
-                  and{' '}
-                  <Box component="a" href="" color={theme.palette.text.primary} fontWeight={'700'}>
-                    Terms &amp; Conditions
-                  </Box>
-                  .
-                </Typography>
-              </Stack>
-            )}
+            {!account && <AccountConnector />}
             {account &&
               parsedSwapData.creator &&
               parsedSwapData.creator === '0x0000000000000000000000000000000000000000' && (
@@ -343,14 +254,13 @@ const Execute = (props) => {
                   </Alert>
                 </Stack>
               )}
-            {account && parsedSwapData.executor && receiveTokenInfo && fromTokenInfo && (
+            {account && parsedSwapData && parsedSwapData.executor && parsedSwapData.inputToken && (
               <form noValidate autoComplete="off" onSubmit={onSubmitExecuteSwap}>
                 <Stack spacing={2} alignItems="center">
                   <img src="/logo.png" width="150" alt="Veriswap Logo" />
                   <SwapData
                     swapData={parsedSwapData}
                     account={account}
-                    chainId={chainId}
                     allowedToExecute={allowedToExecute}
                     setAllowedToExecute={setAllowedToExecute}
                     setSwapAllowance={setSwapAllowance}
