@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Container from 'components/Container';
-import { Footer } from './components';
+import Footer from 'components/Footer';
 
 const Main = ({ children }) => {
   return (
