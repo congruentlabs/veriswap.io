@@ -19,16 +19,6 @@ const getTheme = (mode, themeToggler) =>
         appBar: 1200,
         drawer: 1300
       },
-      components: {
-        MuiButton: {
-          styleOverrides: {
-            label: {
-              fontWeight: 600
-            },
-            containedSecondary: mode === 'light' ? { color: 'white' } : {}
-          }
-        }
-      },
       themeToggler
     })
   );
