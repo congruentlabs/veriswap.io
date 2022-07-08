@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { useTokenBalance, useEthers, useToken, shortenIfAddress, useTokenAllowance } from '@usedapp/core';
+import { Contract } from '@ethersproject/contracts';
 // import Torus from '@toruslabs/torus-embed';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
 import { useTheme } from '@mui/material/styles';
@@ -30,6 +31,7 @@ import AccountConnector from 'components/AccountConnector';
 import ConnectedWallet from 'components/ConnectedWallet';
 
 import { SWAP_CONTRACT } from 'consts';
+import ERC20_ABI from 'erc20Abi.json';
 
 const Swap = () => {
   const theme = useTheme();
@@ -38,7 +40,7 @@ const Swap = () => {
   const swapContractAddress = getSwapContractAddress(chainId);
   const [fromToken, setFromToken] = useState('0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c');
   const [receiveToken, setReceiveToken] = useState('0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977');
-  const [executor, setExecutor] = useState('0x788DdE8Ca5b196ba47138DB6C0527f54B5959D51');
+  const [executor, setExecutor] = useState('0xce95DAde44E7307bAA616C77EF446915633dD9Ab');
   const [fromAmount, setFromAmount] = useState('');
   const [fromActualAmount, setFromActualAmount] = useState('');
   const [fromAmountError, setFromAmountError] = useState('');
@@ -52,13 +54,15 @@ const Swap = () => {
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
   const [swapAlreadyOpen, setSwapAlreadyOpen] = useState(false);
-  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(fromToken);
   const {
     state: createSwapState,
     send: createSwapSend,
     resetState: createSwapResetState
   } = useCreateSwap(swapContract);
+  const fromTokenContractObj = new Contract(fromToken || '0x0000000000000000000000000000000000000000', ERC20_ABI);
+  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(fromTokenContractObj);
 
+  // TODO: check if identity locked for the require identity option
   // const isLocked = useGetSingleValue('isLocked', [account], ID_CONTRACT, idContract);
 
   const fromTokenInfo = useToken(fromToken);
@@ -202,22 +206,21 @@ const Swap = () => {
 
   const onSubmitCreateSwap = (e) => {
     e.preventDefault();
-
-    // if needs approval
-
-    // call approve
-
-    // otherwise call the swap
-
+    approveResetState();
     createSwapResetState();
-    createSwapSend(
-      fromToken, // _inputToken
-      fromActualAmount, // _inputAmount
-      receiveToken, // _outputToken
-      receiveActualAmount, // _outputAmount
-      executor, // _executor
-      addonsRequireIdentity // _requireIdentity
-    );
+
+    if (requiresApproval) {
+      approveSend(swapContractAddress, fromActualAmount);
+    } else {
+      createSwapSend(
+        fromToken, // _inputToken
+        fromActualAmount, // _inputAmount
+        receiveToken, // _outputToken
+        receiveActualAmount, // _outputAmount
+        executor, // _executor
+        addonsRequireIdentity // _requireIdentity
+      );
+    }
   };
 
   return (

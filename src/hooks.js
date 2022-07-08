@@ -14,14 +14,14 @@ export const getSwapContract = (chainId) => {
   return new Contract('0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad', SWAP_ABI);
 };
 
-export const getTokenContract = (chainId) => {
+export const getIdContract = (chainId) => {
   if (chainId === 1) {
-    return new Contract('0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad', SWAP_ABI); // TODO: Replace with mainnet contract
+    return new Contract('0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385', ID_ABI); // TODO: Replace with mainnet contract
   }
   if (chainId === 4) {
-    return new Contract('0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad', SWAP_ABI);
+    return new Contract('0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385', ID_ABI);
   }
-  return new Contract('0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad', SWAP_ABI);
+  return new Contract('0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385', ID_ABI);
 };
 
 export function useCreateSwap(chainId) {
@@ -51,6 +51,15 @@ export function useCancelSwap(chainId) {
   return { state, send, events, resetState };
 }
 
+export function useEnableSwaps(chainId) {
+  const swapContract = getSwapContract(chainId);
+
+  const { state, send, events, resetState } = useContractFunction(swapContract, 'enableSwaps', {
+    transactionName: 'Enable Swaps'
+  });
+  return { state, send, events, resetState };
+}
+
 export function useChangeExecutor(chainId) {
   const swapContract = getSwapContract(chainId);
 
@@ -60,8 +69,8 @@ export function useChangeExecutor(chainId) {
   return { state, send, events, resetState };
 }
 
-export function useApprove(erc20Token) {
-  const { state, send, events, resetState } = useContractFunction(erc20Token, 'approve', {
+export function useApprove(erc20TokenContractObj) {
+  const { state, send, events, resetState } = useContractFunction(erc20TokenContractObj, 'approve', {
     transactionName: 'Approve'
   });
   return { state, send, events, resetState };

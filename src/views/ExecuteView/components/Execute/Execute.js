@@ -10,7 +10,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import ChangeCircleOutlinedIcon from '@mui/icons-material/ChangeCircleOutlined';
 
-import { useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetValue } from 'hooks';
+import { useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetValue, useEnableSwaps } from 'hooks';
 import Container from 'components/Container';
 import ApprovalStatus from 'components/ApprovalStatus';
 import ExecuteSwapStatus from 'components/ExecuteSwapStatus';
@@ -46,6 +46,11 @@ const Execute = (props) => {
   const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(swapContract);
 
   const {
+    state: enableSwapsState,
+    send: enableSwapsSend,
+    resetState: enableSwapsResetState
+  } = useEnableSwaps(swapContract);
+  const {
     state: executeSwapState,
     send: executeSwapSend,
     resetState: executeSwapResetState
@@ -67,27 +72,7 @@ const Execute = (props) => {
 
   useEffect(() => {
     if (swapData && swapData.creator) {
-      const parsedData = {
-        inputToken: swapData.creator,
-        inputAmount: swapData.inputAmount,
-        outputToken: swapData.outputToken,
-        outputAmount: swapData.outputAmount,
-        executor: swapData.executor,
-        creator: swapData.creator,
-        requireIdentity: swapData.requireIdentity,
-        state: swapData.state
-      };
-      // const parsedData = {
-      //   inputToken: '0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c',
-      //   inputAmount: BigNumber.from('20000000000000000000'),
-      //   outputToken: '0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977',
-      //   outputAmount: BigNumber.from('40000000000000000000'),
-      //   executor: '0xc441601696DF5ce0922224248AD96AB956D3B1Ae',
-      //   creator: '0xc441601696DF5ce0922224248AD96AB956D3B1Ae',
-      //   requireIdentity: 0,
-      //   state: 0
-      // };
-      setParsedSwapData(parsedData);
+      setParsedSwapData({ ...swapData });
     }
   }, [swapData, setParsedSwapData]);
 
@@ -196,17 +181,26 @@ const Execute = (props) => {
     cancelSwapResetState();
   };
 
-  const onSubmitExecuteSwap = () => {
+  const onSubmitExecuteSwap = (e) => {
+    e.preventDefault();
     resetStates();
-    executeSwapSend(creatorAddress);
+    executeSwapSend(parsedSwapData.creator);
   };
 
-  const onSubmitCancelSwap = () => {
+  const onSubmitCancelSwap = (e) => {
+    e.preventDefault();
     resetStates();
     cancelSwapSend();
   };
 
-  const onSubmitChangeExecutorSwap = () => {
+  const onClickEnableSwaps = (e) => {
+    e.preventDefault(e);
+    resetStates();
+    enableSwapsSend();
+  };
+
+  const onSubmitChangeExecutorSwap = (e) => {
+    e.preventDefault();
     resetStates();
     setError('');
     if (newExecutor === parsedSwapData.executor) {
@@ -356,6 +350,17 @@ const Execute = (props) => {
                         </Button>
                       </ButtonGroup>
                     )}
+                    <Button
+                      variant="contained"
+                      color="error"
+                      size="large"
+                      style={{ fontWeight: 700 }}
+                      fullWidth
+                      onClick={onClickEnableSwaps}
+                      endIcon={<SwapHorizIcon />}
+                    >
+                      ENABLE SWAPS
+                    </Button>
 
                     <ApprovalStatus state={approveState} />
                     <ExecuteSwapStatus state={executeSwapState} />

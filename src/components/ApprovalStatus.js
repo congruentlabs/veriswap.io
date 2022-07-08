@@ -2,8 +2,9 @@
 // import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
-const ApprovalStatus = (state) => {
+const ApprovalStatus = (props) => {
   // no success message for approvals
+  const { state } = props;
 
   if (state && state.status === 'Mining') {
     return (

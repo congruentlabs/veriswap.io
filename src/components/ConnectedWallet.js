@@ -22,7 +22,7 @@ const ConnectedWallet = (props) => {
       <Typography component="p" variant="body2" align="left" color="text.secondary">
         Connected Wallet
       </Typography>
-      <Typography component="p" variant="h6" align="left">
+      <Typography component="p" variant="body1" align="left">
         {shortenAddress(account)}
       </Typography>
       {ens && (
