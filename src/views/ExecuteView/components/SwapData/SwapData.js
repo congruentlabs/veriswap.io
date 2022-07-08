@@ -6,7 +6,7 @@ import { formatEther } from '@ethersproject/units';
 import { Box, Divider, Chip, Typography } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { getSwapContract } from 'hooks';
+import { getSwapContract, getSwapContractAddress } from 'hooks';
 
 const SwapData = (props) => {
   const {
@@ -21,7 +21,8 @@ const SwapData = (props) => {
     setSwapAllowance
   } = props;
 
-  const swapContract = getSwapContract(chainId);
+  // const swapContract = getSwapContract(chainId);
+  const swapContract = getSwapContractAddress(chainId);
   const inputTokenInfo = useToken(swapData.inputToken);
   const outputTokenInfo = useToken(swapData.outputToken);
   const outputTokenBalance = useTokenBalance(swapData.outputToken, account);
@@ -39,12 +40,12 @@ const SwapData = (props) => {
   }, [account, swapData, setIsCreator, setIsAllowedToExecute]);
 
   useEffect(() => {
-    if (swapAllowance < outputTokenBalance) {
+    if (!swapAllowance || swapAllowance < swapData.outputAmount) {
       setRequiresApproval(true);
     } else {
       setRequiresApproval(false);
     }
-  }, [setSwapAllowance, swapAllowance, setRequiresApproval, outputTokenBalance]);
+  }, [setSwapAllowance, swapAllowance, setRequiresApproval, outputTokenBalance, swapData]);
 
   return (
     <Box
@@ -79,14 +80,14 @@ const SwapData = (props) => {
         {isAllowedToExecute ? (
           <Chip
             sx={{ borderRadius: 2 }}
-            label="You're allowed to execute this swap"
+            label="You're the designated executor of this swap"
             color="success"
             icon={<DoneIcon />}
           />
         ) : (
           <Chip
             sx={{ borderRadius: 2 }}
-            label="You're not allowed to execute this swap"
+            label="You're not the designated executor of this swap"
             color="warning"
             icon={<WarningAmberIcon />}
           />
@@ -117,7 +118,7 @@ const SwapData = (props) => {
         Your balance
       </Typography>
       {outputTokenBalance && outputTokenInfo && (
-        <Typography component="p" variant="h4" align="left">
+        <Typography component="p" variant="body1" align="left">
           {`${formatEther(outputTokenBalance || 0, outputTokenInfo.decimals)} ${outputTokenInfo.symbol}`}
         </Typography>
       )}

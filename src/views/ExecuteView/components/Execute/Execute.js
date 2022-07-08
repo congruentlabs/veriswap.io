@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { useEthers, shortenIfAddress } from '@usedapp/core';
+import { useEthers, shortenIfAddress, useTokenAllowance } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
 
 import { useTheme } from '@mui/material/styles';
@@ -10,7 +10,14 @@ import DoneIcon from '@mui/icons-material/Done';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import ChangeCircleOutlinedIcon from '@mui/icons-material/ChangeCircleOutlined';
 
-import { useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetValue, useEnableSwaps } from 'hooks';
+import {
+  useExecuteSwap,
+  useCancelSwap,
+  useChangeExecutor,
+  useApprove,
+  useGetValue,
+  getSwapContractAddress
+} from 'hooks';
 import Container from 'components/Container';
 import ApprovalStatus from 'components/ApprovalStatus';
 import ExecuteSwapStatus from 'components/ExecuteSwapStatus';
@@ -25,6 +32,7 @@ import { SWAP_CONTRACT, ID_CONTRACT } from 'consts';
 
 import SWAP_ABI from 'swapAbi.json';
 import ID_ABI from 'idAbi.json';
+import ERC20_ABI from 'erc20Abi.json';
 
 const swapContract = new Contract(SWAP_CONTRACT, SWAP_ABI);
 const idContract = new Contract(ID_CONTRACT, ID_ABI);
@@ -35,6 +43,7 @@ const Execute = (props) => {
 
   const { account, chainId } = useEthers();
 
+  const swapContractAddress = getSwapContractAddress(chainId);
   const [isCreator, setIsCreator] = useState(false);
   const [isAllowedToExecute, setIsAllowedToExecute] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
@@ -43,13 +52,7 @@ const Execute = (props) => {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
-  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(swapContract);
 
-  const {
-    state: enableSwapsState,
-    send: enableSwapsSend,
-    resetState: enableSwapsResetState
-  } = useEnableSwaps(swapContract);
   const {
     state: executeSwapState,
     send: executeSwapSend,
@@ -69,6 +72,11 @@ const Execute = (props) => {
   const [parsedSwapData, setParsedSwapData] = useState({});
 
   const swapData = useGetValue('swaps', [swapId], SWAP_CONTRACT, swapContract);
+  const toTokenContractObj = new Contract(
+    parsedSwapData.outputToken || '0x0000000000000000000000000000000000000000',
+    ERC20_ABI
+  );
+  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(toTokenContractObj);
 
   useEffect(() => {
     if (swapData && swapData.creator) {
@@ -184,19 +192,17 @@ const Execute = (props) => {
   const onSubmitExecuteSwap = (e) => {
     e.preventDefault();
     resetStates();
-    executeSwapSend(parsedSwapData.creator);
+    if (requiresApproval) {
+      approveSend(swapContractAddress, parsedSwapData.outputAmount);
+    } else {
+      executeSwapSend(parsedSwapData.creator);
+    }
   };
 
   const onSubmitCancelSwap = (e) => {
     e.preventDefault();
     resetStates();
     cancelSwapSend();
-  };
-
-  const onClickEnableSwaps = (e) => {
-    e.preventDefault(e);
-    resetStates();
-    enableSwapsSend();
   };
 
   const onSubmitChangeExecutorSwap = (e) => {
@@ -350,17 +356,6 @@ const Execute = (props) => {
                         </Button>
                       </ButtonGroup>
                     )}
-                    <Button
-                      variant="contained"
-                      color="error"
-                      size="large"
-                      style={{ fontWeight: 700 }}
-                      fullWidth
-                      onClick={onClickEnableSwaps}
-                      endIcon={<SwapHorizIcon />}
-                    >
-                      ENABLE SWAPS
-                    </Button>
 
                     <ApprovalStatus state={approveState} />
                     <ExecuteSwapStatus state={executeSwapState} />

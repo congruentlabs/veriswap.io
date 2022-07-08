@@ -1,17 +1,19 @@
 import { useContractFunction, useCall } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
 
+import { SWAP_CONTRACT } from 'consts';
+
 import SWAP_ABI from 'swapAbi.json';
 import ID_ABI from 'idAbi.json';
 
 export const getSwapContract = (chainId) => {
   if (chainId === 1) {
-    return new Contract('0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad', SWAP_ABI); // TODO: Replace with mainnet contract
+    return new Contract(SWAP_CONTRACT, SWAP_ABI); // TODO: Replace with mainnet contract
   }
   if (chainId === 4) {
-    return new Contract('0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad', SWAP_ABI);
+    return new Contract(SWAP_CONTRACT, SWAP_ABI);
   }
-  return new Contract('0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad', SWAP_ABI);
+  return new Contract(SWAP_CONTRACT, SWAP_ABI);
 };
 
 export const getIdContract = (chainId) => {
@@ -83,7 +85,7 @@ export const getSwapContractAddress = (chainId) => {
   }
   if (chainId === 4) {
     // rinkeby
-    return '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad';
+    return SWAP_CONTRACT;
   }
   return '';
 };
