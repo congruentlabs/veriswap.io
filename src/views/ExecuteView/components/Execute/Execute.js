@@ -249,6 +249,48 @@ const Execute = (props) => {
             {account &&
               parsedSwapData.creator &&
               parsedSwapData.creator === '0x0000000000000000000000000000000000000000' && <InvalidSwap />}
+            {account && parsedSwapData && parsedSwapData.state === 3 && (
+              <Stack spacing={2} alignItems="center">
+                <Alert severity="warning" sx={{ width: '100%' }}>
+                  <AlertTitle>Swap Cancelled</AlertTitle>
+                  This swap has been cancelled.
+                </Alert>
+                <SwapData
+                  swapData={parsedSwapData}
+                  account={account}
+                  chainId={chainId}
+                  isCreator={isCreator}
+                  setIsCreator={setIsCreator}
+                  isAllowedToExecute={isAllowedToExecute}
+                  setIsAllowedToExecute={setIsAllowedToExecute}
+                  setSwapAllowance={setSwapAllowance}
+                  requiresApproval={requiresApproval}
+                  setRequiresApproval={setRequiresApproval}
+                  isComplete
+                />
+              </Stack>
+            )}
+            {account && parsedSwapData && parsedSwapData.state === 2 && (
+              <Stack spacing={2} alignItems="center">
+                <Alert severity="success" sx={{ width: '100%' }}>
+                  <AlertTitle>Swap Completed</AlertTitle>
+                  This swap has been executed successfully.
+                </Alert>
+                <SwapData
+                  swapData={parsedSwapData}
+                  account={account}
+                  chainId={chainId}
+                  isCreator={isCreator}
+                  setIsCreator={setIsCreator}
+                  isAllowedToExecute={isAllowedToExecute}
+                  setIsAllowedToExecute={setIsAllowedToExecute}
+                  setSwapAllowance={setSwapAllowance}
+                  requiresApproval={requiresApproval}
+                  setRequiresApproval={setRequiresApproval}
+                  isComplete
+                />
+              </Stack>
+            )}
             {account &&
               parsedSwapData &&
               parsedSwapData.executor &&

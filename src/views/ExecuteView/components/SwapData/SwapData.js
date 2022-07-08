@@ -18,7 +18,8 @@ const SwapData = (props) => {
     setIsAllowedToExecute,
     isCreator,
     setIsCreator,
-    setSwapAllowance
+    setSwapAllowance,
+    isComplete
   } = props;
 
   // const swapContract = getSwapContract(chainId);
@@ -76,23 +77,27 @@ const SwapData = (props) => {
           {swapData.executor}
         </Typography>
       )}
-      <Divider sx={{ margin: 2 }}>
-        {isAllowedToExecute ? (
-          <Chip
-            sx={{ borderRadius: 2 }}
-            label="You're the designated executor of this swap"
-            color="success"
-            icon={<DoneIcon />}
-          />
-        ) : (
-          <Chip
-            sx={{ borderRadius: 2 }}
-            label="You're not the designated executor of this swap"
-            color="warning"
-            icon={<WarningAmberIcon />}
-          />
-        )}
-      </Divider>
+      {!isComplete ? (
+        <Divider sx={{ margin: 2 }}>
+          {isAllowedToExecute ? (
+            <Chip
+              sx={{ borderRadius: 2 }}
+              label="You're the designated executor of this swap"
+              color="success"
+              icon={<DoneIcon />}
+            />
+          ) : (
+            <Chip
+              sx={{ borderRadius: 2 }}
+              label="You're not the designated executor of this swap"
+              color="warning"
+              icon={<WarningAmberIcon />}
+            />
+          )}
+        </Divider>
+      ) : (
+        <Divider sx={{ margin: 2 }} />
+      )}
       <Typography component="p" variant="body2" align="left" color="text.secondary">
         Token you're sending
       </Typography>
@@ -144,10 +149,12 @@ const SwapData = (props) => {
           {`${formatEther(swapData.inputAmount || 0, inputTokenInfo.decimals)} ${inputTokenInfo.symbol}`}
         </Typography>
       )}
-      <Divider sx={{ margin: 2 }} />
-      <Typography component={'p'} variant="body2" align="left">
-        If you agree to this exchange, approve and complete the swap!
-      </Typography>
+      {!isComplete && <Divider sx={{ margin: 2 }} />}
+      {!isComplete && (
+        <Typography component={'p'} variant="body2" align="left">
+          If you agree to this exchange, approve and complete the swap!
+        </Typography>
+      )}
     </Box>
   );
 };
