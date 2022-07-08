@@ -2,7 +2,7 @@
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
-const ExecuteSwapStatus = (props) => {
+const ChangeExecutorStatus = (props) => {
   const { state } = props;
   if (state && state.status === 'Success') {
     return (
@@ -10,7 +10,7 @@ const ExecuteSwapStatus = (props) => {
         sx={{ width: '100%', padding: 2, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 2 }}
       >
         <CircularProgress color="success" variant="determinate" value={100} />
-        <Typography>Execute Swap Complete!</Typography>
+        <Typography>Executor Changed!</Typography>
       </Box>
     );
   }
@@ -51,4 +51,4 @@ const ExecuteSwapStatus = (props) => {
   return <></>;
 };
 
-export default ExecuteSwapStatus;
+export default ChangeExecutorStatus;

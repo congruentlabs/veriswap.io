@@ -2,7 +2,8 @@
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
-const CreateSwapStatus = (state) => {
+const CreateSwapStatus = (props) => {
+  const { state } = props;
   if (state && state.status === 'Success') {
     return (
       <Box

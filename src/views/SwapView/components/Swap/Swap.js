@@ -14,18 +14,22 @@ import {
   FormGroup,
   Stack,
   FormControlLabel,
-  Switch
+  Switch,
+  Alert,
+  AlertTitle
 } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
-import { useCreateSwap, useApprove, getSwapContractAddress, getSwapContract } from 'hooks';
+import { useCreateSwap, useApprove, getSwapContractAddress, getSwapContract, useGetValue } from 'hooks';
 import Container from 'components/Container';
 import ApprovalStatus from 'components/ApprovalStatus';
 import CreateSwapStatus from 'components/CreateSwapStatus';
 import AccountConnector from 'components/AccountConnector';
 import ConnectedWallet from 'components/ConnectedWallet';
+
+import { SWAP_CONTRACT } from 'consts';
 
 const Swap = () => {
   const theme = useTheme();
@@ -36,7 +40,6 @@ const Swap = () => {
   const [receiveToken, setReceiveToken] = useState('0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977');
   const [executor, setExecutor] = useState('0x788DdE8Ca5b196ba47138DB6C0527f54B5959D51');
   const [fromAmount, setFromAmount] = useState('');
-  const [creatorAddress, setCreatorAddress] = useState('');
   const [fromActualAmount, setFromActualAmount] = useState('');
   const [fromAmountError, setFromAmountError] = useState('');
   const [fromTokenError, setFromTokenError] = useState('');
@@ -48,6 +51,7 @@ const Swap = () => {
   const [addonsRiskChecked, setAddonsRiskChecked] = useState(false);
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
+  const [swapAlreadyOpen, setSwapAlreadyOpen] = useState(false);
   const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(fromToken);
   const {
     state: createSwapState,
@@ -61,6 +65,14 @@ const Swap = () => {
   const receiveTokenInfo = useToken(receiveToken);
   const fromTokenBalance = useTokenBalance(fromToken, account);
   const swapAllowance = useTokenAllowance(fromToken, account, swapContractAddress);
+  const swapData = useGetValue('swaps', [account], SWAP_CONTRACT, swapContract);
+
+  useEffect(() => {
+    if (swapData && swapData.state === 1) {
+      // 1 === OPEN
+      setSwapAlreadyOpen(true);
+    }
+  }, [swapData]);
 
   useEffect(() => {
     if (swapAllowance < fromActualAmount) {
@@ -111,11 +123,6 @@ const Swap = () => {
       }
     }
   }, [createSwapState]);
-
-  // const { t } = useTranslation();
-  // const isMd = useMediaQuery(theme.breakpoints.up('md'), {
-  //   defaultMatches: true,
-  // });
 
   const handleChangeExecutor = (e) => {
     try {
@@ -204,28 +211,13 @@ const Swap = () => {
 
     createSwapResetState();
     createSwapSend(
-      fromToken,
-      fromActualAmount.toString(),
-      receiveToken,
-      receiveActualAmount.toString(),
-      executor,
-      addonsRequireIdentity
+      fromToken, // _inputToken
+      fromActualAmount, // _inputAmount
+      receiveToken, // _outputToken
+      receiveActualAmount, // _outputAmount
+      executor, // _executor
+      addonsRequireIdentity // _requireIdentity
     );
-  };
-
-  const onSubmitExecuteSwap = () => {
-    createSwapResetState();
-    createSwapSend(creatorAddress);
-  };
-
-  const onSubmitCancelSwap = () => {
-    createSwapResetState();
-    createSwapSend();
-  };
-
-  const onSubmitChangeExecutorSwap = () => {
-    createSwapResetState();
-    createSwapSend(executor);
   };
 
   return (
@@ -260,13 +252,33 @@ const Swap = () => {
               <form noValidate autoComplete="off" onSubmit={onSubmitCreateSwap}>
                 <Stack spacing={2} alignItems="center">
                   <img src="/logo-full.png" width="200" alt="Veriswap Logo" />
+                  {swapAlreadyOpen && (
+                    <>
+                      <Alert severity="success" sx={{ width: '100%' }}>
+                        <AlertTitle>You have an open swap!</AlertTitle>
+                        You have a swap already open. You cannot create a new swap unless you cancel your current one or
+                        it is executed.
+                      </Alert>
+                      <Button
+                        size="large"
+                        sx={{ fontWeight: 900 }}
+                        fullWidth
+                        color="primary"
+                        variant="contained"
+                        href={`/swap/${account}`}
+                      >
+                        MANAGE YOUR SWAP
+                      </Button>
+                    </>
+                  )}
+                  <ConnectedWallet account={account} />
                   <TextField
                     sx={{ height: 54 }}
                     label="Token to Send"
                     variant="outlined"
                     color="primary"
                     size="medium"
-                    disabled={isLoading}
+                    disabled={isLoading || swapAlreadyOpen}
                     fullWidth
                     value={fromToken}
                     onChange={handleChangeFromToken}
@@ -279,14 +291,20 @@ const Swap = () => {
                     variant="outlined"
                     color="primary"
                     size="medium"
-                    disabled={isLoading}
+                    disabled={isLoading || swapAlreadyOpen}
                     fullWidth
                     value={fromAmount}
                     onChange={handleChangeFromAmount}
                     error={fromAmountError !== ''}
                     helperText={fromAmountError}
                   />
-                  <ButtonGroup variant="contained" color="secondary" fullWidth size="small">
+                  <ButtonGroup
+                    disabled={isLoading || swapAlreadyOpen}
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    size="small"
+                  >
                     <Button onClick={(e) => handleClickFromPercentage(e, 25)}>25%</Button>
                     <Button onClick={(e) => handleClickFromPercentage(e, 50)}>50%</Button>
                     <Button onClick={(e) => handleClickFromPercentage(e, 75)}>75%</Button>
@@ -306,7 +324,7 @@ const Swap = () => {
                     variant="outlined"
                     color="primary"
                     size="medium"
-                    disabled={isLoading}
+                    disabled={isLoading || swapAlreadyOpen}
                     fullWidth
                     value={receiveToken}
                     onChange={handleChangeReceiveToken}
@@ -320,7 +338,7 @@ const Swap = () => {
                     color="primary"
                     size="medium"
                     fullWidth
-                    disabled={isLoading}
+                    disabled={isLoading || swapAlreadyOpen}
                     value={receiveAmount}
                     onChange={handleChangeReceiveAmount}
                     error={receiveAmountError !== ''}
@@ -338,7 +356,7 @@ const Swap = () => {
                     variant="outlined"
                     color="primary"
                     size="medium"
-                    disabled={isLoading}
+                    disabled={isLoading || swapAlreadyOpen}
                     fullWidth
                     value={executor}
                     onChange={handleChangeExecutor}
@@ -359,7 +377,7 @@ const Swap = () => {
                       control={
                         <Switch
                           checked={addonsRequireIdentity}
-                          disabled={!account}
+                          disabled={!account || swapAlreadyOpen}
                           onChange={handleChangeAddonsRequireIdentity}
                         />
                       }
@@ -376,8 +394,8 @@ const Swap = () => {
                       variant="contained"
                       color="primary"
                       size="large"
-                      disabled={isLoading || !requiresApproval}
-                      style={{ fontWeight: 900 }}
+                      disabled={isLoading || !requiresApproval || swapAlreadyOpen}
+                      sx={{ fontWeight: 900 }}
                       fullWidth
                       type="submit"
                       endIcon={<DoneIcon />}
@@ -387,9 +405,9 @@ const Swap = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={isLoading || requiresApproval}
+                      disabled={isLoading || requiresApproval || swapAlreadyOpen}
                       size="large"
-                      style={{ fontWeight: 900 }}
+                      sx={{ fontWeight: 900 }}
                       fullWidth
                       type="submit"
                       endIcon={<SwapHorizIcon />}
@@ -397,11 +415,8 @@ const Swap = () => {
                       OPEN SWAP
                     </Button>
                   </ButtonGroup>
-
                   <ApprovalStatus state={approveState} />
                   <CreateSwapStatus state={createSwapState} />
-
-                  <ConnectedWallet account={account} />
                 </Stack>
               </form>
             )}

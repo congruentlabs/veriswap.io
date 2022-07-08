@@ -9,8 +9,17 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { getSwapContract } from 'hooks';
 
 const SwapData = (props) => {
-  const { swapData, chainId, account, setRequiresApproval, allowedToExecute, setAllowedToExecute, setSwapAllowance } =
-    props;
+  const {
+    swapData,
+    chainId,
+    account,
+    setRequiresApproval,
+    isAllowedToExecute,
+    setIsAllowedToExecute,
+    isCreator,
+    setIsCreator,
+    setSwapAllowance
+  } = props;
 
   const swapContract = getSwapContract(chainId);
   const inputTokenInfo = useToken(swapData.inputToken);
@@ -20,11 +29,14 @@ const SwapData = (props) => {
 
   useEffect(() => {
     if (swapData && account) {
+      if (swapData.creator === account) {
+        setIsCreator(true);
+      }
       if (swapData.executor === account) {
-        setAllowedToExecute(true);
+        setIsAllowedToExecute(true);
       }
     }
-  }, [account, swapData, setAllowedToExecute]);
+  }, [account, swapData, setIsCreator, setIsAllowedToExecute]);
 
   useEffect(() => {
     if (swapAllowance < outputTokenBalance) {
@@ -47,7 +59,7 @@ const SwapData = (props) => {
       <Typography component="h2" variant="h4" align="left" gutterBottom>
         Swap Details
       </Typography>
-      <Typography component="p" variant="h6" align="left">
+      <Typography component="p" variant="body1" align="left" color="text.secondary">
         Swap Creator
       </Typography>
       {swapData.executor && (
@@ -55,7 +67,7 @@ const SwapData = (props) => {
           {swapData.creator}
         </Typography>
       )}
-      <Typography component="p" variant="h6" align="left">
+      <Typography component="p" variant="body1" align="left" color="text.secondary">
         Allowed Executor
       </Typography>
       {swapData.executor && (
@@ -64,14 +76,24 @@ const SwapData = (props) => {
         </Typography>
       )}
       <Divider sx={{ margin: 2 }}>
-        {allowedToExecute ? (
-          <Chip label="You're allowed to execute this swap" color="success" icon={<DoneIcon />} />
+        {isAllowedToExecute ? (
+          <Chip
+            sx={{ borderRadius: 2 }}
+            label="You're allowed to execute this swap"
+            color="success"
+            icon={<DoneIcon />}
+          />
         ) : (
-          <Chip label="You're not allowed to execute this swap" color="error" icon={<WarningAmberIcon />} />
+          <Chip
+            sx={{ borderRadius: 2 }}
+            label="You're not allowed to execute this swap"
+            color="warning"
+            icon={<WarningAmberIcon />}
+          />
         )}
       </Divider>
-      <Typography component="p" variant="body2" align="left">
-        Token you're <b>sending</b>
+      <Typography component="p" variant="body2" align="left" color="text.secondary">
+        Token you're sending
       </Typography>
       {outputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
@@ -83,7 +105,7 @@ const SwapData = (props) => {
           {swapData.outputToken}
         </Typography>
       )}
-      <Typography component="p" variant="body2" align="left">
+      <Typography component="p" variant="body2" align="left" color="text.secondary">
         Amount you're sending
       </Typography>
       {swapData.outputAmount && outputTokenInfo && (
@@ -91,7 +113,7 @@ const SwapData = (props) => {
           {`${formatEther(swapData.outputAmount || 0, outputTokenInfo.decimals)} ${outputTokenInfo.symbol}`}
         </Typography>
       )}
-      <Typography component="p" variant="body2" align="left">
+      <Typography component="p" variant="body2" align="left" color="text.secondary">
         Your balance
       </Typography>
       {outputTokenBalance && outputTokenInfo && (
@@ -100,8 +122,8 @@ const SwapData = (props) => {
         </Typography>
       )}
       <Divider sx={{ margin: 2 }} />
-      <Typography component="p" variant="body2" align="left">
-        Token you're <b>receiving</b>
+      <Typography component="p" variant="body2" align="left" color="text.secondary">
+        Token you're receiving
       </Typography>
       {inputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
@@ -113,10 +135,10 @@ const SwapData = (props) => {
           {swapData.inputToken}
         </Typography>
       )}
-      <Typography component="p" variant="body2" align="left">
+      <Typography component="p" variant="body2" align="left" color="text.secondary">
         Amount you're receiving
       </Typography>
-      {swapData.inputAmount && inputTokenInfo && (
+      {inputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
           {`${formatEther(swapData.inputAmount || 0, inputTokenInfo.decimals)} ${inputTokenInfo.symbol}`}
         </Typography>

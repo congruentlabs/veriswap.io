@@ -2,29 +2,31 @@
 import React, { useEffect, useState } from 'react';
 import { useEthers, shortenIfAddress } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
-import { BigNumber } from 'ethers';
 
 import { useTheme } from '@mui/material/styles';
-import { Box, Button, ButtonGroup, Card, Stack } from '@mui/material';
+import { Alert, AlertTitle, Box, Button, ButtonGroup, Card, Stack, TextField } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import ChangeCircleOutlinedIcon from '@mui/icons-material/ChangeCircleOutlined';
 
 import { useExecuteSwap, useCancelSwap, useChangeExecutor, useApprove, useGetValue } from 'hooks';
 import Container from 'components/Container';
 import ApprovalStatus from 'components/ApprovalStatus';
-import CreateSwapStatus from 'components/CreateSwapStatus';
+import ExecuteSwapStatus from 'components/ExecuteSwapStatus';
+import ChangeExecutorStatus from 'components/ChangeExecutorStatus';
+import CancelSwapStatus from 'components/CancelSwapStatus';
 import AccountConnector from 'components/AccountConnector';
 import ConnectedWallet from 'components/ConnectedWallet';
 import InvalidSwap from 'components/InvalidSwap';
 import SwapData from '../SwapData';
 
+import { SWAP_CONTRACT, ID_CONTRACT } from 'consts';
+
 import SWAP_ABI from 'swapAbi.json';
 import ID_ABI from 'idAbi.json';
 
-const SWAP_CONTRACT = '0x2bBB08e5BeCd636b15D8E8de0DCcb98923a2Daad'; // rinkeby
 const swapContract = new Contract(SWAP_CONTRACT, SWAP_ABI);
-const ID_CONTRACT = '0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385';
 const idContract = new Contract(ID_CONTRACT, ID_ABI);
 
 const Execute = (props) => {
@@ -33,11 +35,13 @@ const Execute = (props) => {
 
   const { account, chainId } = useEthers();
 
-  const [allowedToExecute, setAllowedToExecute] = useState(false);
+  const [isCreator, setIsCreator] = useState(false);
+  const [isAllowedToExecute, setIsAllowedToExecute] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
   const [swapAllowance, setSwapAllowance] = useState('');
   const [newExecutor, setNewExecutor] = useState('');
   const [isLoading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
   const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(swapContract);
 
@@ -63,26 +67,26 @@ const Execute = (props) => {
 
   useEffect(() => {
     if (swapData && swapData.creator) {
-      // const parsedData = {
-      //   inputToken: swapData.creator,
-      //   inputAmount: swapData.inputAmount,
-      //   outputToken: swapData.outputToken,
-      //   outputAmount: swapData.outputAmount,
-      //   executor: swapData.executor,
-      //   creator: swapData.creator,
-      //   requireIdentity: swapData.requireIdentity,
-      //   state: swapData.state
-      // };
       const parsedData = {
-        inputToken: '0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c',
-        inputAmount: BigNumber.from('20000000000000000000'),
-        outputToken: '0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977',
-        outputAmount: BigNumber.from('40000000000000000000'),
-        executor: '0xc441601696DF5ce0922224248AD96AB956D3B1Ae',
-        creator: '0xc441601696DF5ce0922224248AD96AB956D3B1Ae',
-        requireIdentity: 0,
-        state: 0
+        inputToken: swapData.creator,
+        inputAmount: swapData.inputAmount,
+        outputToken: swapData.outputToken,
+        outputAmount: swapData.outputAmount,
+        executor: swapData.executor,
+        creator: swapData.creator,
+        requireIdentity: swapData.requireIdentity,
+        state: swapData.state
       };
+      // const parsedData = {
+      //   inputToken: '0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c',
+      //   inputAmount: BigNumber.from('20000000000000000000'),
+      //   outputToken: '0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977',
+      //   outputAmount: BigNumber.from('40000000000000000000'),
+      //   executor: '0xc441601696DF5ce0922224248AD96AB956D3B1Ae',
+      //   creator: '0xc441601696DF5ce0922224248AD96AB956D3B1Ae',
+      //   requireIdentity: 0,
+      //   state: 0
+      // };
       setParsedSwapData(parsedData);
     }
   }, [swapData, setParsedSwapData]);
@@ -180,24 +184,38 @@ const Execute = (props) => {
     try {
       shortenIfAddress(e.target.value);
       setNewExecutor(e.target.value);
+      setError('');
     } catch {
       // do nothing
     }
   };
 
-  const onSubmitExecuteSwap = () => {
+  const resetStates = () => {
+    changeExecutorResetState();
     executeSwapResetState();
+    cancelSwapResetState();
+  };
+
+  const onSubmitExecuteSwap = () => {
+    resetStates();
     executeSwapSend(creatorAddress);
   };
 
   const onSubmitCancelSwap = () => {
-    cancelSwapResetState();
+    resetStates();
     cancelSwapSend();
   };
 
   const onSubmitChangeExecutorSwap = () => {
-    changeExecutorResetState();
-    changeExecutorSend(newExecutor);
+    resetStates();
+    setError('');
+    if (newExecutor === parsedSwapData.executor) {
+      setError('New executor is already the current executor!');
+    } else if (newExecutor === parsedSwapData.creator) {
+      setError('Cannot set the new executor to the swap creator!');
+    } else {
+      changeExecutorSend(newExecutor);
+    }
   };
 
   return (
@@ -231,55 +249,128 @@ const Execute = (props) => {
             {account &&
               parsedSwapData.creator &&
               parsedSwapData.creator === '0x0000000000000000000000000000000000000000' && <InvalidSwap />}
-            {account && parsedSwapData && parsedSwapData.executor && parsedSwapData.inputToken && (
-              <form noValidate autoComplete="off" onSubmit={onSubmitExecuteSwap}>
-                <Stack spacing={2} alignItems="center">
-                  <img src="/logo.png" width="150" alt="Veriswap Logo" />
-                  <SwapData
-                    swapData={parsedSwapData}
-                    account={account}
-                    chainId={chainId}
-                    allowedToExecute={allowedToExecute}
-                    setAllowedToExecute={setAllowedToExecute}
-                    setSwapAllowance={setSwapAllowance}
-                    requiresApproval={requiresApproval}
-                    setRequiresApproval={setRequiresApproval}
-                  />
+            {account &&
+              parsedSwapData &&
+              parsedSwapData.executor &&
+              parsedSwapData.inputToken &&
+              parsedSwapData.state === 1 && (
+                <form noValidate autoComplete="off" onSubmit={onSubmitExecuteSwap}>
+                  <Stack spacing={2} alignItems="center">
+                    <img src="/logo.png" width="150" alt="Veriswap Logo" />
+                    {isCreator && (
+                      <Alert severity="success">
+                        <AlertTitle>This is your swap</AlertTitle>
+                        You cannot execute your own swap, but you can change the executor or cancel it.
+                      </Alert>
+                    )}
+                    <ConnectedWallet account={account} />
+                    <SwapData
+                      swapData={parsedSwapData}
+                      account={account}
+                      chainId={chainId}
+                      isCreator={isCreator}
+                      setIsCreator={setIsCreator}
+                      isAllowedToExecute={isAllowedToExecute}
+                      setIsAllowedToExecute={setIsAllowedToExecute}
+                      setSwapAllowance={setSwapAllowance}
+                      requiresApproval={requiresApproval}
+                      setRequiresApproval={setRequiresApproval}
+                    />
 
-                  <ButtonGroup fullWidth size="medium" orientation="vertical">
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      size="large"
-                      disabled={isLoading || !allowedToExecute || !requiresApproval}
-                      style={{ fontWeight: 900 }}
-                      fullWidth
-                      type="submit"
-                      endIcon={<DoneIcon />}
-                    >
-                      APPROVE
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      disabled={isLoading || !allowedToExecute || requiresApproval}
-                      size="large"
-                      style={{ fontWeight: 900 }}
-                      fullWidth
-                      type="submit"
-                      endIcon={<SwapHorizIcon />}
-                    >
-                      COMPLETE SWAP
-                    </Button>
-                  </ButtonGroup>
+                    {isCreator && (
+                      <Alert severity="info">
+                        <AlertTitle>Changing Executor</AlertTitle>
+                        To change the executor of your swap, provide the new executor address below.
+                      </Alert>
+                    )}
 
-                  <ApprovalStatus state={approveState} />
-                  {/* <CreateSwapStatus state={createSwapState} /> */}
+                    {isCreator && (
+                      <TextField
+                        sx={{ height: 54 }}
+                        label="New Executor"
+                        variant="outlined"
+                        color="primary"
+                        size="medium"
+                        disabled={isLoading}
+                        fullWidth
+                        value={newExecutor}
+                        onChange={handleChangeExecutor}
+                      />
+                    )}
 
-                  <ConnectedWallet account={account} />
-                </Stack>
-              </form>
-            )}
+                    {isCreator && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        disabled={isLoading}
+                        onClick={onSubmitChangeExecutorSwap}
+                        style={{ fontWeight: 700 }}
+                        fullWidth
+                        endIcon={<ChangeCircleOutlinedIcon />}
+                      >
+                        CHANGE EXECUTOR
+                      </Button>
+                    )}
+
+                    {isCreator && (
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        disabled={isLoading}
+                        size="large"
+                        style={{ fontWeight: 700 }}
+                        onClick={onSubmitCancelSwap}
+                        fullWidth
+                        endIcon={<CancelOutlinedIcon />}
+                      >
+                        CANCEL SWAP
+                      </Button>
+                    )}
+
+                    {isAllowedToExecute && (
+                      <ButtonGroup fullWidth size="medium" orientation="vertical">
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          size="large"
+                          disabled={isLoading || !requiresApproval}
+                          style={{ fontWeight: 700 }}
+                          fullWidth
+                          type="submit"
+                          endIcon={<DoneIcon />}
+                        >
+                          APPROVE
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          disabled={isLoading || requiresApproval}
+                          size="large"
+                          style={{ fontWeight: 700 }}
+                          fullWidth
+                          type="submit"
+                          endIcon={<SwapHorizIcon />}
+                        >
+                          COMPLETE SWAP
+                        </Button>
+                      </ButtonGroup>
+                    )}
+
+                    <ApprovalStatus state={approveState} />
+                    <ExecuteSwapStatus state={executeSwapState} />
+                    <ChangeExecutorStatus state={changeExecutorState} />
+                    <CancelSwapStatus state={cancelSwapState} />
+
+                    {error && (
+                      <Alert severity="error" sx={{ width: '100%' }}>
+                        <AlertTitle>Error</AlertTitle>
+                        {error}
+                      </Alert>
+                    )}
+                  </Stack>
+                </form>
+              )}
           </Box>
         </Box>
       </Container>
