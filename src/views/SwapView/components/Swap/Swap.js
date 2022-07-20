@@ -17,7 +17,8 @@ import {
   FormControlLabel,
   Switch,
   Alert,
-  AlertTitle
+  AlertTitle,
+  Divider
 } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
@@ -38,9 +39,12 @@ const Swap = () => {
   const { account, chainId } = useEthers();
   const swapContract = getSwapContract(chainId);
   const swapContractAddress = getSwapContractAddress(chainId);
-  const [fromToken, setFromToken] = useState('0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c');
-  const [receiveToken, setReceiveToken] = useState('0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977');
-  const [executor, setExecutor] = useState('0xce95DAde44E7307bAA616C77EF446915633dD9Ab');
+  const [fromToken, setFromToken] = useState('');
+  // const [fromToken, setFromToken] = useState('0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c');
+  const [receiveToken, setReceiveToken] = useState('');
+  // const [receiveToken, setReceiveToken] = useState('0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977');
+  const [executor, setExecutor] = useState('');
+  // const [executor, setExecutor] = useState('0xce95DAde44E7307bAA616C77EF446915633dD9Ab');
   const [fromAmount, setFromAmount] = useState('');
   const [fromActualAmount, setFromActualAmount] = useState('');
   const [fromAmountError, setFromAmountError] = useState('');
@@ -288,136 +292,148 @@ const Swap = () => {
                     error={fromTokenError !== ''}
                     helperText={fromTokenError}
                   />
-                  <TextField
-                    sx={{ height: 54 }}
-                    label="Amount to Send"
-                    variant="outlined"
-                    color="primary"
-                    size="medium"
-                    disabled={isLoading || swapAlreadyOpen}
-                    fullWidth
-                    value={fromAmount}
-                    onChange={handleChangeFromAmount}
-                    error={fromAmountError !== ''}
-                    helperText={fromAmountError}
-                  />
-                  <ButtonGroup
-                    disabled={isLoading || swapAlreadyOpen}
-                    variant="contained"
-                    color="secondary"
-                    fullWidth
-                    size="small"
-                  >
-                    <Button onClick={(e) => handleClickFromPercentage(e, 25)}>25%</Button>
-                    <Button onClick={(e) => handleClickFromPercentage(e, 50)}>50%</Button>
-                    <Button onClick={(e) => handleClickFromPercentage(e, 75)}>75%</Button>
-                    <Button onClick={(e) => handleClickFromPercentage(e, 100)}>100%</Button>
-                  </ButtonGroup>
+                  {fromToken && (
+                    <TextField
+                      sx={{ height: 54 }}
+                      label="Amount to Send"
+                      variant="outlined"
+                      color="primary"
+                      size="medium"
+                      disabled={isLoading || swapAlreadyOpen}
+                      fullWidth
+                      value={fromAmount}
+                      onChange={handleChangeFromAmount}
+                      error={fromAmountError !== ''}
+                      helperText={fromAmountError}
+                    />
+                  )}
+                  {fromToken && (
+                    <ButtonGroup
+                      disabled={isLoading || swapAlreadyOpen}
+                      variant="contained"
+                      color="secondary"
+                      fullWidth
+                      size="small"
+                    >
+                      <Button onClick={(e) => handleClickFromPercentage(e, 25)}>25%</Button>
+                      <Button onClick={(e) => handleClickFromPercentage(e, 50)}>50%</Button>
+                      <Button onClick={(e) => handleClickFromPercentage(e, 75)}>75%</Button>
+                      <Button onClick={(e) => handleClickFromPercentage(e, 100)}>100%</Button>
+                    </ButtonGroup>
+                  )}
                   {fromTokenInfo && fromTokenBalance && (
                     <Chip
                       label={`Balance: ${formatEther(fromTokenBalance, fromTokenInfo.decimals)} ${
                         fromTokenInfo.symbol
                       }`}
-                      sx={{ fontFamily: 'Roboto Mono' }}
+                      sx={{ fontFamily: 'Roboto Mono', borderRadius: 1, width: '100%', textAlign: 'left' }}
                     />
                   )}
-                  <TextField
-                    sx={{ height: 54 }}
-                    label="Token to Receive"
-                    variant="outlined"
-                    color="primary"
-                    size="medium"
-                    disabled={isLoading || swapAlreadyOpen}
-                    fullWidth
-                    value={receiveToken}
-                    onChange={handleChangeReceiveToken}
-                    error={receiveTokenError !== ''}
-                    helperText={receiveTokenError}
-                  />
-                  <TextField
-                    sx={{ height: 54 }}
-                    label="Amount to Receive"
-                    variant="outlined"
-                    color="primary"
-                    size="medium"
-                    fullWidth
-                    disabled={isLoading || swapAlreadyOpen}
-                    value={receiveAmount}
-                    onChange={handleChangeReceiveAmount}
-                    error={receiveAmountError !== ''}
-                    helperText={receiveAmountError}
-                  />
+                  {fromToken && (
+                    <TextField
+                      sx={{ height: 54 }}
+                      label="Token to Receive"
+                      variant="outlined"
+                      color="primary"
+                      size="medium"
+                      disabled={isLoading || swapAlreadyOpen}
+                      fullWidth
+                      value={receiveToken}
+                      onChange={handleChangeReceiveToken}
+                      error={receiveTokenError !== ''}
+                      helperText={receiveTokenError}
+                    />
+                  )}
+                  {receiveToken && (
+                    <TextField
+                      sx={{ height: 54 }}
+                      label="Amount to Receive"
+                      variant="outlined"
+                      color="primary"
+                      size="medium"
+                      fullWidth
+                      disabled={isLoading || swapAlreadyOpen}
+                      value={receiveAmount}
+                      onChange={handleChangeReceiveAmount}
+                      error={receiveAmountError !== ''}
+                      helperText={receiveAmountError}
+                    />
+                  )}
                   {receiveTokenInfo && (
                     <Chip
-                      label={`Receiving: ${receiveAmount} ${receiveTokenInfo.symbol}`}
-                      sx={{ fontFamily: 'Roboto Mono' }}
+                      label={`Receiving: ${receiveAmount || 0} ${receiveTokenInfo.symbol}`}
+                      sx={{ fontFamily: 'Roboto Mono', borderRadius: 1, width: '100%' }}
                     />
                   )}
-                  <TextField
-                    sx={{ height: 54 }}
-                    label="Executor"
-                    variant="outlined"
-                    color="primary"
-                    size="medium"
-                    disabled={isLoading || swapAlreadyOpen}
-                    fullWidth
-                    value={executor}
-                    onChange={handleChangeExecutor}
-                  />
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={addonsRiskChecked}
-                          disabled
-                          // disabled={!account}
-                          // onChange={handleChangeAddonsRiskChecked}
-                        />
-                      }
-                      label="Enforce Risk Detection"
+                  {receiveToken && (
+                    <TextField
+                      sx={{ height: 54 }}
+                      label="Executor"
+                      variant="outlined"
+                      color="primary"
+                      size="medium"
+                      disabled={isLoading || swapAlreadyOpen}
+                      fullWidth
+                      value={executor}
+                      onChange={handleChangeExecutor}
                     />
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={addonsRequireIdentity}
-                          disabled={!account || swapAlreadyOpen}
-                          onChange={handleChangeAddonsRequireIdentity}
-                        />
-                      }
-                      label="Require Signata Identity"
-                    />
-                  </FormGroup>
+                  )}
+                  {executor && (
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={addonsRiskChecked}
+                            disabled
+                            // disabled={!account}
+                            // onChange={handleChangeAddonsRiskChecked}
+                          />
+                        }
+                        label="Enforce Risk Detection"
+                      />
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={addonsRequireIdentity}
+                            disabled={!account || swapAlreadyOpen}
+                            onChange={handleChangeAddonsRequireIdentity}
+                          />
+                        }
+                        label="Require Signata Identity"
+                      />
+                    </FormGroup>
+                  )}
                   {/* {addonsRequireIdentity && isLocked && (
                     <Alert>
                       <AlertTitle>{isLocked}</AlertTitle>
                     </Alert>
                   )} */}
-                  <ButtonGroup fullWidth size="medium" orientation="vertical">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="large"
-                      disabled={isLoading || !requiresApproval || swapAlreadyOpen}
-                      sx={{ fontWeight: 900 }}
-                      fullWidth
-                      type="submit"
-                      endIcon={<DoneIcon />}
-                    >
-                      APPROVE
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={isLoading || requiresApproval || swapAlreadyOpen}
-                      size="large"
-                      sx={{ fontWeight: 900 }}
-                      fullWidth
-                      type="submit"
-                      endIcon={<SwapHorizIcon />}
-                    >
-                      OPEN SWAP
-                    </Button>
-                  </ButtonGroup>
+                  {executor && (
+                    <ButtonGroup fullWidth size="medium" orientation="vertical">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        disabled={isLoading || !requiresApproval || swapAlreadyOpen}
+                        fullWidth
+                        type="submit"
+                        endIcon={<DoneIcon />}
+                      >
+                        APPROVE
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={isLoading || requiresApproval || swapAlreadyOpen}
+                        size="large"
+                        fullWidth
+                        type="submit"
+                        endIcon={<SwapHorizIcon />}
+                      >
+                        OPEN SWAP
+                      </Button>
+                    </ButtonGroup>
+                  )}
                   <ApprovalStatus state={approveState} />
                   <CreateSwapStatus state={createSwapState} />
                 </Stack>
