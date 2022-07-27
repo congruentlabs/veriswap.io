@@ -31,7 +31,6 @@ import CreateSwapStatus from 'components/CreateSwapStatus';
 import AccountConnector from 'components/AccountConnector';
 import ConnectedWallet from 'components/ConnectedWallet';
 
-import { SWAP_CONTRACT } from 'consts';
 import ERC20_ABI from 'erc20Abi.json';
 
 const Swap = () => {
@@ -73,7 +72,7 @@ const Swap = () => {
   const receiveTokenInfo = useToken(receiveToken);
   const fromTokenBalance = useTokenBalance(fromToken, account);
   const swapAllowance = useTokenAllowance(fromToken, account, swapContractAddress);
-  const swapData = useGetValue('swaps', [account], SWAP_CONTRACT, swapContract);
+  const swapData = useGetValue('swaps', [account], getSwapContractAddress(chainId), swapContract);
 
   useEffect(() => {
     if (swapData && swapData.state === 1) {

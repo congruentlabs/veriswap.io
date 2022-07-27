@@ -1,29 +1,29 @@
 import { useContractFunction, useCall } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
 
-import { SWAP_CONTRACT } from 'consts';
+import { ID_CONTRACT_MAINNET, ID_CONTRACT_RINKEBY, SWAP_CONTRACT_MAINNET, SWAP_CONTRACT_RINKEBY } from 'consts';
 
 import SWAP_ABI from 'swapAbi.json';
 import ID_ABI from 'idAbi.json';
 
 export const getSwapContract = (chainId) => {
   if (chainId === 1) {
-    return new Contract(SWAP_CONTRACT, SWAP_ABI); // TODO: Replace with mainnet contract
+    return new Contract(SWAP_CONTRACT_MAINNET, SWAP_ABI);
   }
   if (chainId === 4) {
-    return new Contract(SWAP_CONTRACT, SWAP_ABI);
+    return new Contract(SWAP_CONTRACT_RINKEBY, SWAP_ABI);
   }
-  return new Contract(SWAP_CONTRACT, SWAP_ABI);
+  return new Contract(SWAP_CONTRACT_MAINNET, SWAP_ABI);
 };
 
 export const getIdContract = (chainId) => {
   if (chainId === 1) {
-    return new Contract('0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385', ID_ABI); // TODO: Replace with mainnet contract
+    return new Contract(ID_CONTRACT_MAINNET, ID_ABI);
   }
   if (chainId === 4) {
-    return new Contract('0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385', ID_ABI);
+    return new Contract(ID_CONTRACT_RINKEBY, ID_ABI);
   }
-  return new Contract('0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385', ID_ABI);
+  return new Contract(ID_CONTRACT_MAINNET, ID_ABI);
 };
 
 export function useCreateSwap(chainId) {
@@ -81,11 +81,11 @@ export function useApprove(erc20TokenContractObj) {
 export const getSwapContractAddress = (chainId) => {
   if (chainId === 1) {
     // mainnet
-    return '';
+    return SWAP_CONTRACT_MAINNET;
   }
   if (chainId === 4) {
     // rinkeby
-    return SWAP_CONTRACT;
+    return SWAP_CONTRACT_RINKEBY;
   }
   return '';
 };
@@ -93,11 +93,11 @@ export const getSwapContractAddress = (chainId) => {
 export const getIdentityContractAddress = (chainId) => {
   if (chainId === 1) {
     // mainnet
-    return '';
+    return ID_CONTRACT_MAINNET;
   }
   if (chainId === 4) {
     // rinkeby
-    return '0xb24e28a4b7fed6d59d3bd06af586f02fddfa6385';
+    return ID_CONTRACT_RINKEBY;
   }
   return '';
 };

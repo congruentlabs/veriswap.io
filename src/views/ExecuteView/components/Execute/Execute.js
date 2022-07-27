@@ -16,7 +16,8 @@ import {
   useChangeExecutor,
   useApprove,
   useGetValue,
-  getSwapContractAddress
+  getSwapContractAddress,
+  getIdentityContractAddress
 } from 'hooks';
 import Container from 'components/Container';
 import ApprovalStatus from 'components/ApprovalStatus';
@@ -28,20 +29,17 @@ import ConnectedWallet from 'components/ConnectedWallet';
 import InvalidSwap from 'components/InvalidSwap';
 import SwapData from '../SwapData';
 
-import { SWAP_CONTRACT, ID_CONTRACT } from 'consts';
-
 import SWAP_ABI from 'swapAbi.json';
 import ID_ABI from 'idAbi.json';
 import ERC20_ABI from 'erc20Abi.json';
-
-const swapContract = new Contract(SWAP_CONTRACT, SWAP_ABI);
-const idContract = new Contract(ID_CONTRACT, ID_ABI);
 
 const Execute = (props) => {
   const theme = useTheme();
   const { swapId } = props;
 
   const { account, chainId } = useEthers();
+  const swapContract = new Contract(getSwapContractAddress(chainId), SWAP_ABI);
+  const idContract = new Contract(getIdentityContractAddress(chainId), ID_ABI);
 
   const swapContractAddress = getSwapContractAddress(chainId);
   const [isCreator, setIsCreator] = useState(false);
@@ -71,7 +69,7 @@ const Execute = (props) => {
 
   const [parsedSwapData, setParsedSwapData] = useState({});
 
-  const swapData = useGetValue('swaps', [swapId], SWAP_CONTRACT, swapContract);
+  const swapData = useGetValue('swaps', [swapId], getSwapContractAddress(chainId), swapContract);
   const toTokenContractObj = new Contract(
     parsedSwapData.outputToken || '0x0000000000000000000000000000000000000000',
     ERC20_ABI
