@@ -23,6 +23,10 @@ const Footer = () => {
           <Box display="flex" flexWrap={'wrap'} alignItems={'center'}>
             {[
               {
+                href: 'https://docs.signata.net/guides/veriswap',
+                alt: 'Help'
+              },
+              {
                 href: 'https://signata.net/',
                 alt: 'Signata'
               },
@@ -31,12 +35,12 @@ const Footer = () => {
                 alt: 'Congruent Labs'
               },
               {
-                href: 'https://twitter.com/satatoken',
-                alt: 'Terms & Conditions'
+                href: 'https://twitter.com/congruentlabs',
+                alt: 'Twitter'
               },
               {
                 href: 'https://github.com/congruentlabs',
-                alt: 'Privacy Policy'
+                alt: 'GitHub'
               }
             ].map((listItem) => (
               <Box marginTop={1} marginRight={2} key={listItem.href}>

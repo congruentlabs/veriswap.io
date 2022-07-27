@@ -15,25 +15,16 @@ const ConnectedWallet = (props) => {
         width: '100%',
         padding: 2,
         textAlign: 'center',
-        backgroundColor: 'background.level2',
-        borderRadius: 2
+        borderRadius: 0
       }}
     >
-      <Typography component="p" variant="body2" align="left" color="text.secondary">
+      <Typography component="p" variant="caption" color="text.secondary">
         Connected Wallet
       </Typography>
-      <Typography component="p" variant="body1" align="left">
-        {shortenAddress(account)}
+      <Typography component="p" variant="body1">
+        {ens ? ens : shortenAddress(account)}
       </Typography>
-      {ens && (
-        <Typography component="p" variant="body1" align="left" color="text.secondary" gutterBottom>
-          {ens}
-        </Typography>
-      )}
-      <Typography component="p" variant="body2" align="left" color="text.secondary">
-        Network
-      </Typography>
-      <Typography component="p" variant="body1" align="left">
+      <Typography component="p" variant="body2" color="text.secondary">
         {chainName}
       </Typography>
     </Box>

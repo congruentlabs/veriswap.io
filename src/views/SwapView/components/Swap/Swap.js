@@ -6,24 +6,27 @@ import { Contract } from '@ethersproject/contracts';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
 import { useTheme } from '@mui/material/styles';
 import {
-  Box,
-  TextField,
-  Button,
-  ButtonGroup,
-  Chip,
-  Card,
-  FormGroup,
-  Stack,
-  FormControlLabel,
-  Switch,
   Alert,
   AlertTitle,
-  Divider
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  Chip,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  Stack,
+  Switch,
+  TextField
 } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import { useCreateSwap, useApprove, getSwapContractAddress, getSwapContract, useGetValue } from 'hooks';
 import Container from 'components/Container';
 import ApprovalStatus from 'components/ApprovalStatus';
@@ -244,9 +247,10 @@ const Swap = () => {
         }}
       />
       <Container maxWidth="sm" zIndex="2" position="relative">
+        {account && <ConnectedWallet account={account} />}
         <Box width={1} height="100%" display="flex" alignItems="center">
           <Box
-            padding={{ xs: 3, sm: 6 }}
+            padding={{ xs: 2, sm: 6 }}
             width={1}
             component={Card}
             borderRadius={2}
@@ -277,20 +281,34 @@ const Swap = () => {
                       </Button>
                     </>
                   )}
-                  <ConnectedWallet account={account} />
-                  <TextField
-                    sx={{ height: 54 }}
-                    label="Token to Send"
-                    variant="outlined"
-                    color="primary"
-                    size="medium"
-                    disabled={isLoading || swapAlreadyOpen}
-                    fullWidth
-                    value={fromToken}
-                    onChange={handleChangeFromToken}
-                    error={fromTokenError !== ''}
-                    helperText={fromTokenError}
-                  />
+                  <FormControl fullWidth sx={{ height: 54 }}>
+                    <InputLabel htmlFor="from-token">From Token</InputLabel>
+                    <OutlinedInput
+                      label="Token to Send"
+                      variant="outlined"
+                      color="primary"
+                      placeholder="e.g. 0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1"
+                      size="medium"
+                      disabled={isLoading || swapAlreadyOpen}
+                      fullWidth
+                      value={fromToken}
+                      onChange={handleChangeFromToken}
+                      error={fromTokenError !== ''}
+                      helperText={fromTokenError ? fromTokenError : 'Paste a valid ERC20 token address.'}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="help"
+                            href="https://docs.signata.net/guides/veriswap"
+                            target="_blank"
+                            // size="small"
+                          >
+                            <HelpOutlineOutlinedIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
                   {fromToken && (
                     <TextField
                       sx={{ height: 54 }}
@@ -332,6 +350,7 @@ const Swap = () => {
                     <TextField
                       sx={{ height: 54 }}
                       label="Token to Receive"
+                      placeholder="e.g. 0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b"
                       variant="outlined"
                       color="primary"
                       size="medium"
@@ -368,6 +387,7 @@ const Swap = () => {
                     <TextField
                       sx={{ height: 54 }}
                       label="Executor"
+                      placeholder="e.g. 0x042fc4ea3f836e1ea5dc4fb70ec90ded51c09eca"
                       variant="outlined"
                       color="primary"
                       size="medium"

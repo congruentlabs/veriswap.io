@@ -236,7 +236,7 @@ const Execute = (props) => {
       <Container maxWidth="sm" zIndex="2" position="relative">
         <Box width={1} height="100%" display="flex" alignItems="center">
           <Box
-            padding={{ xs: 3, sm: 6 }}
+            padding={{ xs: 2, sm: 6 }}
             width={1}
             component={Card}
             borderRadius={2}
