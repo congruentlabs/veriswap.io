@@ -275,7 +275,7 @@ const Swap = () => {
                         fullWidth
                         color="primary"
                         variant="contained"
-                        href={`/swap/${account}`}
+                        href={`/#/swap/${account}`}
                       >
                         MANAGE YOUR SWAP
                       </Button>

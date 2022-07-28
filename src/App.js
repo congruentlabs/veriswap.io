@@ -4,18 +4,18 @@ import { SwapView, ExecuteView } from './views';
 
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import 'aos/dist/aos.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 
 const App = () => {
   return (
     <Page>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<SwapView />} />
-          <Route path="/swap/:swapId" element={<ExecuteView />} />
+          <Route path="swap/:swapId" element={<ExecuteView />} />
           <Route path="*" element={<SwapView />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </Page>
   );
 };
