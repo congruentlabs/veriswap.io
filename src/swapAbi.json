@@ -1,5 +1,39 @@
 [
 	{
+		"inputs": [
+			{
+				"internalType": "contract SignataIdentity",
+				"name": "_signataIdentity",
+				"type": "address"
+			},
+			{
+				"internalType": "contract SignataRight",
+				"name": "_signataRight",
+				"type": "address"
+			},
+			{
+				"internalType": "contract ClaimRight",
+				"name": "_kycClaimRight",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "contract ClaimRight",
+				"name": "newClaimRight",
+				"type": "address"
+			}
+		],
+		"name": "ClaimRightContractChanged",
+		"type": "event"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -61,6 +95,19 @@
 		"inputs": [
 			{
 				"indexed": false,
+				"internalType": "contract SignataRight",
+				"name": "newRights",
+				"type": "address"
+			}
+		],
+		"name": "RightsContractChanged",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
 				"internalType": "address",
 				"name": "creatorAddress",
 				"type": "address"
@@ -110,6 +157,11 @@
 						"type": "bool"
 					},
 					{
+						"internalType": "bool",
+						"name": "requireKyc",
+						"type": "bool"
+					},
+					{
 						"internalType": "enum VeriswapERC20.States",
 						"name": "state",
 						"type": "uint8"
@@ -139,6 +191,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "canSwap",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "cancelSwap",
 		"outputs": [],
 		"stateMutability": "nonpayable",
@@ -155,6 +220,19 @@
 		"name": "changeExecutor",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "claimRight",
+		"outputs": [
+			{
+				"internalType": "contract ClaimRight",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -187,6 +265,11 @@
 			{
 				"internalType": "bool",
 				"name": "_requireIdentity",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "_requireKyc",
 				"type": "bool"
 			}
 		],
@@ -224,63 +307,6 @@
 	},
 	{
 		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "contract SignataIdentity",
-				"name": "_signataIdentity",
-				"type": "address"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "contract SignataIdentity",
-				"name": "newIdentity",
-				"type": "address"
-			}
-		],
-		"name": "updateSignataIdentity",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "canSwap",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "owner",
 		"outputs": [
 			{
@@ -294,10 +320,30 @@
 	},
 	{
 		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "signataIdentity",
 		"outputs": [
 			{
 				"internalType": "contract SignataIdentity",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "signataRight",
+		"outputs": [
+			{
+				"internalType": "contract SignataRight",
 				"name": "",
 				"type": "address"
 			}
@@ -351,12 +397,69 @@
 				"type": "bool"
 			},
 			{
+				"internalType": "bool",
+				"name": "requireKyc",
+				"type": "bool"
+			},
+			{
 				"internalType": "enum VeriswapERC20.States",
 				"name": "state",
 				"type": "uint8"
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "contract ClaimRight",
+				"name": "newClaimRight",
+				"type": "address"
+			}
+		],
+		"name": "updateClaimRight",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "contract SignataIdentity",
+				"name": "newIdentity",
+				"type": "address"
+			}
+		],
+		"name": "updateSignataIdentity",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "contract SignataRight",
+				"name": "newRights",
+				"type": "address"
+			}
+		],
+		"name": "updateSignataRight",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

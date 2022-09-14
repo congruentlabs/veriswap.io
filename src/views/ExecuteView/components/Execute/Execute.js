@@ -17,7 +17,7 @@ import {
   useApprove,
   useGetValue,
   getSwapContractAddress,
-  getIdentityContractAddress
+  getIdContractAddress
 } from 'hooks';
 import Container from 'components/Container';
 import ApprovalStatus from 'components/ApprovalStatus';
@@ -39,7 +39,7 @@ const Execute = (props) => {
 
   const { account, chainId } = useEthers();
   const swapContract = new Contract(getSwapContractAddress(chainId), SWAP_ABI);
-  const idContract = new Contract(getIdentityContractAddress(chainId), ID_ABI);
+  const idContract = new Contract(getIdContractAddress(chainId), ID_ABI);
 
   const swapContractAddress = getSwapContractAddress(chainId);
   const [isCreator, setIsCreator] = useState(false);

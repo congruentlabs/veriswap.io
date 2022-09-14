@@ -33,6 +33,9 @@ import ApprovalStatus from 'components/ApprovalStatus';
 import CreateSwapStatus from 'components/CreateSwapStatus';
 import AccountConnector from 'components/AccountConnector';
 import ConnectedWallet from 'components/ConnectedWallet';
+import UnsupportedChain from 'components/UnsupportedChain';
+
+import { SUPPORTED_CHAINS } from 'consts';
 
 import ERC20_ABI from 'erc20Abi.json';
 
@@ -58,8 +61,10 @@ const Swap = () => {
   const [isLoading, setLoading] = useState(false);
   const [addonsRiskChecked, setAddonsRiskChecked] = useState(false);
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
+  const [addonsRequireKyc, setAddonsRequireKyc] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
   const [swapAlreadyOpen, setSwapAlreadyOpen] = useState(false);
+  const [supportedChain, setSupportedChain] = useState(false);
   const {
     state: createSwapState,
     send: createSwapSend,
@@ -76,6 +81,15 @@ const Swap = () => {
   const fromTokenBalance = useTokenBalance(fromToken, account);
   const swapAllowance = useTokenAllowance(fromToken, account, swapContractAddress);
   const swapData = useGetValue('swaps', [account], getSwapContractAddress(chainId), swapContract);
+
+  useEffect(() => {
+    const chainName = SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
+    if (chainName) {
+      setSupportedChain(true);
+    } else {
+      setSupportedChain(false);
+    }
+  }, [chainId]);
 
   useEffect(() => {
     if (swapData && swapData.state === 1) {
@@ -200,6 +214,10 @@ const Swap = () => {
     setAddonsRequireIdentity(!addonsRequireIdentity);
   };
 
+  const handleChangeAddonsRequireKyc = () => {
+    setAddonsRequireKyc(!addonsRequireKyc);
+  };
+
   const handleClickFromPercentage = (e, val) => {
     e.preventDefault();
     setFromAmountError('');
@@ -224,7 +242,8 @@ const Swap = () => {
         receiveToken, // _outputToken
         receiveActualAmount, // _outputAmount
         executor, // _executor
-        addonsRequireIdentity // _requireIdentity
+        addonsRequireIdentity, // _requireIdentity
+        addonsRequireKyc // _requireKyc
       );
     }
   };
@@ -258,7 +277,8 @@ const Swap = () => {
             // data-aos={'zoom-in'}
           >
             {!account && <AccountConnector />}
-            {account && (
+            {account && !supportedChain && <UnsupportedChain SUPPORTED_CHAINS={SUPPORTED_CHAINS} />}
+            {account && supportedChain && (
               <form noValidate autoComplete="off" onSubmit={onSubmitCreateSwap}>
                 <Stack spacing={2} alignItems="center">
                   <img src="/logo-full.png" width="200" alt="Veriswap Logo" />
@@ -419,6 +439,16 @@ const Swap = () => {
                           />
                         }
                         label="Require Signata Identity"
+                      />
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={addonsRequireKyc}
+                            disabled={!account || swapAlreadyOpen}
+                            onChange={handleChangeAddonsRequireKyc}
+                          />
+                        }
+                        label="Require KYC NFT"
                       />
                     </FormGroup>
                   )}

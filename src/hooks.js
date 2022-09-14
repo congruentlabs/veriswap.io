@@ -1,30 +1,74 @@
 import { useContractFunction, useCall } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
 
-import { ID_CONTRACT_MAINNET, ID_CONTRACT_RINKEBY, SWAP_CONTRACT_MAINNET, SWAP_CONTRACT_RINKEBY } from 'consts';
+import * as consts from 'consts';
 
 import SWAP_ABI from 'swapAbi.json';
 import ID_ABI from 'idAbi.json';
 
-export const getSwapContract = (chainId) => {
+export const getSwapContractAddress = (chainId) => {
   if (chainId === 1) {
-    return new Contract(SWAP_CONTRACT_MAINNET, SWAP_ABI);
+    return consts.SWAP_CONTRACT_MAINNET;
   }
   if (chainId === 4) {
-    return new Contract(SWAP_CONTRACT_RINKEBY, SWAP_ABI);
+    return consts.SWAP_CONTRACT_RINKEBY;
   }
-  return new Contract(SWAP_CONTRACT_MAINNET, SWAP_ABI);
+  if (chainId === 56) {
+    // bsc
+    return consts.SWAP_CONTRACT_BSC;
+  }
+  if (chainId === 137) {
+    // matic
+    return consts.SWAP_CONTRACT_MATIC;
+  }
+  if (chainId === 250) {
+    // fantom
+    return consts.SWAP_CONTRACT_FTM;
+  }
+  if (chainId === 1088) {
+    // metis
+    return consts.SWAP_CONTRACT_METIS;
+  }
+  if (chainId === 43114) {
+    // avax
+    return consts.SWAP_CONTRACT_AVAX;
+  }
+  return consts.SWAP_CONTRACT_MAINNET;
 };
 
-export const getIdContract = (chainId) => {
+export const getSwapContract = (chainId) => new Contract(getSwapContractAddress(chainId), ID_ABI);
+
+export const getIdContractAddress = (chainId) => {
   if (chainId === 1) {
-    return new Contract(ID_CONTRACT_MAINNET, ID_ABI);
+    return consts.ID_CONTRACT_MAINNET;
   }
   if (chainId === 4) {
-    return new Contract(ID_CONTRACT_RINKEBY, ID_ABI);
+    return consts.ID_CONTRACT_RINKEBY;
   }
-  return new Contract(ID_CONTRACT_MAINNET, ID_ABI);
+  if (chainId === 56) {
+    // bsc
+    return consts.ID_CONTRACT_BSC;
+  }
+  if (chainId === 137) {
+    // matic
+    return consts.ID_CONTRACT_MATIC;
+  }
+  if (chainId === 250) {
+    // fantom
+    return consts.ID_CONTRACT_FTM;
+  }
+  if (chainId === 1088) {
+    // metis
+    return consts.ID_CONTRACT_METIS;
+  }
+  if (chainId === 43114) {
+    // avax
+    return consts.ID_CONTRACT_AVAX;
+  }
+  return consts.ID_CONTRACT_MAINNET;
 };
+
+export const getIdContract = (chainId) => new Contract(getIdContractAddress(chainId), ID_ABI);
 
 export function useCreateSwap(chainId) {
   const swapContract = getSwapContract(chainId);
@@ -77,30 +121,6 @@ export function useApprove(erc20TokenContractObj) {
   });
   return { state, send, events, resetState };
 }
-
-export const getSwapContractAddress = (chainId) => {
-  if (chainId === 1) {
-    // mainnet
-    return SWAP_CONTRACT_MAINNET;
-  }
-  if (chainId === 4) {
-    // rinkeby
-    return SWAP_CONTRACT_RINKEBY;
-  }
-  return '';
-};
-
-export const getIdentityContractAddress = (chainId) => {
-  if (chainId === 1) {
-    // mainnet
-    return ID_CONTRACT_MAINNET;
-  }
-  if (chainId === 4) {
-    // rinkeby
-    return ID_CONTRACT_RINKEBY;
-  }
-  return '';
-};
 
 export const useGetValue = (method, args, contractAddress, contract) => {
   const { value, error } =
