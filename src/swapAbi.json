@@ -1,524 +1,524 @@
 [
-	{
-		"inputs": [
-			{
-				"internalType": "contract SignataIdentity",
-				"name": "_signataIdentity",
-				"type": "address"
-			},
-			{
-				"internalType": "contract SignataRight",
-				"name": "_signataRight",
-				"type": "address"
-			},
-			{
-				"internalType": "contract ClaimRight",
-				"name": "_kycClaimRight",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_sanctionsContract",
-				"type": "address"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "contract ClaimRight",
-				"name": "newClaimRight",
-				"type": "address"
-			}
-		],
-		"name": "ClaimRightContractChanged",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "creatorAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "oldExecutor",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "newExecutor",
-				"type": "address"
-			}
-		],
-		"name": "ExecutorModified",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "contract SignataIdentity",
-				"name": "newIdentity",
-				"type": "address"
-			}
-		],
-		"name": "IdentityContractChanged",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "previousOwner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "OwnershipTransferred",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "contract SignataRight",
-				"name": "newRights",
-				"type": "address"
-			}
-		],
-		"name": "RightsContractChanged",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "newSanctionsList",
-				"type": "address"
-			}
-		],
-		"name": "SanctionsListChanged",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "creatorAddress",
-				"type": "address"
-			}
-		],
-		"name": "SwapCancelled",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"components": [
-					{
-						"internalType": "address",
-						"name": "inputToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "inputAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "outputToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "outputAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "executor",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "creator",
-						"type": "address"
-					},
-					{
-						"internalType": "bool",
-						"name": "requireIdentity",
-						"type": "bool"
-					},
-					{
-						"internalType": "bool",
-						"name": "requireKyc",
-						"type": "bool"
-					},
-					{
-						"internalType": "bool",
-						"name": "requireSanctionCheck",
-						"type": "bool"
-					},
-					{
-						"internalType": "enum VeriswapERC20.States",
-						"name": "state",
-						"type": "uint8"
-					}
-				],
-				"indexed": false,
-				"internalType": "struct VeriswapERC20.EscrowSwap",
-				"name": "swapData",
-				"type": "tuple"
-			}
-		],
-		"name": "SwapCreated",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "creatorAddress",
-				"type": "address"
-			}
-		],
-		"name": "SwapExecuted",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "canSwap",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "cancelSwap",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newExecutor",
-				"type": "address"
-			}
-		],
-		"name": "changeExecutor",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "claimRight",
-		"outputs": [
-			{
-				"internalType": "contract ClaimRight",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_inputToken",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_inputAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_outputToken",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_outputAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_executor",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "_requireIdentity",
-				"type": "bool"
-			},
-			{
-				"internalType": "bool",
-				"name": "_requireKyc",
-				"type": "bool"
-			},
-			{
-				"internalType": "bool",
-				"name": "_requireSanctionCheck",
-				"type": "bool"
-			}
-		],
-		"name": "createSwap",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "disableSwaps",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "enableSwaps",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "creatorAddress",
-				"type": "address"
-			}
-		],
-		"name": "executeSwap",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "sanctionsContract",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "signataIdentity",
-		"outputs": [
-			{
-				"internalType": "contract SignataIdentity",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "signataRight",
-		"outputs": [
-			{
-				"internalType": "contract SignataRight",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "swaps",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "inputToken",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "inputAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "outputToken",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "outputAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "executor",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "creator",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "requireIdentity",
-				"type": "bool"
-			},
-			{
-				"internalType": "bool",
-				"name": "requireKyc",
-				"type": "bool"
-			},
-			{
-				"internalType": "bool",
-				"name": "requireSanctionCheck",
-				"type": "bool"
-			},
-			{
-				"internalType": "enum VeriswapERC20.States",
-				"name": "state",
-				"type": "uint8"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "contract ClaimRight",
-				"name": "newClaimRight",
-				"type": "address"
-			}
-		],
-		"name": "updateClaimRight",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newSanctionsContract",
-				"type": "address"
-			}
-		],
-		"name": "updateSanctionsList",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "contract SignataIdentity",
-				"name": "newIdentity",
-				"type": "address"
-			}
-		],
-		"name": "updateSignataIdentity",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "contract SignataRight",
-				"name": "newRights",
-				"type": "address"
-			}
-		],
-		"name": "updateSignataRight",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "contract ClaimRight",
+        "name": "newClaimRight",
+        "type": "address"
+      }
+    ],
+    "name": "ClaimRightContractChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "creatorAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldExecutor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newExecutor",
+        "type": "address"
+      }
+    ],
+    "name": "ExecutorModified",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "contract SignataIdentity",
+        "name": "newIdentity",
+        "type": "address"
+      }
+    ],
+    "name": "IdentityContractChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "contract SignataRight",
+        "name": "newRights",
+        "type": "address"
+      }
+    ],
+    "name": "RightsContractChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newSanctionsList",
+        "type": "address"
+      }
+    ],
+    "name": "SanctionsListChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "creatorAddress",
+        "type": "address"
+      }
+    ],
+    "name": "SwapCancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "inputToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "inputAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "outputToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "outputAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "executor",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "requireIdentity",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "requireKyc",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "requireSanctionCheck",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum VeriswapERC20.States",
+            "name": "state",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct VeriswapERC20.EscrowSwap",
+        "name": "swapData",
+        "type": "tuple"
+      }
+    ],
+    "name": "SwapCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "creatorAddress",
+        "type": "address"
+      }
+    ],
+    "name": "SwapExecuted",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "cancelSwap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newExecutor",
+        "type": "address"
+      }
+    ],
+    "name": "changeExecutor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_inputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_inputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_outputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_outputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_executor",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "_requireIdentity",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "_requireKyc",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "_requireSanctionCheck",
+        "type": "bool"
+      }
+    ],
+    "name": "createSwap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "disableSwaps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "enableSwaps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "creatorAddress",
+        "type": "address"
+      }
+    ],
+    "name": "executeSwap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract SignataIdentity",
+        "name": "_signataIdentity",
+        "type": "address"
+      },
+      {
+        "internalType": "contract SignataRight",
+        "name": "_signataRight",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ClaimRight",
+        "name": "_kycClaimRight",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_sanctionsContract",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ClaimRight",
+        "name": "newClaimRight",
+        "type": "address"
+      }
+    ],
+    "name": "updateClaimRight",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newSanctionsContract",
+        "type": "address"
+      }
+    ],
+    "name": "updateSanctionsList",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract SignataIdentity",
+        "name": "newIdentity",
+        "type": "address"
+      }
+    ],
+    "name": "updateSignataIdentity",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract SignataRight",
+        "name": "newRights",
+        "type": "address"
+      }
+    ],
+    "name": "updateSignataRight",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "canSwap",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "claimRight",
+    "outputs": [
+      {
+        "internalType": "contract ClaimRight",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "sanctionsContract",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "signataIdentity",
+    "outputs": [
+      {
+        "internalType": "contract SignataIdentity",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "signataRight",
+    "outputs": [
+      {
+        "internalType": "contract SignataRight",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "swaps",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "outputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "outputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "executor",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "requireIdentity",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "requireKyc",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "requireSanctionCheck",
+        "type": "bool"
+      },
+      {
+        "internalType": "enum VeriswapERC20.States",
+        "name": "state",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
 ]
