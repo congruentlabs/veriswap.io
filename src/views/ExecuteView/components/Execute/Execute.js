@@ -17,7 +17,9 @@ import {
   useApprove,
   useGetValue,
   getSwapContractAddress,
-  getIdContractAddress
+  getIdContractAddress,
+  logLoading,
+  shouldBeLoading
 } from 'hooks';
 import Container from 'components/Container';
 import ApprovalStatus from 'components/ApprovalStatus';
@@ -84,85 +86,29 @@ const Execute = (props) => {
 
   useEffect(() => {
     if (approveState) {
-      console.log(approveState);
-      if (approveState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (approveState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (approveState.status === 'None') {
-        setLoading(false);
-      }
-      if (approveState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (approveState.status === 'Success') {
-        setLoading(false);
-      }
+      logLoading(approveState, 'approveSwap');
+      setLoading(shouldBeLoading(approveState.status));
     }
   }, [approveState]);
 
   useEffect(() => {
     if (executeSwapState) {
-      console.log(executeSwapState);
-      if (executeSwapState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (executeSwapState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (executeSwapState.status === 'None') {
-        setLoading(false);
-      }
-      if (executeSwapState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (executeSwapState.status === 'Success') {
-        setLoading(false);
-      }
+      logLoading(executeSwapState, 'executeSwap');
+      setLoading(shouldBeLoading(executeSwapState.status));
     }
   }, [executeSwapState]);
 
   useEffect(() => {
     if (cancelSwapState) {
-      console.log(cancelSwapState);
-      if (cancelSwapState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (cancelSwapState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (cancelSwapState.status === 'None') {
-        setLoading(false);
-      }
-      if (cancelSwapState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (cancelSwapState.status === 'Success') {
-        setLoading(false);
-      }
+      logLoading(cancelSwapState, 'cancelSwap');
+      setLoading(shouldBeLoading(cancelSwapState.status));
     }
   }, [cancelSwapState]);
 
   useEffect(() => {
     if (changeExecutorState) {
-      console.log(changeExecutorState);
-      if (changeExecutorState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (changeExecutorState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (changeExecutorState.status === 'None') {
-        setLoading(false);
-      }
-      if (changeExecutorState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (changeExecutorState.status === 'Success') {
-        setLoading(false);
-      }
+      logLoading(changeExecutorState, 'changeExecutor');
+      setLoading(shouldBeLoading(changeExecutorState.status));
     }
   }, [changeExecutorState]);
 
@@ -185,6 +131,7 @@ const Execute = (props) => {
     changeExecutorResetState();
     executeSwapResetState();
     cancelSwapResetState();
+    approveResetState();
   };
 
   const onSubmitExecuteSwap = (e) => {

@@ -27,7 +27,15 @@ import {
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
-import { useCreateSwap, useApprove, getSwapContractAddress, getSwapContract, useGetValue } from 'hooks';
+import {
+  useCreateSwap,
+  useApprove,
+  getSwapContractAddress,
+  getSwapContract,
+  useGetValue,
+  logLoading,
+  shouldBeLoading
+} from 'hooks';
 import Container from 'components/Container';
 import ApprovalStatus from 'components/ApprovalStatus';
 import CreateSwapStatus from 'components/CreateSwapStatus';
@@ -35,7 +43,7 @@ import AccountConnector from 'components/AccountConnector';
 import ConnectedWallet from 'components/ConnectedWallet';
 import UnsupportedChain from 'components/UnsupportedChain';
 
-import { SUPPORTED_CHAINS } from 'consts';
+import { SUPPORTED_CHAINS, SANCTIONS_SUPPORTED_CHAINS } from 'consts';
 
 import ERC20_ABI from 'erc20Abi.json';
 
@@ -45,10 +53,10 @@ const Swap = () => {
   const swapContract = getSwapContract(chainId);
   const swapContractAddress = getSwapContractAddress(chainId);
   const [fromToken, setFromToken] = useState('');
-  // const [fromToken, setFromToken] = useState('0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c');
   const [receiveToken, setReceiveToken] = useState('');
-  // const [receiveToken, setReceiveToken] = useState('0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977');
   const [executor, setExecutor] = useState('');
+  // const [fromToken, setFromToken] = useState('0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c');
+  // const [receiveToken, setReceiveToken] = useState('0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977');
   // const [executor, setExecutor] = useState('0xce95DAde44E7307bAA616C77EF446915633dD9Ab');
   const [fromAmount, setFromAmount] = useState('');
   const [fromActualAmount, setFromActualAmount] = useState('');
@@ -62,9 +70,11 @@ const Swap = () => {
   const [addonsRiskChecked, setAddonsRiskChecked] = useState(false);
   const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
   const [addonsRequireKyc, setAddonsRequireKyc] = useState(false);
+  const [addonsRequireOfacSanctions, setAddonsRequireOfacSanctions] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
   const [swapAlreadyOpen, setSwapAlreadyOpen] = useState(false);
   const [supportedChain, setSupportedChain] = useState(false);
+  const [supportedSanctionChain, setSupportedSanctionChain] = useState(false);
   const {
     state: createSwapState,
     send: createSwapSend,
@@ -92,6 +102,15 @@ const Swap = () => {
   }, [chainId]);
 
   useEffect(() => {
+    const chainName = SANCTIONS_SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
+    if (chainName) {
+      setSupportedSanctionChain(true);
+    } else {
+      setSupportedSanctionChain(false);
+    }
+  }, [chainId]);
+
+  useEffect(() => {
     if (swapData && swapData.state === 1) {
       // 1 === OPEN
       setSwapAlreadyOpen(true);
@@ -108,43 +127,15 @@ const Swap = () => {
 
   useEffect(() => {
     if (approveState) {
-      console.log(approveState);
-      if (approveState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (approveState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (approveState.status === 'None') {
-        setLoading(false);
-      }
-      if (approveState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (approveState.status === 'Success') {
-        setLoading(false);
-      }
+      logLoading(approveState, 'approve');
+      setLoading(shouldBeLoading(approveState.status));
     }
   }, [approveState]);
 
   useEffect(() => {
     if (createSwapState) {
-      console.log(createSwapState);
-      if (createSwapState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (createSwapState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (createSwapState.status === 'None') {
-        setLoading(false);
-      }
-      if (createSwapState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (createSwapState.status === 'Success') {
-        setLoading(false);
-      }
+      logLoading(createSwapState, 'createSwap');
+      setLoading(shouldBeLoading(createSwapState.status));
     }
   }, [createSwapState]);
 
@@ -218,6 +209,10 @@ const Swap = () => {
     setAddonsRequireKyc(!addonsRequireKyc);
   };
 
+  const handleChangeAddonsRequireOfacSanctions = () => {
+    setAddonsRequireOfacSanctions(!addonsRequireOfacSanctions);
+  };
+
   const handleClickFromPercentage = (e, val) => {
     e.preventDefault();
     setFromAmountError('');
@@ -243,7 +238,8 @@ const Swap = () => {
         receiveActualAmount, // _outputAmount
         executor, // _executor
         addonsRequireIdentity, // _requireIdentity
-        addonsRequireKyc // _requireKyc
+        addonsRequireKyc, // _requireKyc
+        addonsRequireOfacSanctions // _requireSanctionCheck
       );
     }
   };
@@ -448,8 +444,20 @@ const Swap = () => {
                             onChange={handleChangeAddonsRequireKyc}
                           />
                         }
-                        label="Require KYC NFT"
+                        label="Require Signata KYC Proof NFT"
                       />
+                      {supportedSanctionChain && (
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={addonsRequireOfacSanctions}
+                              disabled={!account || swapAlreadyOpen}
+                              onChange={handleChangeAddonsRequireOfacSanctions}
+                            />
+                          }
+                          label="Require OFAC Sanctions Screening"
+                        />
+                      )}
                     </FormGroup>
                   )}
                   {/* {addonsRequireIdentity && isLocked && (
@@ -473,7 +481,9 @@ const Swap = () => {
                       <Button
                         variant="contained"
                         color="primary"
-                        disabled={isLoading || requiresApproval || swapAlreadyOpen}
+                        disabled={
+                          isLoading || requiresApproval || swapAlreadyOpen || !fromActualAmount || !receiveActualAmount
+                        }
                         size="large"
                         fullWidth
                         type="submit"
