@@ -66,7 +66,7 @@ export const getSwapContractAddress = (chainId) => {
   return consts.SWAP_CONTRACT_MAINNET;
 };
 
-export const getSwapContract = (chainId) => new Contract(getSwapContractAddress(chainId), ID_ABI);
+export const getSwapContract = (chainId) => new Contract(getSwapContractAddress(chainId), SWAP_ABI);
 
 export const getIdContractAddress = (chainId) => {
   if (chainId === 1) {
@@ -183,3 +183,28 @@ export const useGetSingleValue = (method, args, contractAddress, contract) => {
   }
   return value?.[0];
 };
+
+export function shouldBeLoading(state) {
+  switch (state) {
+    case 'PendingSignature':
+      return true;
+    case 'Exception':
+      return false;
+    case 'None':
+      return false;
+    case 'Mining':
+      return true;
+    case 'Success':
+      return false;
+    default:
+      return false;
+  }
+}
+
+export function logLoading(state, name) {
+  if (state && window.location.hostname === 'localhost') {
+    if (state && state.status !== 'None') {
+      console.log({ name, state: { ...state } });
+    }
+  }
+}
