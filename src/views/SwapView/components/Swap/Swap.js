@@ -60,9 +60,6 @@ const Swap = () => {
   const [fromToken, setFromToken] = useState('');
   const [receiveToken, setReceiveToken] = useState('');
   const [executor, setExecutor] = useState('');
-  // const [fromToken, setFromToken] = useState('0xdA3083e219FB1012BB8CA5fE4eF42f83299b973c');
-  // const [receiveToken, setReceiveToken] = useState('0xee479918Eb7fEfC0C7D4578B28c53b5f8620B977');
-  // const [executor, setExecutor] = useState('0xce95DAde44E7307bAA616C77EF446915633dD9Ab');
   const [fromAmount, setFromAmount] = useState('');
   const [fromActualAmount, setFromActualAmount] = useState('');
   const [fromAmountError, setFromAmountError] = useState('');
@@ -101,13 +98,109 @@ const Swap = () => {
     const getTokens = async () => {
       const response = await axios.get(tokenListAddress);
       if (response.data && response.data.tokens) {
-        setTokens(response.data.tokens);
+        const newArray = response.data.tokens;
+        if (chainId === 1) {
+          // adding partner addresses that aren't in the trust wallet list
+          newArray.push({
+            symbol: 'SATA',
+            address: '0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1',
+            type: 'ERC20',
+            asset: 'c60_t0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1',
+            name: 'Signata',
+            decimals: 18,
+            logoURI: 'https://my.signata.net/logo.png',
+            pairs: []
+          });
+          newArray.push({
+            symbol: 'dSATA',
+            address: '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b',
+            type: 'ERC20',
+            asset: 'c60_t0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b',
+            name: 'Signata DAO',
+            decimals: 18,
+            logoURI: 'https://sata.technology/dSATA.png',
+            pairs: []
+          });
+          newArray.push({
+            symbol: 'AGFI',
+            address: '0x4D0F56d728c5232ab07fAA0BdcbA23670A35451f',
+            type: 'ERC20',
+            asset: 'c60_t0x4D0F56d728c5232ab07fAA0BdcbA23670A35451f',
+            name: 'Aggregated Finance',
+            decimals: 9,
+            logoURI: 'https://aggregated.finance/logo-new.png',
+            pairs: []
+          });
+          console.log(newArray);
+        }
+        if (chainId === 56) {
+          newArray.push({
+            symbol: 'SATA',
+            address: '0x6b1C8765C7EFf0b60706b0ae489EB9bb9667465A',
+            type: 'ERC20',
+            asset: 'c60_t0x6b1C8765C7EFf0b60706b0ae489EB9bb9667465A',
+            name: 'Signata',
+            decimals: 18,
+            logoURI: 'https://my.signata.net/logo.png',
+            pairs: []
+          });
+        }
+        if (chainId === 137) {
+          newArray.push({
+            symbol: 'SATA',
+            address: '0x2E0f9A07d0ef445dB402d1c656ea6b71af81cb65',
+            type: 'ERC20',
+            asset: 'c60_t0x2E0f9A07d0ef445dB402d1c656ea6b71af81cb65',
+            name: 'Signata',
+            decimals: 18,
+            logoURI: 'https://my.signata.net/logo.png',
+            pairs: []
+          });
+        }
+        if (chainId === 250) {
+          newArray.push({
+            symbol: 'SATA',
+            address: '0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1',
+            type: 'ERC20',
+            asset: 'c60_t0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1',
+            name: 'Signata',
+            decimals: 18,
+            logoURI: 'https://my.signata.net/logo.png',
+            pairs: []
+          });
+        }
+        if (chainId === 1088) {
+          newArray.push({
+            symbol: 'SATA',
+            address: '0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1',
+            type: 'ERC20',
+            asset: 'c60_t0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1',
+            name: 'Signata',
+            decimals: 18,
+            logoURI: 'https://my.signata.net/logo.png',
+            pairs: []
+          });
+        }
+        if (chainId === 43114) {
+          newArray.push({
+            symbol: 'SATA',
+            address: '0xbec0A9aEa58b6a0c0f05a03078f7E7Dcecc13A95',
+            type: 'ERC20',
+            asset: 'c60_t0xbec0A9aEa58b6a0c0f05a03078f7E7Dcecc13A95',
+            name: 'Signata',
+            decimals: 18,
+            logoURI: 'https://my.signata.net/logo.png',
+            pairs: []
+          });
+        }
+        newArray.sort((a, b) => (a.symbol > b.symbol ? 1 : b.symbol > a.symbol ? -1 : 0));
+        setTokens(newArray);
       }
     };
     if (tokenListAddress) {
       getTokens();
     }
-  }, [tokenListAddress]);
+  }, [tokenListAddress, chainId]);
 
   useEffect(() => {
     const chainName = SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
@@ -261,8 +354,18 @@ const Swap = () => {
     }
   };
 
-  const handleSelectFromToken = (e) => {
-    console.log(e.target.value);
+  const handleSelectFromToken = (e, newValue) => {
+    console.log(newValue);
+    if (newValue && newValue.address) {
+      setFromToken(newValue.address);
+    }
+  };
+
+  const handleSelectReceiveToken = (e, newValue) => {
+    console.log(newValue);
+    if (newValue && newValue.address) {
+      setReceiveToken(newValue.address);
+    }
   };
 
   return (
@@ -320,22 +423,28 @@ const Swap = () => {
                   )}
                   <Autocomplete
                     id="from-select"
-                    sx={{ width: 300 }}
+                    // sx={{ width: 300 }}
+                    fullWidth
                     options={tokens}
                     autoHighlight
-                    onChange={(e) => handleSelectFromToken(e)}
-                    getOptionLabel={(option) => option.name}
+                    onChange={handleSelectFromToken}
+                    getOptionLabel={(option) => `${option.name} ${option.symbol} (${shortenIfAddress(option.address)})`}
                     renderOption={(props, option) => (
                       <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                        <img loading="lazy" width="20" src={option.logoURI} srcSet={option.logoURI} alt={option.name} />
+                        <img
+                          loading="lazy"
+                          width="20"
+                          src={option.logoURI}
+                          srcSet={option.logoURI}
+                          alt={option.symbol}
+                        />
                         {option.name} ({option.symbol})
                       </Box>
                     )}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        fullWidth
-                        label="Select Token"
+                        label="Select From Token"
                         inputProps={{
                           ...params.inputProps,
                           autoComplete: 'new-password' // disable autocomplete and autofill
@@ -356,7 +465,6 @@ const Swap = () => {
                       value={fromToken}
                       onChange={handleChangeFromToken}
                       error={fromTokenError !== ''}
-                      helperText={fromTokenError ? fromTokenError : 'Paste a valid ERC20 token address.'}
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton
@@ -406,6 +514,41 @@ const Swap = () => {
                         fromTokenInfo.symbol
                       }`}
                       sx={{ fontFamily: 'Roboto Mono', borderRadius: 1, width: '100%', textAlign: 'left' }}
+                    />
+                  )}
+                  {fromToken && (
+                    <Autocomplete
+                      id="receive-select"
+                      // sx={{ width: 300 }}
+                      fullWidth
+                      options={tokens}
+                      autoHighlight
+                      onChange={handleSelectReceiveToken}
+                      getOptionLabel={(option) =>
+                        `${option.name} ${option.symbol} (${shortenIfAddress(option.address)})`
+                      }
+                      renderOption={(props, option) => (
+                        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                          <img
+                            loading="lazy"
+                            width="20"
+                            src={option.logoURI}
+                            srcSet={option.logoURI}
+                            alt={option.name}
+                          />
+                          {option.name} ({option.symbol})
+                        </Box>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select Receive Token"
+                          inputProps={{
+                            ...params.inputProps,
+                            autoComplete: 'new-password' // disable autocomplete and autofill
+                          }}
+                        />
+                      )}
                     />
                   )}
                   {fromToken && (
