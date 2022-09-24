@@ -49,6 +49,7 @@
     "@walletconnect/web3-provider": "^1.7.8",
     "aos": "^2.3.4",
     "assert": "^2.0.0",
+    "axios": "^0.27.2",
     "babel-loader": "^8.2.5",
     "babel-preset-react-app": "^10.0.1",
     "bfj": "^7.0.2",

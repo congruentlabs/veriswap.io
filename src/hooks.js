@@ -8,22 +8,22 @@ import ID_ABI from 'idAbi.json';
 
 export const getTokenList = (chainId) => {
   if (chainId === 1) {
-    return 'https://github.com/Uniswap/assets/blob/master/blockchains/ethereum/tokenlist.json';
+    return 'https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/tokenlist.json';
   }
   if (chainId === 4) {
     return '';
   }
   if (chainId === 56) {
     // bsc
-    return 'https://github.com/Uniswap/assets/blob/master/blockchains/binance/tokenlist.json';
+    return 'https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/binance/tokenlist.json';
   }
   if (chainId === 137) {
     // matic
-    return 'https://github.com/Uniswap/assets/blob/master/blockchains/polygon/tokenlist.json';
+    return 'https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/polygon/tokenlist.json';
   }
   if (chainId === 250) {
     // fantom
-    return 'https://github.com/Uniswap/assets/blob/master/blockchains/fantom/tokenlist.json';
+    return 'https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/fantom/tokenlist.json';
   }
   if (chainId === 1088) {
     // metis
@@ -31,7 +31,7 @@ export const getTokenList = (chainId) => {
   }
   if (chainId === 43114) {
     // avax
-    return 'https://github.com/Uniswap/assets/blob/master/blockchains/avalanchec/tokenlist.json';
+    return 'https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/avalanchec/tokenlist.json';
   }
   return '';
 };

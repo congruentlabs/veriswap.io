@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTokenBalance, useEthers, useToken, shortenIfAddress, useTokenAllowance } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
+import axios from 'axios';
 // import Torus from '@toruslabs/torus-embed';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
 import { useTheme } from '@mui/material/styles';
@@ -22,7 +23,8 @@ import {
   OutlinedInput,
   Stack,
   Switch,
-  TextField
+  TextField,
+  Autocomplete
 } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
@@ -34,7 +36,8 @@ import {
   getSwapContract,
   useGetValue,
   logLoading,
-  shouldBeLoading
+  shouldBeLoading,
+  getTokenList
 } from 'hooks';
 import Container from 'components/Container';
 import ApprovalStatus from 'components/ApprovalStatus';
@@ -52,6 +55,8 @@ const Swap = () => {
   const { account, chainId } = useEthers();
   const swapContract = getSwapContract(chainId);
   const swapContractAddress = getSwapContractAddress(chainId);
+  const tokenListAddress = getTokenList(chainId);
+  const [tokens, setTokens] = useState([]);
   const [fromToken, setFromToken] = useState('');
   const [receiveToken, setReceiveToken] = useState('');
   const [executor, setExecutor] = useState('');
@@ -91,6 +96,18 @@ const Swap = () => {
   const fromTokenBalance = useTokenBalance(fromToken, account);
   const swapAllowance = useTokenAllowance(fromToken, account, swapContractAddress);
   const swapData = useGetValue('swaps', [account], getSwapContractAddress(chainId), swapContract);
+
+  useEffect(() => {
+    const getTokens = async () => {
+      const response = await axios.get(tokenListAddress);
+      if (response.data && response.data.tokens) {
+        setTokens(response.data.tokens);
+      }
+    };
+    if (tokenListAddress) {
+      getTokens();
+    }
+  }, [tokenListAddress]);
 
   useEffect(() => {
     const chainName = SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
@@ -244,6 +261,10 @@ const Swap = () => {
     }
   };
 
+  const handleSelectFromToken = (e) => {
+    console.log(e.target.value);
+  };
+
   return (
     <Box minHeight={800} height={'auto'} position={'relative'}>
       <Box
@@ -297,6 +318,31 @@ const Swap = () => {
                       </Button>
                     </>
                   )}
+                  <Autocomplete
+                    id="from-select"
+                    sx={{ width: 300 }}
+                    options={tokens}
+                    autoHighlight
+                    onChange={(e) => handleSelectFromToken(e)}
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(props, option) => (
+                      <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                        <img loading="lazy" width="20" src={option.logoURI} srcSet={option.logoURI} alt={option.name} />
+                        {option.name} ({option.symbol})
+                      </Box>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        label="Select Token"
+                        inputProps={{
+                          ...params.inputProps,
+                          autoComplete: 'new-password' // disable autocomplete and autofill
+                        }}
+                      />
+                    )}
+                  />
                   <FormControl fullWidth sx={{ height: 54 }}>
                     <InputLabel htmlFor="from-token">From Token</InputLabel>
                     <OutlinedInput
