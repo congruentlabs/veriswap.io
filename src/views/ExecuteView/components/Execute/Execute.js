@@ -51,7 +51,6 @@ const Execute = (props) => {
   const [newExecutor, setNewExecutor] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [addonsRequireIdentity, setAddonsRequireIdentity] = useState(false);
 
   const {
     state: executeSwapState,
