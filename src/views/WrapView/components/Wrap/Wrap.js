@@ -48,7 +48,7 @@ const Wrap = () => {
   const [requiresApproval, setRequiresApproval] = useState(false);
   const { state: depositState, send: depositSend, resetState: depositResetState } = useDepositSata(wrapContract);
   const { state: withdrawState, send: withdrawSend, resetState: withdrawResetState } = useWithdrawSata(wrapContract);
-  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(wrapContract);
+  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(sataToken);
 
   // TODO: check if identity locked for the require identity option
   // const isLocked = useGetSingleValue('isLocked', [account], ID_CONTRACT, idContract);
@@ -118,8 +118,8 @@ const Wrap = () => {
         setSataAmount(formatUnits(sataTokenBalance || 0, sataTokenInfo.decimals));
         setSataActualAmount(sataTokenBalance);
       } else {
-        setSataAmount(formatUnits(newAmount, sataTokenInfo.decimals));
-        setSataActualAmount(newAmount);
+        setSataAmount(newAmount);
+        setSataActualAmount(formatUnits(newAmount, sataTokenInfo.decimals));
       }
     } catch (error) {
       console.error(error.message);
@@ -134,8 +134,8 @@ const Wrap = () => {
         setVSataAmount(formatUnits(vSataTokenBalance || 0, vSataTokenInfo.decimals));
         setVSataActualAmount(vSataTokenBalance);
       } else {
-        setVSataAmount(formatUnits(newAmount, vSataTokenInfo.decimals));
-        setVSataActualAmount(newAmount);
+        setVSataAmount(newAmount);
+        setVSataActualAmount(formatUnits(newAmount, vSataTokenInfo.decimals));
       }
     } catch (error) {
       console.error(error.message);
