@@ -119,7 +119,7 @@ const Wrap = () => {
         setSataActualAmount(sataTokenBalance);
       } else {
         setSataAmount(newAmount);
-        setSataActualAmount(formatUnits(newAmount, sataTokenInfo.decimals));
+        setSataActualAmount(parseUnits(newAmount, sataTokenInfo.decimals));
       }
     } catch (error) {
       console.error(error.message);
@@ -135,7 +135,7 @@ const Wrap = () => {
         setVSataActualAmount(vSataTokenBalance);
       } else {
         setVSataAmount(newAmount);
-        setVSataActualAmount(formatUnits(newAmount, vSataTokenInfo.decimals));
+        setVSataActualAmount(parseUnits(newAmount, vSataTokenInfo.decimals));
       }
     } catch (error) {
       console.error(error.message);
@@ -189,7 +189,8 @@ const Wrap = () => {
                   {sataTokenInfo && sataTokenInfo.name} Token
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 700 }}>
-                  Balance: {sataTokenBalance && sataTokenBalance.toString()} {sataTokenInfo && sataTokenInfo.symbol}
+                  Balance: {sataTokenBalance && formatUnits(sataTokenBalance || 0, sataTokenInfo.decimals)}{' '}
+                  {sataTokenInfo && sataTokenInfo.symbol}
                 </Typography>
                 <TextField
                   value={sataAmount}
@@ -234,7 +235,8 @@ const Wrap = () => {
                   {vSataTokenInfo && vSataTokenInfo.name} Token
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 700 }}>
-                  Balance: {vSataTokenBalance && vSataTokenBalance.toString()} {vSataTokenInfo && vSataTokenInfo.symbol}
+                  Balance: {vSataTokenBalance && formatUnits(vSataTokenBalance || 0, vSataTokenInfo.decimals)}{' '}
+                  {vSataTokenInfo && vSataTokenInfo.symbol}
                 </Typography>
                 <TextField
                   value={vSataAmount}
