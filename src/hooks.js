@@ -1,10 +1,12 @@
-import { useContractFunction, useCall } from '@usedapp/core';
+import { useContractFunction, useCall, ERC20 } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
 
 import * as consts from 'consts';
 
 import SWAP_ABI from 'swapAbi.json';
 import ID_ABI from 'idAbi.json';
+import WRAP_ABI from 'wrapAbi.json';
+import ERC20_ABI from 'erc20Abi.json';
 
 export const getTokenList = (chainId) => {
   if (chainId === 1) {
@@ -99,6 +101,36 @@ export const getIdContractAddress = (chainId) => {
 };
 
 export const getIdContract = (chainId) => new Contract(getIdContractAddress(chainId), ID_ABI);
+
+export const getSataWrapContractAddress = (chainId) => {
+  return consts.SATA_WRAP_CONTRACT_MAINNET;
+};
+
+export const getSataWrapContract = (chainId) => new Contract(getSataWrapContractAddress(chainId), WRAP_ABI);
+
+export const getSataTokenAddress = (chainId) => {
+  return consts.SATA_CONTRACT_MAINNET;
+};
+
+export const getSataTokenContract = (chainId) => new Contract(getSataTokenAddress(chainId), ERC20_ABI);
+
+export function useDepositSata(chainId) {
+  const sataWrapContract = getSataWrapContract(chainId);
+
+  const { state, send, events, resetState } = useContractFunction(sataWrapContract, 'deposit', {
+    transactionName: 'Deposit SATA'
+  });
+  return { state, send, events, resetState };
+}
+
+export function useWithdrawSata(chainId) {
+  const sataWrapContract = getSataWrapContract(chainId);
+
+  const { state, send, events, resetState } = useContractFunction(sataWrapContract, 'withdraw', {
+    transactionName: 'Withdraw SATA'
+  });
+  return { state, send, events, resetState };
+}
 
 export function useCreateSwap(chainId) {
   const swapContract = getSwapContract(chainId);
