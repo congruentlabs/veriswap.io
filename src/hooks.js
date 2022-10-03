@@ -102,6 +102,8 @@ export const getIdContractAddress = (chainId) => {
 
 export const getIdContract = (chainId) => new Contract(getIdContractAddress(chainId), ID_ABI);
 
+// SATA
+
 export const getSataWrapContractAddress = (chainId) => {
   return consts.SATA_WRAP_CONTRACT_MAINNET;
 };
@@ -131,6 +133,104 @@ export function useWithdrawSata(chainId) {
   });
   return { state, send, events, resetState };
 }
+
+// USDT
+
+export const getUsdtWrapContractAddress = (chainId) => {
+  return consts.USDT_WRAP_CONTRACT_MAINNET;
+};
+
+export const getUsdtWrapContract = (chainId) => new Contract(getUsdtWrapContractAddress(chainId), WRAP_ABI);
+
+export const getUsdtTokenAddress = (chainId) => {
+  return consts.USDT_CONTRACT_MAINNET;
+};
+
+export const getUsdtTokenContract = (chainId) => new Contract(getUsdtTokenAddress(chainId), ERC20_ABI);
+
+export function useDepositUsdt(chainId) {
+  const wrapContract = getUsdtWrapContract(chainId);
+
+  const { state, send, events, resetState } = useContractFunction(wrapContract, 'deposit', {
+    transactionName: 'Deposit USDT'
+  });
+  return { state, send, events, resetState };
+}
+
+export function useWithdrawUsdt(chainId) {
+  const wrapContract = getUsdtWrapContract(chainId);
+
+  const { state, send, events, resetState } = useContractFunction(wrapContract, 'withdraw', {
+    transactionName: 'Withdraw USDT'
+  });
+  return { state, send, events, resetState };
+}
+
+// USDC
+
+export const getUsdcWrapContractAddress = (chainId) => {
+  return consts.USDC_WRAP_CONTRACT_MAINNET;
+};
+
+export const getUsdcWrapContract = (chainId) => new Contract(getUsdcWrapContractAddress(chainId), WRAP_ABI);
+
+export const getUsdcTokenAddress = (chainId) => {
+  return consts.USDC_CONTRACT_MAINNET;
+};
+
+export const getUsdcTokenContract = (chainId) => new Contract(getUsdcTokenAddress(chainId), ERC20_ABI);
+
+export function useDepositUsdc(chainId) {
+  const wrapContract = getUsdcWrapContract(chainId);
+
+  const { state, send, events, resetState } = useContractFunction(wrapContract, 'deposit', {
+    transactionName: 'Deposit USDC'
+  });
+  return { state, send, events, resetState };
+}
+
+export function useWithdrawUsdc(chainId) {
+  const wrapContract = getUsdcWrapContract(chainId);
+
+  const { state, send, events, resetState } = useContractFunction(wrapContract, 'withdraw', {
+    transactionName: 'Withdraw USDC'
+  });
+  return { state, send, events, resetState };
+}
+
+// DAI
+
+export const getDaiWrapContractAddress = (chainId) => {
+  return consts.DAI_WRAP_CONTRACT_MAINNET;
+};
+
+export const getDaiWrapContract = (chainId) => new Contract(getDaiWrapContractAddress(chainId), WRAP_ABI);
+
+export const getDaiTokenAddress = (chainId) => {
+  return consts.DAI_CONTRACT_MAINNET;
+};
+
+export const getDaiTokenContract = (chainId) => new Contract(getDaiTokenAddress(chainId), ERC20_ABI);
+
+export function useDepositDai(chainId) {
+  const wrapContract = getDaiWrapContract(chainId);
+
+  const { state, send, events, resetState } = useContractFunction(wrapContract, 'deposit', {
+    transactionName: 'Deposit DAI'
+  });
+  return { state, send, events, resetState };
+}
+
+export function useWithdrawDai(chainId) {
+  const wrapContract = getDaiWrapContract(chainId);
+
+  const { state, send, events, resetState } = useContractFunction(wrapContract, 'withdraw', {
+    transactionName: 'Withdraw DAI'
+  });
+  return { state, send, events, resetState };
+}
+
+// SWAP
 
 export function useCreateSwap(chainId) {
   const swapContract = getSwapContract(chainId);
