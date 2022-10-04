@@ -9,7 +9,7 @@ const getTheme = (mode, themeToggler) =>
       palette: dark,
       shadows: shadows(mode),
       typography: {
-        fontFamily: '"Lato", sans-serif',
+        fontFamily: 'Lato, sans-serif',
         button: {
           textTransform: 'none',
           fontWeight: 'medium'
