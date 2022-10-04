@@ -73,7 +73,7 @@ const VUSDT = () => {
     }
   }, [vUsdtTokenBalance, vUsdtTokenInfo, vUsdtAmount]);
 
-  const onSubmitWrapSata = (e) => {
+  const onSubmitWrap = (e) => {
     e.preventDefault();
     approveResetState();
     depositResetState();
@@ -86,7 +86,7 @@ const VUSDT = () => {
     }
   };
 
-  const onSubmitUnwrapSata = (e) => {
+  const onSubmitUnwrap = (e) => {
     e.preventDefault();
     approveResetState();
     depositResetState();
@@ -128,9 +128,12 @@ const VUSDT = () => {
   };
 
   return (
-    <Stack spacing={2} alignItems="center">
+    <Stack spacing={1} alignItems="center">
       <Typography variant="h4" sx={{ fontWeight: 700 }}>
         {usdtTokenInfo && usdtTokenInfo.name} Token
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {usdtTokenAddress}
       </Typography>
       <Typography variant="body1" sx={{ fontWeight: 700 }}>
         Balance: {usdtTokenBalance && formatUnits(usdtTokenBalance || 0, usdtTokenInfo.decimals)}{' '}
@@ -151,7 +154,7 @@ const VUSDT = () => {
         disabled={usdtTokenBalance && usdtTokenBalance.isZero()}
         size="large"
         startIcon={<ArrowDownwardIcon />}
-        onClick={onSubmitWrapSata}
+        onClick={onSubmitWrap}
       >
         {requiresApproval ? 'Approve' : 'Wrap'}
       </Button>
@@ -171,12 +174,15 @@ const VUSDT = () => {
         disabled={vUsdtTokenBalance && vUsdtTokenBalance.isZero()}
         size="large"
         startIcon={<ArrowUpwardIcon />}
-        onClick={onSubmitUnwrapSata}
+        onClick={onSubmitUnwrap}
       >
         Unwrap
       </Button>
       <Typography variant="h4" sx={{ fontWeight: 700 }}>
         {vUsdtTokenInfo && vUsdtTokenInfo.name} Token
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {wrapContractAddress}
       </Typography>
       <Typography variant="body1" sx={{ fontWeight: 700 }}>
         Balance: {vUsdtTokenBalance && formatUnits(vUsdtTokenBalance || 0, vUsdtTokenInfo.decimals)}{' '}

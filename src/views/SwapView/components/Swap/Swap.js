@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useTokenBalance, useEthers, useToken, shortenIfAddress, useTokenAllowance } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
 import axios from 'axios';
-// import Torus from '@toruslabs/torus-embed';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
 import { useTheme } from '@mui/material/styles';
 import {
@@ -24,7 +23,10 @@ import {
   Stack,
   Switch,
   TextField,
-  Autocomplete
+  Autocomplete,
+  Typography,
+  Link,
+  Divider
 } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
@@ -688,6 +690,27 @@ const Swap = () => {
               </form>
             )}
           </Box>
+        </Box>
+        <Box>
+          <Stack spacing={2}>
+            <div>
+              <Divider sx={{ mt: 10 }}>
+                <i>Other Services</i>
+              </Divider>
+            </div>
+            <ButtonGroup fullWidth orientation="vertical" size="large" variant="text" color="primary">
+              <Button href="#/wrap">KYC Wrapped Tokens</Button>
+              <Button href="https://my.signata.net/" target="_blank">
+                Signata Identity Manager
+              </Button>
+              <Button href="https://store.signata.net/" target="_blank">
+                Merch
+              </Button>
+            </ButtonGroup>
+            <Box textAlign="center">
+              <img src="hoodie.jpg" alt="hoodie" width="100%" style={{ borderRadius: 8, maxWidth: 200 }} />
+            </Box>
+          </Stack>
         </Box>
       </Container>
     </Box>

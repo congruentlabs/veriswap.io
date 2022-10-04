@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import { useEthers } from '@usedapp/core';
-import axios from 'axios';
-// import Torus from '@toruslabs/torus-embed';
 import { useTheme } from '@mui/material/styles';
-import { Stack, Box, Card, Typography, Link, Alert, Divider, Tabs, Tab } from '@mui/material';
+import { Stack, Box, Card, Typography, Link, Alert, Divider, Tabs, Tab, Button, ButtonGroup } from '@mui/material';
 import Container from 'components/Container';
 import AccountConnector from 'components/AccountConnector';
 import ConnectedWallet from 'components/ConnectedWallet';
@@ -127,6 +125,27 @@ const Wrap = () => {
               </Box>
             )}
           </Box>
+        </Box>
+        <Box>
+          <Stack spacing={2}>
+            <div>
+              <Divider sx={{ mt: 10 }}>
+                <i>Other Services</i>
+              </Divider>
+            </div>
+            <ButtonGroup fullWidth orientation="vertical" size="large" variant="text" color="primary">
+              <Button href="/">Swap</Button>
+              <Button href="https://my.signata.net/" target="_blank">
+                Signata Identity Manager
+              </Button>
+              <Button href="https://store.signata.net/" target="_blank">
+                Merch
+              </Button>
+            </ButtonGroup>
+            <Box textAlign="center">
+              <img src="hoodie.jpg" alt="hoodie" width="100%" style={{ borderRadius: 8, maxWidth: 200 }} />
+            </Box>
+          </Stack>
         </Box>
       </Container>
     </Box>

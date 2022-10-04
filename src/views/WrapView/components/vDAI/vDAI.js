@@ -26,31 +26,31 @@ const VDAI = () => {
   const { account, chainId } = useEthers();
   const wrapContract = getDaiWrapContract(chainId);
   const wrapContractAddress = getDaiWrapContractAddress(chainId);
-  const usdtTokenAddress = getDaiTokenAddress(chainId);
-  const usdtToken = new Contract(usdtTokenAddress || '0x0000000000000000000000000000000000000000', ERC20_ABI);
-  const [usdtAmount, setDaiAmount] = useState('');
-  const [usdtActualAmount, setDaiActualAmount] = useState('');
+  const daiTokenAddress = getDaiTokenAddress(chainId);
+  const daiToken = new Contract(daiTokenAddress || '0x0000000000000000000000000000000000000000', ERC20_ABI);
+  const [daiAmount, setDaiAmount] = useState('');
+  const [daiActualAmount, setDaiActualAmount] = useState('');
   const [vDaiAmount, setVDaiAmount] = useState('');
   const [vDaiActualAmount, setVDaiActualAmount] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
   const { state: depositState, send: depositSend, resetState: depositResetState } = useDepositDai(wrapContract);
   const { state: withdrawState, send: withdrawSend, resetState: withdrawResetState } = useWithdrawDai(wrapContract);
-  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(usdtToken);
+  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(daiToken);
 
-  const usdtTokenInfo = useToken(usdtTokenAddress);
+  const daiTokenInfo = useToken(daiTokenAddress);
   const vDaiTokenInfo = useToken(wrapContractAddress);
-  const usdtTokenBalance = useTokenBalance(usdtTokenAddress, account);
+  const daiTokenBalance = useTokenBalance(daiTokenAddress, account);
   const vDaiTokenBalance = useTokenBalance(wrapContractAddress, account);
-  const wrapAllowance = useTokenAllowance(usdtTokenAddress, account, wrapContractAddress);
+  const wrapAllowance = useTokenAllowance(daiTokenAddress, account, wrapContractAddress);
 
   useEffect(() => {
-    if (wrapAllowance < usdtActualAmount) {
+    if (wrapAllowance < daiActualAmount) {
       setRequiresApproval(true);
     } else {
       setRequiresApproval(false);
     }
-  }, [wrapAllowance, setRequiresApproval, usdtActualAmount]);
+  }, [wrapAllowance, setRequiresApproval, daiActualAmount]);
 
   useEffect(() => {
     if (approveState) {
@@ -60,11 +60,11 @@ const VDAI = () => {
   }, [approveState]);
 
   useEffect(() => {
-    if (usdtTokenBalance && usdtTokenInfo && !usdtAmount) {
-      setDaiActualAmount(usdtTokenBalance);
-      setDaiAmount(formatEther(usdtTokenBalance, usdtTokenInfo.decimals));
+    if (daiTokenBalance && daiTokenInfo && !daiAmount) {
+      setDaiActualAmount(daiTokenBalance);
+      setDaiAmount(formatEther(daiTokenBalance, daiTokenInfo.decimals));
     }
-  }, [usdtTokenBalance, usdtTokenInfo, usdtAmount]);
+  }, [daiTokenBalance, daiTokenInfo, daiAmount]);
 
   useEffect(() => {
     if (vDaiTokenBalance && vDaiTokenInfo && !vDaiAmount) {
@@ -80,9 +80,9 @@ const VDAI = () => {
     withdrawResetState();
 
     if (requiresApproval) {
-      approveSend(wrapContractAddress, usdtActualAmount);
+      approveSend(wrapContractAddress, daiActualAmount);
     } else {
-      depositSend(usdtActualAmount);
+      depositSend(daiActualAmount);
     }
   };
 
@@ -98,13 +98,13 @@ const VDAI = () => {
   const onChangeDaiAmount = (e) => {
     try {
       const newAmount = e.target.value;
-      const parsedAmount = parseUnits(newAmount, usdtTokenInfo.decimals);
-      if (parsedAmount.gt(usdtTokenBalance) || parsedAmount.isNegative()) {
-        setDaiAmount(formatUnits(usdtTokenBalance || 0, usdtTokenInfo.decimals));
-        setDaiActualAmount(usdtTokenBalance);
+      const parsedAmount = parseUnits(newAmount, daiTokenInfo.decimals);
+      if (parsedAmount.gt(daiTokenBalance) || parsedAmount.isNegative()) {
+        setDaiAmount(formatUnits(daiTokenBalance || 0, daiTokenInfo.decimals));
+        setDaiActualAmount(daiTokenBalance);
       } else {
         setDaiAmount(newAmount);
-        setDaiActualAmount(parseUnits(newAmount, usdtTokenInfo.decimals));
+        setDaiActualAmount(parseUnits(newAmount, daiTokenInfo.decimals));
       }
     } catch (error) {
       console.error(error.message);
@@ -128,16 +128,19 @@ const VDAI = () => {
   };
 
   return (
-    <Stack spacing={2} alignItems="center">
+    <Stack spacing={1} alignItems="center">
       <Typography variant="h4" sx={{ fontWeight: 700 }}>
-        {usdtTokenInfo && usdtTokenInfo.name} Token
+        {daiTokenInfo && daiTokenInfo.name} Token
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {daiTokenAddress}
       </Typography>
       <Typography variant="body1" sx={{ fontWeight: 700 }}>
-        Balance: {usdtTokenBalance && formatUnits(usdtTokenBalance || 0, usdtTokenInfo.decimals)}{' '}
-        {usdtTokenInfo && usdtTokenInfo.symbol}
+        Balance: {daiTokenBalance && formatUnits(daiTokenBalance || 0, daiTokenInfo.decimals)}{' '}
+        {daiTokenInfo && daiTokenInfo.symbol}
       </Typography>
       <TextField
-        value={usdtAmount}
+        value={daiAmount}
         onChange={onChangeDaiAmount}
         label="Amount"
         variant="outlined"
@@ -148,7 +151,7 @@ const VDAI = () => {
         color="primary"
         variant="contained"
         fullWidth
-        disabled={usdtTokenBalance && usdtTokenBalance.isZero()}
+        disabled={daiTokenBalance && daiTokenBalance.isZero()}
         size="large"
         startIcon={<ArrowDownwardIcon />}
         onClick={onSubmitWrap}
@@ -177,6 +180,9 @@ const VDAI = () => {
       </Button>
       <Typography variant="h4" sx={{ fontWeight: 700 }}>
         {vDaiTokenInfo && vDaiTokenInfo.name} Token
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {wrapContractAddress}
       </Typography>
       <Typography variant="body1" sx={{ fontWeight: 700 }}>
         Balance: {vDaiTokenBalance && formatUnits(vDaiTokenBalance || 0, vDaiTokenInfo.decimals)}{' '}

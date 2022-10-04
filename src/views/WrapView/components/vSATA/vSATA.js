@@ -1,12 +1,11 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { useTokenBalance, useEthers, useToken, shortenIfAddress, useTokenAllowance } from '@usedapp/core';
+import { useTokenBalance, useEthers, useToken, useTokenAllowance } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
-import axios from 'axios';
 // import Torus from '@toruslabs/torus-embed';
 import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
 import { useTheme } from '@mui/material/styles';
-import { Stack, Autocomplete, Box, Card, TextField, Typography, Button, Link } from '@mui/material';
+import { Stack, TextField, Typography, Button, Link } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import {
@@ -20,7 +19,6 @@ import {
   useWithdrawSata
 } from 'hooks';
 import ApprovalStatus from 'components/ApprovalStatus';
-import AccountConnector from 'components/AccountConnector';
 import StatusMessage from 'components/StatusMessage';
 
 import ERC20_ABI from 'erc20Abi.json';
@@ -80,7 +78,7 @@ const VSATA = () => {
     }
   }, [vSataTokenBalance, vSataTokenInfo, vSataAmount]);
 
-  const onSubmitWrapSata = (e) => {
+  const onSubmitWrap = (e) => {
     e.preventDefault();
     approveResetState();
     depositResetState();
@@ -93,7 +91,7 @@ const VSATA = () => {
     }
   };
 
-  const onSubmitUnwrapSata = (e) => {
+  const onSubmitUnwrap = (e) => {
     e.preventDefault();
     approveResetState();
     depositResetState();
@@ -135,9 +133,12 @@ const VSATA = () => {
   };
 
   return (
-    <Stack spacing={2} alignItems="center">
+    <Stack spacing={1} alignItems="center">
       <Typography variant="h4" sx={{ fontWeight: 700 }}>
         {sataTokenInfo && sataTokenInfo.name} Token
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {sataTokenAddress}
       </Typography>
       <Typography variant="body1" sx={{ fontWeight: 700 }}>
         Balance: {sataTokenBalance && formatUnits(sataTokenBalance || 0, sataTokenInfo.decimals)}{' '}
@@ -158,7 +159,7 @@ const VSATA = () => {
         disabled={sataTokenBalance && sataTokenBalance.isZero()}
         size="large"
         startIcon={<ArrowDownwardIcon />}
-        onClick={onSubmitWrapSata}
+        onClick={onSubmitWrap}
       >
         {requiresApproval ? 'Approve' : 'Wrap'}
       </Button>
@@ -178,12 +179,15 @@ const VSATA = () => {
         disabled={vSataTokenBalance && vSataTokenBalance.isZero()}
         size="large"
         startIcon={<ArrowUpwardIcon />}
-        onClick={onSubmitUnwrapSata}
+        onClick={onSubmitUnwrap}
       >
         Unwrap
       </Button>
       <Typography variant="h4" sx={{ fontWeight: 700 }}>
         {vSataTokenInfo && vSataTokenInfo.name} Token
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {wrapContractAddress}
       </Typography>
       <Typography variant="body1" sx={{ fontWeight: 700 }}>
         Balance: {vSataTokenBalance && formatUnits(vSataTokenBalance || 0, vSataTokenInfo.decimals)}{' '}

@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { useEthers, shortenIfAddress, useTokenAllowance } from '@usedapp/core';
+import { useEthers, shortenIfAddress } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
-
 import { useTheme } from '@mui/material/styles';
-import { Alert, AlertTitle, Box, Button, ButtonGroup, Card, Stack, TextField } from '@mui/material';
+import { Alert, AlertTitle, Box, Button, ButtonGroup, Card, Stack, TextField, Divider } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
@@ -358,6 +357,28 @@ const Execute = (props) => {
                 </form>
               )}
           </Box>
+        </Box>
+        <Box>
+          <Stack spacing={2}>
+            <div>
+              <Divider sx={{ mt: 10 }}>
+                <i>Other Services</i>
+              </Divider>
+            </div>
+            <ButtonGroup fullWidth orientation="vertical" size="large" variant="text" color="primary">
+              <Button href="/">Swap</Button>
+              <Button href="#/wrap">KYC Wrapped Tokens</Button>
+              <Button href="https://my.signata.net/" target="_blank">
+                Signata Identity Manager
+              </Button>
+              <Button href="https://store.signata.net/" target="_blank">
+                Merch
+              </Button>
+            </ButtonGroup>
+            <Box textAlign="center">
+              <img src="hoodie.jpg" alt="hoodie" width="100%" style={{ borderRadius: 8, maxWidth: 200 }} />
+            </Box>
+          </Stack>
         </Box>
       </Container>
     </Box>

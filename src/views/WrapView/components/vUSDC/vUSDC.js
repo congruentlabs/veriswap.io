@@ -26,31 +26,31 @@ const VUSDC = () => {
   const { account, chainId } = useEthers();
   const wrapContract = getUsdcWrapContract(chainId);
   const wrapContractAddress = getUsdcWrapContractAddress(chainId);
-  const usdtTokenAddress = getUsdcTokenAddress(chainId);
-  const usdtToken = new Contract(usdtTokenAddress || '0x0000000000000000000000000000000000000000', ERC20_ABI);
-  const [usdtAmount, setUsdcAmount] = useState('');
-  const [usdtActualAmount, setUsdcActualAmount] = useState('');
+  const usdcTokenAddress = getUsdcTokenAddress(chainId);
+  const usdcToken = new Contract(usdcTokenAddress || '0x0000000000000000000000000000000000000000', ERC20_ABI);
+  const [usdcAmount, setUsdcAmount] = useState('');
+  const [usdcActualAmount, setUsdcActualAmount] = useState('');
   const [vUsdcAmount, setVUsdcAmount] = useState('');
   const [vUsdcActualAmount, setVUsdcActualAmount] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
   const { state: depositState, send: depositSend, resetState: depositResetState } = useDepositUsdc(wrapContract);
   const { state: withdrawState, send: withdrawSend, resetState: withdrawResetState } = useWithdrawUsdc(wrapContract);
-  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(usdtToken);
+  const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(usdcToken);
 
-  const usdtTokenInfo = useToken(usdtTokenAddress);
+  const usdcTokenInfo = useToken(usdcTokenAddress);
   const vUsdcTokenInfo = useToken(wrapContractAddress);
-  const usdtTokenBalance = useTokenBalance(usdtTokenAddress, account);
+  const usdcTokenBalance = useTokenBalance(usdcTokenAddress, account);
   const vUsdcTokenBalance = useTokenBalance(wrapContractAddress, account);
-  const wrapAllowance = useTokenAllowance(usdtTokenAddress, account, wrapContractAddress);
+  const wrapAllowance = useTokenAllowance(usdcTokenAddress, account, wrapContractAddress);
 
   useEffect(() => {
-    if (wrapAllowance < usdtActualAmount) {
+    if (wrapAllowance < usdcActualAmount) {
       setRequiresApproval(true);
     } else {
       setRequiresApproval(false);
     }
-  }, [wrapAllowance, setRequiresApproval, usdtActualAmount]);
+  }, [wrapAllowance, setRequiresApproval, usdcActualAmount]);
 
   useEffect(() => {
     if (approveState) {
@@ -60,11 +60,11 @@ const VUSDC = () => {
   }, [approveState]);
 
   useEffect(() => {
-    if (usdtTokenBalance && usdtTokenInfo && !usdtAmount) {
-      setUsdcActualAmount(usdtTokenBalance);
-      setUsdcAmount(formatEther(usdtTokenBalance, usdtTokenInfo.decimals));
+    if (usdcTokenBalance && usdcTokenInfo && !usdcAmount) {
+      setUsdcActualAmount(usdcTokenBalance);
+      setUsdcAmount(formatEther(usdcTokenBalance, usdcTokenInfo.decimals));
     }
-  }, [usdtTokenBalance, usdtTokenInfo, usdtAmount]);
+  }, [usdcTokenBalance, usdcTokenInfo, usdcAmount]);
 
   useEffect(() => {
     if (vUsdcTokenBalance && vUsdcTokenInfo && !vUsdcAmount) {
@@ -80,9 +80,9 @@ const VUSDC = () => {
     withdrawResetState();
 
     if (requiresApproval) {
-      approveSend(wrapContractAddress, usdtActualAmount);
+      approveSend(wrapContractAddress, usdcActualAmount);
     } else {
-      depositSend(usdtActualAmount);
+      depositSend(usdcActualAmount);
     }
   };
 
@@ -98,13 +98,13 @@ const VUSDC = () => {
   const onChangeUsdcAmount = (e) => {
     try {
       const newAmount = e.target.value;
-      const parsedAmount = parseUnits(newAmount, usdtTokenInfo.decimals);
-      if (parsedAmount.gt(usdtTokenBalance) || parsedAmount.isNegative()) {
-        setUsdcAmount(formatUnits(usdtTokenBalance || 0, usdtTokenInfo.decimals));
-        setUsdcActualAmount(usdtTokenBalance);
+      const parsedAmount = parseUnits(newAmount, usdcTokenInfo.decimals);
+      if (parsedAmount.gt(usdcTokenBalance) || parsedAmount.isNegative()) {
+        setUsdcAmount(formatUnits(usdcTokenBalance || 0, usdcTokenInfo.decimals));
+        setUsdcActualAmount(usdcTokenBalance);
       } else {
         setUsdcAmount(newAmount);
-        setUsdcActualAmount(parseUnits(newAmount, usdtTokenInfo.decimals));
+        setUsdcActualAmount(parseUnits(newAmount, usdcTokenInfo.decimals));
       }
     } catch (error) {
       console.error(error.message);
@@ -128,16 +128,19 @@ const VUSDC = () => {
   };
 
   return (
-    <Stack spacing={2} alignItems="center">
+    <Stack spacing={1} alignItems="center">
       <Typography variant="h4" sx={{ fontWeight: 700 }}>
-        {usdtTokenInfo && usdtTokenInfo.name} Token
+        {usdcTokenInfo && usdcTokenInfo.name} Token
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {usdcTokenAddress}
       </Typography>
       <Typography variant="body1" sx={{ fontWeight: 700 }}>
-        Balance: {usdtTokenBalance && formatUnits(usdtTokenBalance || 0, usdtTokenInfo.decimals)}{' '}
-        {usdtTokenInfo && usdtTokenInfo.symbol}
+        Balance: {usdcTokenBalance && formatUnits(usdcTokenBalance || 0, usdcTokenInfo.decimals)}{' '}
+        {usdcTokenInfo && usdcTokenInfo.symbol}
       </Typography>
       <TextField
-        value={usdtAmount}
+        value={usdcAmount}
         onChange={onChangeUsdcAmount}
         label="Amount"
         variant="outlined"
@@ -148,7 +151,7 @@ const VUSDC = () => {
         color="primary"
         variant="contained"
         fullWidth
-        disabled={usdtTokenBalance && usdtTokenBalance.isZero()}
+        disabled={usdcTokenBalance && usdcTokenBalance.isZero()}
         size="large"
         startIcon={<ArrowDownwardIcon />}
         onClick={onSubmitWrap}
@@ -177,6 +180,9 @@ const VUSDC = () => {
       </Button>
       <Typography variant="h4" sx={{ fontWeight: 700 }}>
         {vUsdcTokenInfo && vUsdcTokenInfo.name} Token
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {wrapContractAddress}
       </Typography>
       <Typography variant="body1" sx={{ fontWeight: 700 }}>
         Balance: {vUsdcTokenBalance && formatUnits(vUsdcTokenBalance || 0, vUsdcTokenInfo.decimals)}{' '}
