@@ -35,6 +35,10 @@ export const getTokenList = (chainId) => {
     // avax
     return 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/avalanchec/tokenlist.json';
   }
+  if (chainId === 42161) {
+    // avax
+    return 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/tokenlist.json';
+  }
   return '';
 };
 
@@ -64,6 +68,9 @@ export const getSwapContractAddress = (chainId) => {
   if (chainId === 43114) {
     // avax
     return consts.SWAP_CONTRACT_AVAX;
+  }
+  if (chainId === 42161) {
+    return consts.SWAP_CONTRACT_ARBITRUM;
   }
   return consts.SWAP_CONTRACT_MAINNET;
 };
@@ -96,6 +103,9 @@ export const getIdContractAddress = (chainId) => {
   if (chainId === 43114) {
     // avax
     return consts.ID_CONTRACT_AVAX;
+  }
+  if (chainId === 42161) {
+    return consts.ID_CONTRACT_ARBITRUM;
   }
   return consts.ID_CONTRACT_MAINNET;
 };
