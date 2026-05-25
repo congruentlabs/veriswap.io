@@ -2,9 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import '@rainbow-me/rainbowkit/styles.css';
 
 import { wagmiConfig } from './wagmi.js';
 import { buildTheme } from './theme.js';
@@ -32,22 +30,20 @@ export default function App() {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={mode === 'dark' ? darkTheme() : lightTheme()} modalSize="compact">
-          <ColorModeContext.Provider value={colorMode}>
-            <ThemeProvider theme={muiTheme}>
-              <CssBaseline />
-              <HashRouter>
-                <Routes>
-                  <Route element={<Main />}>
-                    <Route index element={<SwapView />} />
-                    <Route path="swap/:swapId" element={<ExecuteView />} />
-                    <Route path="wrap" element={<WrapView />} />
-                  </Route>
-                </Routes>
-              </HashRouter>
-            </ThemeProvider>
-          </ColorModeContext.Provider>
-        </RainbowKitProvider>
+        <ColorModeContext.Provider value={colorMode}>
+          <ThemeProvider theme={muiTheme}>
+            <CssBaseline />
+            <HashRouter>
+              <Routes>
+                <Route element={<Main />}>
+                  <Route index element={<SwapView />} />
+                  <Route path="swap/:swapId" element={<ExecuteView />} />
+                  <Route path="wrap" element={<WrapView />} />
+                </Route>
+              </Routes>
+            </HashRouter>
+          </ThemeProvider>
+        </ColorModeContext.Provider>
       </QueryClientProvider>
     </WagmiProvider>
   );

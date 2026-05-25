@@ -2,7 +2,7 @@ import { Outlet, Link as RouterLink } from 'react-router-dom';
 import { AppBar, Toolbar, Box, Container, IconButton, Stack, Button, Divider, Typography, Link } from '@mui/material';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import ConnectButton from '../components/ConnectButton.jsx';
 import { useColorMode } from '../colorMode.js';
 
 export default function Main() {
@@ -25,7 +25,7 @@ export default function Main() {
             <IconButton onClick={toggle} color="inherit" aria-label="toggle theme">
               {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
-            <ConnectButton showBalance={false} chainStatus="icon" accountStatus="address" />
+            <ConnectButton />
           </Stack>
         </Toolbar>
       </AppBar>
