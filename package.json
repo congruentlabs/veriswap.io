@@ -24,8 +24,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5",
-    "viem": "^2.22.20",
-    "wagmi": "^2.14.10"
+    "viem": "^2.51.0",
+    "wagmi": "^3.6.15"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.2.0",
