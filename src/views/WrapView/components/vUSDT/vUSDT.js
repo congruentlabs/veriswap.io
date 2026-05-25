@@ -161,7 +161,7 @@ const VUSDT = () => {
       <ApprovalStatus state={approveState} />
       <StatusMessage state={depositState} title="Wrap Token" />
       <Typography variant="body2" align="center">
-        Wrapping and Unwrapping tokens requires a Signata KYC NFT to held by your wallet. You can{' '}
+        Wrapping and Unwrapping tokens requires a Signata KYC NFT to be held by your wallet. You can{' '}
         <Link href="https://my.signata.net" target="_blank">
           verify and purchase one from Signata
         </Link>
