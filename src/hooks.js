@@ -4,9 +4,41 @@ import { Contract } from '@ethersproject/contracts';
 import * as consts from 'consts';
 
 import SWAP_ABI from 'swapAbi.json';
+import NATIVE_SWAP_ABI from 'nativeSwapAbi.json';
 import ID_ABI from 'idAbi.json';
 import WRAP_ABI from 'wrapAbi.json';
 import ERC20_ABI from 'erc20Abi.json';
+
+export const isNativeToken = (tokenAddress) =>
+  tokenAddress && tokenAddress.toLowerCase() === consts.NATIVE_TOKEN_ADDRESS;
+
+export const getNativeToken = (chainId) => {
+  const nativeAssets = {
+    1: { chainName: 'Ethereum', name: 'Ether', symbol: 'ETH' },
+    4: { chainName: 'Rinkeby', name: 'Rinkeby Ether', symbol: 'ETH' },
+    56: { chainName: 'BSC', name: 'BNB', symbol: 'BNB' },
+    137: { chainName: 'Polygon', name: 'Matic', symbol: 'MATIC' },
+    250: { chainName: 'Fantom', name: 'Fantom', symbol: 'FTM' },
+    1088: { chainName: 'Metis Andromeda', name: 'Metis', symbol: 'METIS' },
+    43114: { chainName: 'Avalanche', name: 'Avalanche', symbol: 'AVAX' },
+    42161: { chainName: 'Arbitrum', name: 'Ether', symbol: 'ETH' }
+  };
+  const nativeAsset = nativeAssets[chainId];
+  if (!nativeAsset) {
+    return null;
+  }
+  return {
+    ...nativeAsset,
+    address: consts.NATIVE_TOKEN_ADDRESS,
+    type: 'NATIVE',
+    asset: `native-${chainId}`,
+    decimals: 18,
+    logoURI: '/logo.png',
+    pairs: []
+  };
+};
+
+export const isNativeSwap = (inputToken, outputToken) => isNativeToken(inputToken) || isNativeToken(outputToken);
 
 export const getTokenList = (chainId) => {
   if (chainId === 1) {
@@ -42,7 +74,38 @@ export const getTokenList = (chainId) => {
   return '';
 };
 
-export const getSwapContractAddress = (chainId) => {
+export const getNativeSwapContractAddress = (chainId) => {
+  if (chainId === 1) {
+    return consts.NATIVE_SWAP_CONTRACT_MAINNET;
+  }
+  if (chainId === 4) {
+    return consts.NATIVE_SWAP_CONTRACT_RINKEBY;
+  }
+  if (chainId === 56) {
+    return consts.NATIVE_SWAP_CONTRACT_BSC;
+  }
+  if (chainId === 137) {
+    return consts.NATIVE_SWAP_CONTRACT_MATIC;
+  }
+  if (chainId === 250) {
+    return consts.NATIVE_SWAP_CONTRACT_FTM;
+  }
+  if (chainId === 1088) {
+    return consts.NATIVE_SWAP_CONTRACT_METIS;
+  }
+  if (chainId === 43114) {
+    return consts.NATIVE_SWAP_CONTRACT_AVAX;
+  }
+  if (chainId === 42161) {
+    return consts.NATIVE_SWAP_CONTRACT_ARBITRUM;
+  }
+  return '';
+};
+
+export const getSwapContractAddress = (chainId, useNativeSwap = false) => {
+  if (useNativeSwap) {
+    return getNativeSwapContractAddress(chainId);
+  }
   if (chainId === 1) {
     return consts.SWAP_CONTRACT_MAINNET;
   }
@@ -75,7 +138,11 @@ export const getSwapContractAddress = (chainId) => {
   return consts.SWAP_CONTRACT_MAINNET;
 };
 
-export const getSwapContract = (chainId) => new Contract(getSwapContractAddress(chainId), SWAP_ABI);
+export const getSwapContract = (chainId, useNativeSwap = false) =>
+  new Contract(
+    getSwapContractAddress(chainId, useNativeSwap) || consts.NATIVE_TOKEN_ADDRESS,
+    useNativeSwap ? NATIVE_SWAP_ABI : SWAP_ABI
+  );
 
 export const getIdContractAddress = (chainId) => {
   if (chainId === 1) {
@@ -242,8 +309,15 @@ export function useWithdrawDai(chainId) {
 
 // SWAP
 
-export function useCreateSwap(chainId) {
-  const swapContract = getSwapContract(chainId);
+const resolveSwapContract = (chainIdOrContract, useNativeSwap = false) => {
+  if (chainIdOrContract && chainIdOrContract.address) {
+    return chainIdOrContract;
+  }
+  return getSwapContract(chainIdOrContract, useNativeSwap);
+};
+
+export function useCreateSwap(chainIdOrContract, useNativeSwap = false) {
+  const swapContract = resolveSwapContract(chainIdOrContract, useNativeSwap);
 
   const { state, send, events, resetState } = useContractFunction(swapContract, 'createSwap', {
     transactionName: 'Create Swap'
@@ -251,8 +325,8 @@ export function useCreateSwap(chainId) {
   return { state, send, events, resetState };
 }
 
-export function useExecuteSwap(chainId) {
-  const swapContract = getSwapContract(chainId);
+export function useExecuteSwap(chainIdOrContract, useNativeSwap = false) {
+  const swapContract = resolveSwapContract(chainIdOrContract, useNativeSwap);
 
   const { state, send, events, resetState } = useContractFunction(swapContract, 'executeSwap', {
     transactionName: 'Execute Swap'
@@ -260,8 +334,8 @@ export function useExecuteSwap(chainId) {
   return { state, send, events, resetState };
 }
 
-export function useCancelSwap(chainId) {
-  const swapContract = getSwapContract(chainId);
+export function useCancelSwap(chainIdOrContract, useNativeSwap = false) {
+  const swapContract = resolveSwapContract(chainIdOrContract, useNativeSwap);
 
   const { state, send, events, resetState } = useContractFunction(swapContract, 'cancelSwap', {
     transactionName: 'Cancel Swap'
@@ -269,8 +343,8 @@ export function useCancelSwap(chainId) {
   return { state, send, events, resetState };
 }
 
-export function useEnableSwaps(chainId) {
-  const swapContract = getSwapContract(chainId);
+export function useEnableSwaps(chainIdOrContract, useNativeSwap = false) {
+  const swapContract = resolveSwapContract(chainIdOrContract, useNativeSwap);
 
   const { state, send, events, resetState } = useContractFunction(swapContract, 'enableSwaps', {
     transactionName: 'Enable Swaps'
@@ -278,8 +352,8 @@ export function useEnableSwaps(chainId) {
   return { state, send, events, resetState };
 }
 
-export function useChangeExecutor(chainId) {
-  const swapContract = getSwapContract(chainId);
+export function useChangeExecutor(chainIdOrContract, useNativeSwap = false) {
+  const swapContract = resolveSwapContract(chainIdOrContract, useNativeSwap);
 
   const { state, send, events, resetState } = useContractFunction(swapContract, 'changeExecutor', {
     transactionName: 'Change Executor'
@@ -297,11 +371,13 @@ export function useApprove(erc20TokenContractObj) {
 export const useGetValue = (method, args, contractAddress, contract) => {
   const { value, error } =
     useCall(
-      contractAddress && {
-        contract,
-        method,
-        args
-      }
+      contractAddress
+        ? {
+            contract,
+            method,
+            args
+          }
+        : undefined
     ) ?? {};
   if (error) {
     console.error(error.message);
@@ -313,11 +389,13 @@ export const useGetValue = (method, args, contractAddress, contract) => {
 export const useGetSingleValue = (method, args, contractAddress, contract) => {
   const { value, error } =
     useCall(
-      contractAddress && {
-        contract,
-        method,
-        args
-      }
+      contractAddress
+        ? {
+            contract,
+            method,
+            args
+          }
+        : undefined
     ) ?? {};
   if (error) {
     console.error(error.message);

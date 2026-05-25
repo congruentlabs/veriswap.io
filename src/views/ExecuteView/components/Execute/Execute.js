@@ -16,7 +16,10 @@ import {
   useApprove,
   useGetValue,
   getSwapContractAddress,
+  getSwapContract,
   getIdContractAddress,
+  isNativeToken,
+  isNativeSwap,
   logLoading,
   shouldBeLoading
 } from 'hooks';
@@ -33,16 +36,19 @@ import SwapData from '../SwapData';
 import SWAP_ABI from 'swapAbi.json';
 import ID_ABI from 'idAbi.json';
 import ERC20_ABI from 'erc20Abi.json';
+import { NATIVE_TOKEN_ADDRESS } from 'consts';
 
 const Execute = (props) => {
   const theme = useTheme();
   const { swapId } = props;
 
   const { account, chainId } = useEthers();
-  const swapContract = new Contract(getSwapContractAddress(chainId), SWAP_ABI);
+  const erc20SwapContractAddress = getSwapContractAddress(chainId);
+  const nativeSwapContractAddress = getSwapContractAddress(chainId, true);
+  const erc20SwapContract = getSwapContract(chainId);
+  const nativeSwapContract = getSwapContract(chainId, true);
   const idContract = new Contract(getIdContractAddress(chainId), ID_ABI);
 
-  const swapContractAddress = getSwapContractAddress(chainId);
   const [isCreator, setIsCreator] = useState(false);
   const [isAllowedToExecute, setIsAllowedToExecute] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
@@ -51,6 +57,18 @@ const Execute = (props) => {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const [parsedSwapData, setParsedSwapData] = useState({});
+
+  const erc20SwapData = useGetValue('swaps', [swapId], erc20SwapContractAddress, erc20SwapContract);
+  const nativeSwapData = useGetValue('swaps', [swapId], nativeSwapContractAddress, nativeSwapContract);
+  const swapData =
+    nativeSwapData && nativeSwapData.creator && nativeSwapData.creator !== NATIVE_TOKEN_ADDRESS
+      ? nativeSwapData
+      : erc20SwapData;
+  const nativeSwap = Boolean(isNativeSwap(parsedSwapData.inputToken, parsedSwapData.outputToken));
+  const isOutputNative = isNativeToken(parsedSwapData.outputToken);
+  const swapContract = nativeSwap ? nativeSwapContract : erc20SwapContract;
+  const swapContractAddress = nativeSwap ? nativeSwapContractAddress : erc20SwapContractAddress;
   const {
     state: executeSwapState,
     send: executeSwapSend,
@@ -66,12 +84,8 @@ const Execute = (props) => {
     send: changeExecutorSend,
     resetState: changeExecutorResetState
   } = useChangeExecutor(swapContract);
-
-  const [parsedSwapData, setParsedSwapData] = useState({});
-
-  const swapData = useGetValue('swaps', [swapId], getSwapContractAddress(chainId), swapContract);
   const toTokenContractObj = new Contract(
-    parsedSwapData.outputToken || '0x0000000000000000000000000000000000000000',
+    isOutputNative ? NATIVE_TOKEN_ADDRESS : parsedSwapData.outputToken || NATIVE_TOKEN_ADDRESS,
     ERC20_ABI
   );
   const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(toTokenContractObj);
@@ -135,8 +149,12 @@ const Execute = (props) => {
   const onSubmitExecuteSwap = (e) => {
     e.preventDefault();
     resetStates();
-    if (requiresApproval) {
+    if (requiresApproval && !isOutputNative) {
       approveSend(swapContractAddress, parsedSwapData.outputAmount);
+    } else if (isOutputNative) {
+      executeSwapSend(parsedSwapData.creator, {
+        value: parsedSwapData.outputAmount
+      });
     } else {
       executeSwapSend(parsedSwapData.creator);
     }

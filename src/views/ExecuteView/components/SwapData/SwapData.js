@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react';
-import { useTokenBalance, useToken, useTokenAllowance } from '@usedapp/core';
-import { formatEther } from '@ethersproject/units';
+import { useTokenBalance, useToken, useTokenAllowance, useEtherBalance } from '@usedapp/core';
+import { formatUnits } from '@ethersproject/units';
 
 import { Box, Divider, Chip, Typography } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { getSwapContract, getSwapContractAddress } from 'hooks';
+import { getNativeToken, getSwapContractAddress, isNativeToken, isNativeSwap } from 'hooks';
 
 const SwapData = (props) => {
   const {
@@ -23,11 +23,23 @@ const SwapData = (props) => {
   } = props;
 
   // const swapContract = getSwapContract(chainId);
-  const swapContract = getSwapContractAddress(chainId);
-  const inputTokenInfo = useToken(swapData.inputToken);
-  const outputTokenInfo = useToken(swapData.outputToken);
-  const outputTokenBalance = useTokenBalance(swapData.outputToken, account);
-  const swapAllowance = useTokenAllowance(swapData.outputToken, account, swapContract);
+  const nativeSwap = Boolean(isNativeSwap(swapData.inputToken, swapData.outputToken));
+  const swapContract = getSwapContractAddress(chainId, nativeSwap);
+  const isInputNative = isNativeToken(swapData.inputToken);
+  const isOutputNative = isNativeToken(swapData.outputToken);
+  const nativeTokenInfo = getNativeToken(chainId);
+  const inputErc20TokenInfo = useToken(isInputNative ? undefined : swapData.inputToken);
+  const outputErc20TokenInfo = useToken(isOutputNative ? undefined : swapData.outputToken);
+  const outputNativeBalance = useEtherBalance(account);
+  const outputErc20TokenBalance = useTokenBalance(isOutputNative ? undefined : swapData.outputToken, account);
+  const inputTokenInfo = isInputNative ? nativeTokenInfo : inputErc20TokenInfo;
+  const outputTokenInfo = isOutputNative ? nativeTokenInfo : outputErc20TokenInfo;
+  const outputTokenBalance = isOutputNative ? outputNativeBalance : outputErc20TokenBalance;
+  const swapAllowance = useTokenAllowance(
+    isOutputNative || !swapContract ? undefined : swapData.outputToken,
+    account,
+    swapContract || undefined
+  );
 
   useEffect(() => {
     if (swapData && account) {
@@ -41,12 +53,14 @@ const SwapData = (props) => {
   }, [account, swapData, setIsCreator, setIsAllowedToExecute]);
 
   useEffect(() => {
-    if (!swapAllowance || swapAllowance < swapData.outputAmount) {
+    if (isOutputNative || isComplete) {
+      setRequiresApproval(false);
+    } else if (!swapAllowance || swapAllowance.lt(swapData.outputAmount)) {
       setRequiresApproval(true);
     } else {
       setRequiresApproval(false);
     }
-  }, [setSwapAllowance, swapAllowance, setRequiresApproval, outputTokenBalance, swapData]);
+  }, [setSwapAllowance, swapAllowance, setRequiresApproval, outputTokenBalance, swapData, isOutputNative, isComplete]);
 
   return (
     <Box
@@ -116,7 +130,7 @@ const SwapData = (props) => {
       </Typography>
       {swapData.outputAmount && outputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
-          {`${formatEther(swapData.outputAmount || 0, outputTokenInfo.decimals)} ${outputTokenInfo.symbol}`}
+          {`${formatUnits(swapData.outputAmount || 0, outputTokenInfo.decimals)} ${outputTokenInfo.symbol}`}
         </Typography>
       )}
       <Typography component="p" variant="body2" align="left" color="text.secondary">
@@ -124,7 +138,7 @@ const SwapData = (props) => {
       </Typography>
       {outputTokenBalance && outputTokenInfo && (
         <Typography component="p" variant="body1" align="left">
-          {`${formatEther(outputTokenBalance || 0, outputTokenInfo.decimals)} ${outputTokenInfo.symbol}`}
+          {`${formatUnits(outputTokenBalance || 0, outputTokenInfo.decimals)} ${outputTokenInfo.symbol}`}
         </Typography>
       )}
       <Divider sx={{ margin: 2 }} />
@@ -146,7 +160,7 @@ const SwapData = (props) => {
       </Typography>
       {inputTokenInfo && (
         <Typography component="p" variant="h4" align="left">
-          {`${formatEther(swapData.inputAmount || 0, inputTokenInfo.decimals)} ${inputTokenInfo.symbol}`}
+          {`${formatUnits(swapData.inputAmount || 0, inputTokenInfo.decimals)} ${inputTokenInfo.symbol}`}
         </Typography>
       )}
       {!isComplete && <Divider sx={{ margin: 2 }} />}
