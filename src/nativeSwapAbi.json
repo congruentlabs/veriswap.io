@@ -1,0 +1,180 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "inputToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "inputAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "outputToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "outputAmount",
+            "type": "uint256"
+          },
+          { "internalType": "address", "name": "executor", "type": "address" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          { "internalType": "bool", "name": "requireIdentity", "type": "bool" },
+          { "internalType": "bool", "name": "requireKyc", "type": "bool" },
+          {
+            "internalType": "bool",
+            "name": "requireSanctionCheck",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum VeriswapNative.States",
+            "name": "state",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct VeriswapNative.EscrowSwap",
+        "name": "swapData",
+        "type": "tuple"
+      }
+    ],
+    "name": "SwapCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "creatorAddress",
+        "type": "address"
+      }
+    ],
+    "name": "SwapExecuted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "creatorAddress",
+        "type": "address"
+      }
+    ],
+    "name": "SwapCancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "creatorAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldExecutor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newExecutor",
+        "type": "address"
+      }
+    ],
+    "name": "ExecutorModified",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_inputToken", "type": "address" },
+      { "internalType": "uint256", "name": "_inputAmount", "type": "uint256" },
+      { "internalType": "address", "name": "_outputToken", "type": "address" },
+      { "internalType": "uint256", "name": "_outputAmount", "type": "uint256" },
+      { "internalType": "address", "name": "_executor", "type": "address" },
+      { "internalType": "bool", "name": "_requireIdentity", "type": "bool" },
+      { "internalType": "bool", "name": "_requireKyc", "type": "bool" },
+      {
+        "internalType": "bool",
+        "name": "_requireSanctionCheck",
+        "type": "bool"
+      }
+    ],
+    "name": "createSwap",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "creatorAddress", "type": "address" }
+    ],
+    "name": "executeSwap",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "cancelSwap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "newExecutor", "type": "address" }
+    ],
+    "name": "changeExecutor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "swaps",
+    "outputs": [
+      { "internalType": "address", "name": "inputToken", "type": "address" },
+      { "internalType": "uint256", "name": "inputAmount", "type": "uint256" },
+      { "internalType": "address", "name": "outputToken", "type": "address" },
+      { "internalType": "uint256", "name": "outputAmount", "type": "uint256" },
+      { "internalType": "address", "name": "executor", "type": "address" },
+      { "internalType": "address", "name": "creator", "type": "address" },
+      { "internalType": "bool", "name": "requireIdentity", "type": "bool" },
+      { "internalType": "bool", "name": "requireKyc", "type": "bool" },
+      {
+        "internalType": "bool",
+        "name": "requireSanctionCheck",
+        "type": "bool"
+      },
+      {
+        "internalType": "enum VeriswapNative.States",
+        "name": "state",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "canSwap",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

@@ -1,9 +1,16 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { useTokenBalance, useEthers, useToken, shortenIfAddress, useTokenAllowance } from '@usedapp/core';
+import {
+  useTokenBalance,
+  useEthers,
+  useToken,
+  shortenIfAddress,
+  useTokenAllowance,
+  useEtherBalance
+} from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
 import axios from 'axios';
-import { formatEther, formatUnits, parseUnits } from '@ethersproject/units';
+import { formatUnits, parseUnits } from '@ethersproject/units';
 import { useTheme } from '@mui/material/styles';
 import {
   Alert,
@@ -36,6 +43,9 @@ import {
   useApprove,
   getSwapContractAddress,
   getSwapContract,
+  getNativeToken,
+  isNativeToken,
+  isNativeSwap,
   useGetValue,
   logLoading,
   shouldBeLoading,
@@ -48,15 +58,13 @@ import AccountConnector from 'components/AccountConnector';
 import ConnectedWallet from 'components/ConnectedWallet';
 import UnsupportedChain from 'components/UnsupportedChain';
 
-import { SUPPORTED_CHAINS, SANCTIONS_SUPPORTED_CHAINS } from 'consts';
+import { SUPPORTED_CHAINS, SANCTIONS_SUPPORTED_CHAINS, NATIVE_TOKEN_ADDRESS } from 'consts';
 
 import ERC20_ABI from 'erc20Abi.json';
 
 const Swap = () => {
   const theme = useTheme();
   const { account, chainId } = useEthers();
-  const swapContract = getSwapContract(chainId);
-  const swapContractAddress = getSwapContractAddress(chainId);
   const tokenListAddress = getTokenList(chainId);
   const [tokens, setTokens] = useState([]);
   const [fromToken, setFromToken] = useState('');
@@ -79,28 +87,51 @@ const Swap = () => {
   const [swapAlreadyOpen, setSwapAlreadyOpen] = useState(false);
   const [supportedChain, setSupportedChain] = useState(false);
   const [supportedSanctionChain, setSupportedSanctionChain] = useState(false);
+  const nativeSwap = Boolean(isNativeSwap(fromToken, receiveToken));
+  const isFromNative = isNativeToken(fromToken);
+  const isReceiveNative = isNativeToken(receiveToken);
+  const nativeTokenInfo = getNativeToken(chainId);
+  const swapContract = getSwapContract(chainId, nativeSwap);
+  const swapContractAddress = getSwapContractAddress(chainId, nativeSwap);
+  const nativeSwapReady = !nativeSwap || Boolean(swapContractAddress);
   const {
     state: createSwapState,
     send: createSwapSend,
     resetState: createSwapResetState
   } = useCreateSwap(swapContract);
-  const fromTokenContractObj = new Contract(fromToken || '0x0000000000000000000000000000000000000000', ERC20_ABI);
+  const fromTokenContractObj = new Contract(
+    isFromNative ? NATIVE_TOKEN_ADDRESS : fromToken || NATIVE_TOKEN_ADDRESS,
+    ERC20_ABI
+  );
   const { state: approveState, send: approveSend, resetState: approveResetState } = useApprove(fromTokenContractObj);
 
   // TODO: check if identity locked for the require identity option
   // const isLocked = useGetSingleValue('isLocked', [account], ID_CONTRACT, idContract);
 
-  const fromTokenInfo = useToken(fromToken);
-  const receiveTokenInfo = useToken(receiveToken);
-  const fromTokenBalance = useTokenBalance(fromToken, account);
-  const swapAllowance = useTokenAllowance(fromToken, account, swapContractAddress);
-  const swapData = useGetValue('swaps', [account], getSwapContractAddress(chainId), swapContract);
+  const fromTokenInfo = useToken(isFromNative ? undefined : fromToken || undefined);
+  const receiveTokenInfo = useToken(isReceiveNative ? undefined : receiveToken || undefined);
+  const fromNativeBalance = useEtherBalance(account);
+  const fromErc20TokenBalance = useTokenBalance(isFromNative ? undefined : fromToken || undefined, account);
+  const fromTokenBalance = isFromNative ? fromNativeBalance : fromErc20TokenBalance;
+  const fromTokenDisplayInfo = isFromNative ? nativeTokenInfo : fromTokenInfo;
+  const receiveTokenDisplayInfo = isReceiveNative ? nativeTokenInfo : receiveTokenInfo;
+  const swapAllowance = useTokenAllowance(
+    isFromNative || !swapContractAddress ? undefined : fromToken || undefined,
+    account,
+    swapContractAddress || undefined
+  );
+  const swapData = useGetValue('swaps', [account], swapContractAddress, swapContract);
 
   useEffect(() => {
     const getTokens = async () => {
-      const response = await axios.get(tokenListAddress);
-      if (response.data && response.data.tokens) {
-        const newArray = response.data.tokens;
+      let newArray = [];
+      try {
+        if (tokenListAddress) {
+          const response = await axios.get(tokenListAddress);
+          if (response.data && response.data.tokens) {
+            newArray = [...response.data.tokens];
+          }
+        }
         if (chainId === 1) {
           // adding partner addresses that aren't in the trust wallet list
           newArray.push({
@@ -195,13 +226,18 @@ const Swap = () => {
             pairs: []
           });
         }
+      } catch (error) {
+        console.error(error.message);
+      } finally {
+        const nativeToken = getNativeToken(chainId);
+        if (nativeToken) {
+          newArray = [nativeToken, ...newArray.filter((token) => !isNativeToken(token.address))];
+        }
         newArray.sort((a, b) => (a.symbol > b.symbol ? 1 : b.symbol > a.symbol ? -1 : 0));
         setTokens(newArray);
       }
     };
-    if (tokenListAddress) {
-      getTokens();
-    }
+    getTokens();
   }, [tokenListAddress, chainId]);
 
   useEffect(() => {
@@ -230,12 +266,14 @@ const Swap = () => {
   }, [swapData]);
 
   useEffect(() => {
-    if (swapAllowance < fromActualAmount) {
+    if (isFromNative || !fromActualAmount) {
+      setRequiresApproval(false);
+    } else if (!swapAllowance || swapAllowance.lt(fromActualAmount)) {
       setRequiresApproval(true);
     } else {
       setRequiresApproval(false);
     }
-  }, [swapAllowance, setRequiresApproval, fromActualAmount]);
+  }, [swapAllowance, setRequiresApproval, fromActualAmount, isFromNative]);
 
   useEffect(() => {
     if (approveState) {
@@ -283,10 +321,11 @@ const Swap = () => {
     try {
       setFromAmountError('');
       const newAmount = e.target.value;
-      const parsedAmount = parseUnits(newAmount, fromTokenInfo.decimals);
-      if (parsedAmount.gt(fromTokenBalance) || parsedAmount.isNegative()) {
+      const decimals = fromTokenDisplayInfo?.decimals || 18;
+      const parsedAmount = parseUnits(newAmount || '0', decimals);
+      if ((fromTokenBalance && parsedAmount.gt(fromTokenBalance)) || parsedAmount.isNegative()) {
         setFromActualAmount(fromTokenBalance);
-        setFromAmount(formatUnits(fromTokenBalance || 0, fromTokenInfo.decimals));
+        setFromAmount(formatUnits(fromTokenBalance || 0, decimals));
       } else {
         setFromActualAmount(parsedAmount);
         setFromAmount(newAmount);
@@ -301,7 +340,8 @@ const Swap = () => {
     e.preventDefault();
     try {
       const newAmount = e.target.value || 0;
-      const parsedAmount = parseUnits(newAmount, receiveTokenInfo.decimals);
+      const decimals = receiveTokenDisplayInfo?.decimals || 18;
+      const parsedAmount = parseUnits(newAmount.toString(), decimals);
       setReceiveActualAmount(parsedAmount);
       setReceiveAmount(newAmount);
     } catch (error) {
@@ -331,7 +371,7 @@ const Swap = () => {
     if (fromToken && fromTokenBalance && fromTokenBalance.gt(0)) {
       const newAmount = fromTokenBalance.div(100).mul(val);
       setFromActualAmount(newAmount);
-      setFromAmount(formatUnits(newAmount || 0, 18));
+      setFromAmount(formatUnits(newAmount || 0, fromTokenDisplayInfo?.decimals || 18));
     }
   };
 
@@ -343,7 +383,7 @@ const Swap = () => {
     if (requiresApproval) {
       approveSend(swapContractAddress, fromActualAmount);
     } else {
-      createSwapSend(
+      const createSwapArgs = [
         fromToken, // _inputToken
         fromActualAmount, // _inputAmount
         receiveToken, // _outputToken
@@ -352,7 +392,12 @@ const Swap = () => {
         addonsRequireIdentity, // _requireIdentity
         addonsRequireKyc, // _requireKyc
         addonsRequireOfacSanctions // _requireSanctionCheck
-      );
+      ];
+      if (isFromNative) {
+        createSwapSend(...createSwapArgs, { value: fromActualAmount });
+      } else {
+        createSwapSend(...createSwapArgs);
+      }
     }
   };
 
@@ -369,6 +414,9 @@ const Swap = () => {
       setReceiveToken(newValue.address);
     }
   };
+
+  const getTokenLabel = (option) =>
+    `${option.name} ${option.symbol} (${isNativeToken(option.address) ? 'native' : shortenIfAddress(option.address)})`;
 
   return (
     <Box minHeight={800} height={'auto'} position={'relative'}>
@@ -423,6 +471,12 @@ const Swap = () => {
                       </Button>
                     </>
                   )}
+                  {nativeSwap && !nativeSwapReady && (
+                    <Alert severity="warning" sx={{ width: '100%' }}>
+                      <AlertTitle>Native swaps are not deployed on this chain yet.</AlertTitle>
+                      Select ERC20 tokens only, or configure the VeriswapNative contract address for this network.
+                    </Alert>
+                  )}
                   <Autocomplete
                     id="from-select"
                     // sx={{ width: 300 }}
@@ -430,7 +484,7 @@ const Swap = () => {
                     options={tokens}
                     autoHighlight
                     onChange={handleSelectFromToken}
-                    getOptionLabel={(option) => `${option.name} ${option.symbol} (${shortenIfAddress(option.address)})`}
+                    getOptionLabel={getTokenLabel}
                     renderOption={(props, option) => (
                       <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                         <img
@@ -510,12 +564,17 @@ const Swap = () => {
                       <Button onClick={(e) => handleClickFromPercentage(e, 100)}>100%</Button>
                     </ButtonGroup>
                   )}
-                  {fromTokenInfo && fromTokenBalance && (
+                  {fromTokenDisplayInfo && fromTokenBalance && (
                     <Chip
-                      label={`Balance: ${formatEther(fromTokenBalance, fromTokenInfo.decimals)} ${
-                        fromTokenInfo.symbol
+                      label={`Balance: ${formatUnits(fromTokenBalance, fromTokenDisplayInfo.decimals)} ${
+                        fromTokenDisplayInfo.symbol
                       }`}
-                      sx={{ fontFamily: 'Roboto Mono', borderRadius: 1, width: '100%', textAlign: 'left' }}
+                      sx={{
+                        fontFamily: 'Roboto Mono',
+                        borderRadius: 1,
+                        width: '100%',
+                        textAlign: 'left'
+                      }}
                     />
                   )}
                   {fromToken && (
@@ -526,9 +585,7 @@ const Swap = () => {
                       options={tokens}
                       autoHighlight
                       onChange={handleSelectReceiveToken}
-                      getOptionLabel={(option) =>
-                        `${option.name} ${option.symbol} (${shortenIfAddress(option.address)})`
-                      }
+                      getOptionLabel={getTokenLabel}
                       renderOption={(props, option) => (
                         <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                           <img
@@ -584,10 +641,14 @@ const Swap = () => {
                       helperText={receiveAmountError}
                     />
                   )}
-                  {receiveTokenInfo && (
+                  {receiveTokenDisplayInfo && (
                     <Chip
-                      label={`Receiving: ${receiveAmount || 0} ${receiveTokenInfo.symbol}`}
-                      sx={{ fontFamily: 'Roboto Mono', borderRadius: 1, width: '100%' }}
+                      label={`Receiving: ${receiveAmount || 0} ${receiveTokenDisplayInfo.symbol}`}
+                      sx={{
+                        fontFamily: 'Roboto Mono',
+                        borderRadius: 1,
+                        width: '100%'
+                      }}
                     />
                   )}
                   {receiveToken && (
@@ -662,7 +723,7 @@ const Swap = () => {
                         variant="contained"
                         color="primary"
                         size="large"
-                        disabled={isLoading || !requiresApproval || swapAlreadyOpen}
+                        disabled={isLoading || !requiresApproval || swapAlreadyOpen || !nativeSwapReady}
                         fullWidth
                         type="submit"
                         endIcon={<DoneIcon />}
@@ -673,7 +734,12 @@ const Swap = () => {
                         variant="contained"
                         color="primary"
                         disabled={
-                          isLoading || requiresApproval || swapAlreadyOpen || !fromActualAmount || !receiveActualAmount
+                          isLoading ||
+                          requiresApproval ||
+                          swapAlreadyOpen ||
+                          !fromActualAmount ||
+                          !receiveActualAmount ||
+                          !nativeSwapReady
                         }
                         size="large"
                         fullWidth
