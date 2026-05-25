@@ -1,41 +1,35 @@
-# Deploying to Cloudflare Workers (static assets)
+# Deploying to Cloudflare Pages
 
-This repo deploys as a Cloudflare **Worker with static assets** (not Pages),
-via Git integration in the Cloudflare dashboard.
+This repo deploys as a Cloudflare **Pages** project named `veriswap-web`
+via Git integration.
 
 ## How it works
 
-[`wrangler.toml`](wrangler.toml) tells Cloudflare to serve `./build/` as a
-static site:
+- [`wrangler.toml`](wrangler.toml) declares `pages_build_output_dir = "./build"`
+  so wrangler knows where the static output lives.
+- [`public/_redirects`](public/_redirects) provides the SPA fallback —
+  any unmatched route returns `index.html` so deep links like
+  `/#/swap/0x…` work on refresh.
+- [`public/_headers`](public/_headers) sets long-cache for hashed assets
+  and sensible security headers.
 
-```toml
-name = "veriswap-web"
-compatibility_date = "2025-01-01"
+## Dashboard config
 
-[assets]
-directory = "./build"
-not_found_handling = "single-page-application"
-```
-
-`not_found_handling = "single-page-application"` is the SPA fallback —
-any 404 returns `index.html` with a 200 so deep links like `/#/swap/0x…`
-work on refresh. (Replaces the Pages `_redirects` file.)
-
-## Dashboard build config
-
+- **Framework preset**: None (or Vite — both work)
 - **Build command**: `npm run build`
-- **Deploy command**: `npx wrangler deploy` (Cloudflare's default for
-  Workers — leave it as-is)
-- **Root directory**: blank
+- **Build output directory**: `build`
+- **Deploy command**: `npx wrangler pages deploy` *(only needed if the
+  dashboard auto-set it; Pages can deploy without an explicit command
+  too)*
 - **Env**: `NODE_VERSION=20`
 
-Every push to `main` triggers a production deploy. PRs get preview
-deployments.
+Every push to `main` triggers a production build; PRs get preview
+deployments at unique `*.veriswap-web.pages.dev` URLs.
 
 ## Custom domain
 
-Add `veriswap.io` (and `www.`) under **Workers → veriswap-web → Settings
-→ Domains & Routes**.
+Project → **Custom domains** → add `veriswap.io` and `www.veriswap.io`.
+Cloudflare handles DNS automatically when the domain is on Cloudflare.
 
 ## Manual deploy (optional)
 
@@ -43,12 +37,5 @@ Add `veriswap.io` (and `www.`) under **Workers → veriswap-web → Settings
 npm install -g wrangler
 wrangler login
 npm run build
-wrangler deploy
+wrangler pages deploy build --project-name=veriswap-web
 ```
-
-## Adding security headers later
-
-Workers static assets don't read a `_headers` file. If you need custom
-headers (CSP, X-Frame-Options, long-cache for `/assets/*`), add a
-minimal Worker fetch handler that wraps `env.ASSETS.fetch()` and
-mutates the response headers.
